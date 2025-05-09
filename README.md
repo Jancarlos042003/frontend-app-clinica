@@ -44,5 +44,3 @@ npm install -g expo-cli
 ```bash
 npx expo start
 ```
-
-Esto abrirá una ventana en tu navegador desde donde podrás correr la app en un emulador, dispositivo físico o en el navegador.
