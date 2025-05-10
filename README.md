@@ -33,10 +33,10 @@ Asegúrate de tener instalado Node.js y Expo CLI.
 npm install
 ```
 
-Si aún no tienes Expo CLI, instálalo globalmente:
+Si aún no tienes Expo CLI de manera local dentro del proyecto:
 
 ```bash
-npm install -g expo-cli
+npm install --save-dev expo
 ```
 
 ### 3. Iniciar el servidor de desarrollo
