@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
@@ -17,11 +16,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ArrowBack, UserLarge } from '../../components/icons/icons';
+import { API_URL } from '../../config/env';
+import useApi from '../../hooks/useApi';
 import { DniSchema, dniSchema } from '../../schemas/DniSchema';
 
 const DniVerification = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { error, loading, fetchData } = useApi<any>();
 
   const {
     control,
@@ -35,18 +36,25 @@ const DniVerification = () => {
   });
 
   const onSubmit = async (data: any) => {
-    setIsLoading(true);
-    // Para simular una petición:
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push({
-        pathname: 'verification-code', // Ruta a la que redirigir
-        // Parámetros a pasar
-        params: {
-          dni: data.dni,
-        },
-      });
-    }, 2000);
+    try {
+      const response = await fetchData(
+        `${API_URL}/api/auth/check-user?identifier=${data.dni}`,
+        '',
+        'GET'
+      );
+
+      if (response) {
+        router.push({
+          pathname: 'verification-code', // Ruta a la que redirigir
+          // Parámetros a pasar
+          params: {
+            dni: data.dni,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error al llamar a la API:', error);
+    }
   };
 
   return (
@@ -97,13 +105,15 @@ const DniVerification = () => {
                     </Text>
                   )}
 
+                  {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
+
                   <Pressable
                     className={`mt-6 items-center rounded-lg py-4 ${
-                      isLoading ? 'bg-[#C8C8F4]' : 'bg-[#4C4DDC]'
+                      loading ? 'bg-[#C8C8F4]' : 'bg-[#4C4DDC]'
                     }`}
                     onPress={handleSubmit(onSubmit)}
-                    disabled={isLoading}>
-                    {isLoading ? (
+                    disabled={loading}>
+                    {loading ? (
                       <ActivityIndicator color="#4C4DDC" />
                     ) : (
                       <Text className="text-base font-semibold text-white">Verificar DNI</Text>
