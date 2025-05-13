@@ -6,6 +6,10 @@ const useApi = <T>() => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const clearError = () => {
+    setError(null);
+  };
+
   const fetchData = async (
     url: string,
     token: string,
@@ -32,7 +36,13 @@ const useApi = <T>() => {
       setData(response.data);
       return response.data;
     } catch (err: any) {
-      if (err.response?.status === 401) {
+      // Usar el mensaje del backend si está disponible
+      console.log(err.response?.data);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else if (err.response?.status === 401) {
         setError('No autorizado. Verifica tus credenciales.');
       } else if (err.response?.status === 403) {
         setError('Prohibido. No tienes acceso a este recurso.');
@@ -44,7 +54,7 @@ const useApi = <T>() => {
     }
   };
 
-  return { data, error, loading, fetchData };
+  return { data, error, loading, fetchData, clearError };
 };
 
 export default useApi;

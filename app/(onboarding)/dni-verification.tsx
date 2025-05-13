@@ -22,7 +22,7 @@ import { DniSchema, dniSchema } from '../../schemas/DniSchema';
 
 const DniVerification = () => {
   const router = useRouter();
-  const { error, loading, fetchData } = useApi<any>();
+  const { error, loading, fetchData, clearError } = useApi<any>();
 
   const {
     control,
@@ -89,7 +89,10 @@ const DniVerification = () => {
                       <TextInput
                         placeholder="Ingresa tu DNI"
                         onBlur={onBlur}
-                        onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
+                        onChangeText={(text) => {
+                          onChange(text.replace(/[^0-9]/g, ''));
+                          clearError(); // Limpiar el error al cambiar el texto
+                        }}
                         value={value}
                         className="py- w-full rounded-lg border border-[#D4D4D8] bg-white px-4 py-3 text-center text-base text-[#101010]"
                         keyboardType="numeric"
@@ -118,6 +121,10 @@ const DniVerification = () => {
                     ) : (
                       <Text className="text-base font-semibold text-white">Verificar DNI</Text>
                     )}
+                  </Pressable>
+
+                  <Pressable className="mt-6 items-center" onPress={() => router.push('login')}>
+                    <Text className="text-base font-semibold  text-[#4C4DDC]">Iniciar sesión</Text>
                   </Pressable>
                 </View>
               </View>
