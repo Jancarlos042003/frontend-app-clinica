@@ -1,16 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  Alert,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PasswordInput from '../../components/auth/PasswordInput';
@@ -18,6 +9,7 @@ import PasswordStrengthIndicator from '../../components/auth/PasswordStrengthInd
 import BackButton from '../../components/buttons/BackButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { LockClosed } from '../../components/icons/icons';
+import DismissKeyboardView from '../../components/layouts/DismissKeyboardView';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { PasswordSchema, passwordSchema } from '../../schemas/PasswordSchema';
@@ -67,7 +59,7 @@ const Signup = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <DismissKeyboardView>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 p-6">
               <BackButton onPress={router.back} />
@@ -133,7 +125,7 @@ const Signup = () => {
               </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
+        </DismissKeyboardView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

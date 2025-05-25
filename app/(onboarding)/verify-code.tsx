@@ -3,20 +3,19 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import BackButton from '../../components/buttons/BackButton';
 import { Shield } from '../../components/icons/icons';
+import DismissKeyboardView from '../../components/layouts/DismissKeyboardView';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 
@@ -145,7 +144,7 @@ const VerifyCode = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <DismissKeyboardView>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 p-6">
               <BackButton onPress={router.back} />
@@ -217,7 +216,7 @@ const VerifyCode = () => {
               </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
+        </DismissKeyboardView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

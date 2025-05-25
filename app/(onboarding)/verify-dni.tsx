@@ -1,22 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import RegisterSection from '../../components/auth/RegisterSection';
 import BackButton from '../../components/buttons/BackButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { UserLarge } from '../../components/icons/icons';
+import DismissKeyboardView from '../../components/layouts/DismissKeyboardView';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { DniSchema, dniSchema } from '../../schemas/DniSchema';
@@ -63,7 +55,7 @@ const VerifyDni = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <DismissKeyboardView>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 p-6">
               <BackButton onPress={router.back} />
@@ -125,7 +117,7 @@ const VerifyDni = () => {
               </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
+        </DismissKeyboardView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
