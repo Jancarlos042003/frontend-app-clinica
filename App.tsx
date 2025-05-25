@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 
 import './global.css';
-import Intro from './app/(onboarding)/intro';
+import Index from './app/index';
 
 export default function App() {
   return (
     <>
-      <Intro />
+      <Index />
       <StatusBar style="auto" />
     </>
   );

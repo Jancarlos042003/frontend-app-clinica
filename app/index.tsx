@@ -1,8 +1,8 @@
-import Intro from './(onboarding)/intro';
+import Start from './(onboarding)/start';
 import '../global.css';
 
 const Index = () => {
-  return <Intro />;
+  return <Start />;
 };
 
 export default Index;
