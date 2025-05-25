@@ -46,3 +46,7 @@ export const LockClosed = ({ size, color }: IconProps) => {
 export const LoginIcon = ({ size, color }: IconProps) => {
   return <Ionicons name="log-in" size={size} color={color} />;
 };
+
+export const LogoIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="heart-pulse" size={size} color={color} />;
+};
