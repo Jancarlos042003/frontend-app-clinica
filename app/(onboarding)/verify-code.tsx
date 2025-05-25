@@ -188,7 +188,7 @@ const VerifyCode = () => {
                   </View>
 
                   <Pressable
-                    className={`items-center rounded-lg py-4 ${loading || tooManyRequests ? 'bg-primary_300' : 'bg-primary'}`}
+                    className={`items-center rounded-lg py-5 active:bg-primary_500 ${loading || tooManyRequests ? 'bg-primary_300' : 'bg-primary'}`}
                     onPress={verifyCode}
                     disabled={loading || tooManyRequests}>
                     {loading ? (

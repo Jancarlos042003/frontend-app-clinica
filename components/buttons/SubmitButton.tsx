@@ -15,7 +15,7 @@ const SubmitButton = ({
 }: SubmitButtonProps) => {
   return (
     <Pressable
-      className={`items-center rounded-lg py-5 ${loading ? 'bg-primary_300' : 'bg-primary'} ${className}`}
+      className={`items-center rounded-lg py-5 active:bg-primary_500 ${loading ? 'bg-primary_300' : 'bg-primary'} ${className}`}
       onPress={onPress}
       disabled={loading}>
       {loading ? (
