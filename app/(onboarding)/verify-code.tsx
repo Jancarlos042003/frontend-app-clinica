@@ -15,16 +15,20 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ArrowBack, Shield } from '../../components/icons/icons';
+import BackButton from '../../components/buttons/BackButton';
+import { Shield } from '../../components/icons/icons';
+import { API_URL } from '../../config/env';
+import useApi from '../../hooks/useApi';
 
-const VerificationCode = () => {
+const VerifyCode = () => {
   const [code, setCode] = useState(['', '', '', '', '', '']);
-  const [isLoading, setIsLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const router = useRouter();
+  const { error, loading, fetchData, clearError } = useApi<any>();
   const { dni } = useLocalSearchParams<{ dni: string }>();
   const inputRefs = useRef<(TextInput | null)[]>([]);
+  const [tooManyRequests, setTooManyRequests] = useState(false);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -67,14 +71,29 @@ const VerificationCode = () => {
   };
 
   const handleResendCode = () => {
-    if (canResend) {
-      // Simulating API call to resend code
-      Alert.alert(
-        'Código enviado',
-        `Se ha enviado un nuevo código al número asociado al DNI ${dni}`
-      );
-      setTimeLeft(60);
-      setCanResend(false);
+    if (canResend && !tooManyRequests) {
+      fetchData(`${API_URL}/api/auth/resend-code?identifier=${dni}`, '', 'POST')
+        .then((response) => {
+          console.log(response);
+          Alert.alert('Código enviado', `Se ha enviado un nuevo código al número ${dni}`);
+          setTimeLeft(60);
+          setCanResend(false);
+        })
+        .catch((error) => {
+          console.error('Error al reenviar el código:', error);
+          // Verificar si es un error de demasiadas solicitudes
+          if (
+            error.message?.includes('ManyRequestsException') ||
+            error.name === 'ManyRequestsException' ||
+            error.status === 429
+          ) {
+            setTooManyRequests(true);
+            Alert.alert(
+              'Demasiados intentos',
+              'Has excedido el límite de intentos. Por favor, intenta más tarde.'
+            );
+          }
+        });
     }
   };
 
@@ -85,43 +104,58 @@ const VerificationCode = () => {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      // Simulating API call - replace with actual API endpoint
-      // const response = await axios.post('https://api.example.com/verify-code', {
-      //   dni,
-      //   code: fullCode
-      // });
+    const requestData = {
+      identifier: dni,
+      code: fullCode,
+    };
 
-      // For demo purposes, we'll just simulate a successful response
-      setTimeout(() => {
-        setIsLoading(false);
-        router.push('create-password'); // Replace with actual screen
-      }, 1500);
-    } catch (error) {
-      setIsLoading(false);
-      Alert.alert('Error', 'Código incorrecto. Por favor, inténtalo de nuevo.');
-    }
+    fetchData(`${API_URL}/api/auth/verify-code`, '', 'POST', requestData)
+      .then((response) => {
+        console.log(response);
+
+        // Verifica si la respuesta confirma que el código es válido
+        if (response && !response.error) {
+          router.push({
+            pathname: 'signup', // Ruta a la que redirigir
+            params: { dni },
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error al verificar el código:', error);
+        // Verificar si es un error de demasiadas solicitudes
+        if (
+          error.message?.includes('ManyRequestsException') ||
+          error.name === 'ManyRequestsException' ||
+          error.status === 429
+        ) {
+          setTooManyRequests(true);
+          Alert.alert(
+            'Demasiados intentos',
+            'Has excedido el límite de intentos. Por favor, intenta más tarde.'
+          );
+        } else {
+          Alert.alert('Error', 'Código incorrecto. Por favor, inténtalo de nuevo.');
+        }
+      });
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#EDEFFC]">
+    <SafeAreaView className="flex-1 bg-primary_100">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1">
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 p-6">
-              <Pressable onPress={() => router.back()}>
-                <ArrowBack size={24} color="#101010" />
-              </Pressable>
+              <BackButton onPress={router.back} />
 
               <View className="flex-1 items-center justify-center">
                 <View className="mb-8 items-center justify-center">
-                  <Shield size={100} color="#4C4DDC" />
+                  <Shield size={100} color="#32729F" />
                 </View>
 
-                <Text className="mb-2 text-center text-2xl font-bold text-[#101010]">
+                <Text className="mb-2 text-center text-3xl font-bold text-primary">
                   Código de verificación
                 </Text>
 
@@ -137,7 +171,7 @@ const VerificationCode = () => {
                         ref={(ref) => {
                           inputRefs.current[index] = ref;
                         }}
-                        className="h-16 w-12 rounded-lg border border-[#D4D4D8] bg-white text-center text-2xl font-bold text-[#101010]"
+                        className="h-16 w-12 rounded-lg border border-[#D4D4D8] bg-white text-center text-2xl font-bold text-[#101010] focus:border-primary"
                         keyboardType="numeric"
                         maxLength={1}
                         value={code[index]}
@@ -145,32 +179,36 @@ const VerificationCode = () => {
                           // Solo permitir números
                           const numbersOnly = text.replace(/[^0-9]/g, '');
                           handleCodeChange(numbersOnly, index);
+                          clearError();
                         }}
                         onKeyPress={(e) => handleKeyPress(e, index)}
                         selectTextOnFocus
+                        editable={!tooManyRequests}
                       />
                     ))}
                   </View>
 
                   <Pressable
-                    className={`items-center rounded-lg py-4 ${isLoading ? 'bg-[#C8C8F4]' : 'bg-[#4C4DDC]'}`}
+                    className={`items-center rounded-lg py-4 ${loading || tooManyRequests ? 'bg-primary_300' : 'bg-primary'}`}
                     onPress={verifyCode}
-                    disabled={isLoading}>
-                    {isLoading ? (
+                    disabled={loading || tooManyRequests}>
+                    {loading ? (
                       <ActivityIndicator color="#4C4DDC" />
                     ) : (
-                      <Text className="text-base font-semibold text-white">Verificar código</Text>
+                      <Text className="text-lg font-semibold text-white">Verificar código</Text>
                     )}
                   </Pressable>
+
+                  {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
 
                   <View className="mt-6 items-center">
                     <Text className="mb-2 text-sm text-[#101010]">
                       {canResend ? '¿No recibiste el código?' : `Reenviar código en ${timeLeft}s`}
                     </Text>
 
-                    <Pressable onPress={handleResendCode} disabled={!canResend}>
+                    <Pressable onPress={handleResendCode} disabled={!canResend || tooManyRequests}>
                       <Text
-                        className={`text-base font-semibold ${canResend ? 'text-[#4C4DDC]' : 'text-[#C8C8F4]'}`}>
+                        className={`text-lg font-semibold ${canResend && !tooManyRequests ? 'text-primary' : 'text-primary_300'}`}>
                         Reenviar código
                       </Text>
                     </Pressable>
@@ -185,4 +223,4 @@ const VerificationCode = () => {
   );
 };
 
-export default VerificationCode;
+export default VerifyCode;
