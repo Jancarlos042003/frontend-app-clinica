@@ -1,4 +1,5 @@
-import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { useRef } from 'react';
+import { ActivityIndicator, Animated, Pressable, Text } from 'react-native';
 
 interface SubmitButtonProps {
   onPress: () => void;
@@ -13,16 +14,43 @@ const SubmitButton = ({
   text = 'Iniciar sesión',
   className = '',
 }: SubmitButtonProps) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 10,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 10,
+    }).start();
+  };
+
   return (
     <Pressable
-      className={`items-center rounded-lg py-5 active:bg-primary_500 ${loading ? 'bg-primary_300' : 'bg-primary'} ${className}`}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       onPress={onPress}
       disabled={loading}>
-      {loading ? (
-        <ActivityIndicator color="#65a5cb" />
-      ) : (
-        <Text className="text-lg font-bold text-white">{text}</Text>
-      )}
+      <Animated.View
+        style={{
+          transform: [{ scale: scaleAnim }],
+        }}
+        className={`items-center rounded-lg py-5 ${loading ? 'bg-primary_300' : 'bg-primary'} ${className}`}>
+        {loading ? (
+          <ActivityIndicator color="#65a5cb" />
+        ) : (
+          <Text className="text-lg font-bold text-white">{text}</Text>
+        )}
+      </Animated.View>
     </Pressable>
   );
 };
