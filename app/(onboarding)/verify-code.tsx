@@ -1,21 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'react-native';
 
 import BackButton from '../../components/buttons/BackButton';
 import { Shield } from '../../components/icons/icons';
-import DismissKeyboardView from '../../components/layouts/DismissKeyboardView';
+import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 
@@ -140,85 +129,77 @@ const VerifyCode = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary_100">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1">
-        <DismissKeyboardView>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 p-6">
-              <BackButton onPress={router.back} />
+    <KeyboardAwareFormLayout>
+      <View className="flex-1 p-6">
+        <BackButton onPress={router.back} />
 
-              <View className="flex-1 items-center justify-center">
-                <View className="mb-8 items-center justify-center">
-                  <Shield size={100} color="#32729F" />
-                </View>
+        <View className="flex-1 items-center justify-center">
+          <View className="mb-8 items-center justify-center">
+            <Shield size={100} color="#32729F" />
+          </View>
 
-                <Text className="mb-2 text-center text-3xl font-bold text-primary">
-                  Código de verificación
-                </Text>
+          <Text className="mb-2 text-center text-3xl font-bold text-primary">
+            Código de verificación
+          </Text>
 
-                <Text className="mb-8 text-center text-base text-[#101010]">
-                  Hemos enviado un código de 6 dígitos al número asociado a tu DNI
-                </Text>
+          <Text className="mb-8 text-center text-base text-[#101010]">
+            Hemos enviado un código de 6 dígitos al número asociado a tu DNI
+          </Text>
 
-                <View className="w-full max-w-sm">
-                  <View className="mb-8 flex-row justify-between">
-                    {[0, 1, 2, 3, 4, 5].map((index) => (
-                      <TextInput
-                        key={index}
-                        ref={(ref) => {
-                          inputRefs.current[index] = ref;
-                        }}
-                        className="h-16 w-12 rounded-lg border border-[#D4D4D8] bg-white text-center text-2xl font-bold text-[#101010] focus:border-primary"
-                        keyboardType="numeric"
-                        maxLength={1}
-                        value={code[index]}
-                        onChangeText={(text) => {
-                          // Solo permitir números
-                          const numbersOnly = text.replace(/[^0-9]/g, '');
-                          handleCodeChange(numbersOnly, index);
-                          clearError();
-                        }}
-                        onKeyPress={(e) => handleKeyPress(e, index)}
-                        selectTextOnFocus
-                        editable={!tooManyRequests}
-                      />
-                    ))}
-                  </View>
-
-                  <Pressable
-                    className={`items-center rounded-lg py-5 active:bg-primary_500 ${loading || tooManyRequests ? 'bg-primary_300' : 'bg-primary'}`}
-                    onPress={verifyCode}
-                    disabled={loading || tooManyRequests}>
-                    {loading ? (
-                      <ActivityIndicator color="#4C4DDC" />
-                    ) : (
-                      <Text className="text-lg font-semibold text-white">Verificar código</Text>
-                    )}
-                  </Pressable>
-
-                  {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
-
-                  <View className="mt-6 items-center">
-                    <Text className="mb-2 text-sm text-[#101010]">
-                      {canResend ? '¿No recibiste el código?' : `Reenviar código en ${timeLeft}s`}
-                    </Text>
-
-                    <Pressable onPress={handleResendCode} disabled={!canResend || tooManyRequests}>
-                      <Text
-                        className={`text-lg font-semibold ${canResend && !tooManyRequests ? 'text-primary' : 'text-primary_300'}`}>
-                        Reenviar código
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </View>
+          <View className="w-full max-w-sm">
+            <View className="mb-8 flex-row justify-between">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <TextInput
+                  key={index}
+                  ref={(ref) => {
+                    inputRefs.current[index] = ref;
+                  }}
+                  className="h-16 w-12 rounded-lg border border-[#D4D4D8] bg-white text-center text-2xl font-bold text-[#101010] focus:border-primary"
+                  keyboardType="numeric"
+                  maxLength={1}
+                  value={code[index]}
+                  onChangeText={(text) => {
+                    // Solo permitir números
+                    const numbersOnly = text.replace(/[^0-9]/g, '');
+                    handleCodeChange(numbersOnly, index);
+                    clearError();
+                  }}
+                  onKeyPress={(e) => handleKeyPress(e, index)}
+                  selectTextOnFocus
+                  editable={!tooManyRequests}
+                />
+              ))}
             </View>
-          </ScrollView>
-        </DismissKeyboardView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+            <Pressable
+              className={`items-center rounded-lg py-5 active:bg-primary_500 ${loading || tooManyRequests ? 'bg-primary_300' : 'bg-primary'}`}
+              onPress={verifyCode}
+              disabled={loading || tooManyRequests}>
+              {loading ? (
+                <ActivityIndicator color="#4C4DDC" />
+              ) : (
+                <Text className="text-lg font-semibold text-white">Verificar código</Text>
+              )}
+            </Pressable>
+
+            {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
+
+            <View className="mt-6 items-center">
+              <Text className="mb-2 text-sm text-[#101010]">
+                {canResend ? '¿No recibiste el código?' : `Reenviar código en ${timeLeft}s`}
+              </Text>
+
+              <Pressable onPress={handleResendCode} disabled={!canResend || tooManyRequests}>
+                <Text
+                  className={`text-lg font-semibold ${canResend && !tooManyRequests ? 'text-primary' : 'text-primary_300'}`}>
+                  Reenviar código
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </View>
+    </KeyboardAwareFormLayout>
   );
 };
 
