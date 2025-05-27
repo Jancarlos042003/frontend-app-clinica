@@ -8,6 +8,7 @@ import BackButton from '../../components/buttons/BackButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { UserLarge } from '../../components/icons/icons';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
+import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { DniSchema, dniSchema } from '../../schemas/DniSchema';
@@ -51,7 +52,7 @@ const VerifyDni = () => {
 
   return (
     <KeyboardAwareFormLayout>
-      <View className="flex-1 p-6">
+      <ScreenWrapper edges={['top', 'bottom']} className="p-6">
         <BackButton onPress={router.back} />
 
         <View className="flex-1 items-center justify-center">
@@ -109,7 +110,7 @@ const VerifyDni = () => {
             />
           </View>
         </View>
-      </View>
+      </ScreenWrapper>
     </KeyboardAwareFormLayout>
   );
 };

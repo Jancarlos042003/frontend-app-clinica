@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import RegisterSection from '../../components/auth/RegisterSection';
 import BackButton from '../../components/buttons/BackButton';
@@ -10,6 +11,7 @@ import SubmitButton from '../../components/buttons/SubmitButton';
 import TogglePasswordButton from '../../components/buttons/TogglePasswordButton';
 import HeaderBackground from '../../components/layouts/HeaderBackground';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
+import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { LoginSchema, loginSchema } from '../../schemas/LoginSchema';
@@ -18,6 +20,10 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { error, loading, fetchData, clearError } = useApi<any>();
+  const insets = useSafeAreaInsets();
+
+  // Ajuste del padding superior para el botón de retroceso
+  const paddingTopBackButton = insets.top > 0 ? insets.top + 24 : 24;
 
   const {
     control,
@@ -52,12 +58,13 @@ const Login = () => {
 
   return (
     <KeyboardAwareFormLayout>
-      <HeaderBackground />
+      <ScreenWrapper edges={['bottom']}>
+        <HeaderBackground />
+        <View className="ml-6" style={{ marginTop: paddingTopBackButton }}>
+          <BackButton onPress={router.back} color="white" />
+        </View>
 
-      <View className="flex-1">
-        <BackButton onPress={router.back} />
-
-        <View className="mt-[320px] flex-1 rounded-t-3xl bg-primary_100 px-7 py-9">
+        <View className="mt-[255px] flex-1 rounded-t-2xl bg-primary_100 px-7 py-9">
           <Text className="text-4xl font-bold text-primary">Iniciar Sesión</Text>
 
           <Text className="mb-4 text-base text-black">Ingresa tus credenciales</Text>
@@ -67,7 +74,7 @@ const Login = () => {
               control={control}
               name="dni"
               render={({ field: { onChange, onBlur, value } }) => (
-                <View className="mb-2">
+                <View className="mb-4">
                   <TextInput
                     className={`border bg-white ${errors.dni ? 'border-red-500' : 'border-[#D4D4D8]'} mb-2 rounded-md p-4 text-lg text-[#101010] focus:border-primary`}
                     placeholder="DNI"
@@ -78,7 +85,7 @@ const Login = () => {
                     onBlur={onBlur}
                   />
                   {errors.dni && (
-                    <Text className="mb-4 text-sm text-red-500">{errors.dni.message}</Text>
+                    <Text className=" text-sm text-red-500">{errors.dni.message}</Text>
                   )}
                 </View>
               )}
@@ -107,7 +114,7 @@ const Login = () => {
                     />
                   </View>
                   {errors.password && (
-                    <Text className="mb-4 text-sm text-red-500">{errors.password.message}</Text>
+                    <Text className="text-sm text-red-500">{errors.password.message}</Text>
                   )}
                   <Pressable className="mb-4 self-end">
                     <Text className="font-semibold text-primary">¿Olvidaste tu contraseña?</Text>
@@ -122,7 +129,7 @@ const Login = () => {
             <RegisterSection onPress={() => router.push('verify-dni')} />
           </View>
         </View>
-      </View>
+      </ScreenWrapper>
     </KeyboardAwareFormLayout>
   );
 };

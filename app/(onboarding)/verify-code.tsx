@@ -1,3 +1,4 @@
+import { ScreenWrapper } from 'components/layouts/ScreenWrapper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'react-native';
@@ -130,7 +131,7 @@ const VerifyCode = () => {
 
   return (
     <KeyboardAwareFormLayout>
-      <View className="flex-1 p-6">
+      <ScreenWrapper edges={['top', 'bottom']} className="p-6">
         <BackButton onPress={router.back} />
 
         <View className="flex-1 items-center justify-center">
@@ -198,7 +199,7 @@ const VerifyCode = () => {
             </View>
           </View>
         </View>
-      </View>
+      </ScreenWrapper>
     </KeyboardAwareFormLayout>
   );
 };

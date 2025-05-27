@@ -9,6 +9,7 @@ import BackButton from '../../components/buttons/BackButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { LockClosed } from '../../components/icons/icons';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
+import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
 import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { PasswordSchema, passwordSchema } from '../../schemas/PasswordSchema';
@@ -55,7 +56,7 @@ const Signup = () => {
   };
   return (
     <KeyboardAwareFormLayout>
-      <View className="flex-1 p-6">
+      <ScreenWrapper edges={['top', 'bottom']} className="p-6">
         <BackButton onPress={router.back} />
 
         <View className="flex-1 items-center justify-center">
@@ -117,7 +118,7 @@ const Signup = () => {
             {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
           </View>
         </View>
-      </View>
+      </ScreenWrapper>
     </KeyboardAwareFormLayout>
   );
 };
