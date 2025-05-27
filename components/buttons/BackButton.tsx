@@ -8,7 +8,7 @@ type BackButtonProps = {
   size?: number;
 };
 
-const BackButton = ({ onPress, color = '#101010', size = 24 }: BackButtonProps) => {
+const BackButton = ({ onPress, color = '#32729F', size = 24 }: BackButtonProps) => {
   return (
     <Pressable className="mb-6" onPress={onPress}>
       <ArrowBack size={size} color={color} />
