@@ -5,18 +5,19 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 type IconProps = {
   size: number;
   color: string;
+  style?: object;
 };
 
-export const Home = ({ size, color }: IconProps) => {
-  return <Feather name="home" size={size} color={color} />;
+export const Home = ({ size, color, style }: IconProps) => {
+  return <Feather name="home" size={size} color={color} style={style} />;
 };
 
-export const Calendar = ({ size, color }: IconProps) => {
-  return <Feather name="calendar" size={size} color={color} />;
+export const Calendar = ({ size, color, style }: IconProps) => {
+  return <Feather name="calendar" size={size} color={color} style={style} />;
 };
 
-export const Message = ({ size, color }: IconProps) => {
-  return <Feather name="message-circle" size={size} color={color} />;
+export const Message = ({ size, color, style }: IconProps) => {
+  return <Feather name="message-circle" size={size} color={color} style={style} />;
 };
 
 export const UserLarge = ({ size, color }: IconProps) => {
