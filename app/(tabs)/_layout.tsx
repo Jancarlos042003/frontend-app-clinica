@@ -14,7 +14,7 @@ const TabsLayout = () => {
           position: 'absolute',
           elevation: 0, // Ya que en android viene con elevation: 8 por defecto
           borderTopWidth: 0,
-          height: 40 + insets.bottom,
+          height: 81,
           paddingTop: 10,
           marginHorizontal: 7,
           marginBottom: 7,
@@ -26,7 +26,7 @@ const TabsLayout = () => {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
-          marginTop: 2,
+          marginTop: 1,
         },
         tabBarIconStyle: {
           marginTop: 4,
@@ -52,7 +52,7 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Home
               color={color}
-              size={focused ? 28 : 24}
+              size={focused ? 27 : 26}
               style={{
                 transform: [{ scale: focused ? 1.1 : 1 }],
               }}
@@ -68,7 +68,7 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Calendar
               color={color}
-              size={focused ? 28 : 24}
+              size={focused ? 27 : 26}
               style={{
                 transform: [{ scale: focused ? 1.1 : 1 }],
               }}
@@ -84,7 +84,7 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Message
               color={color}
-              size={focused ? 28 : 24}
+              size={focused ? 27 : 26}
               style={{
                 transform: [{ scale: focused ? 1.1 : 1 }],
               }}
