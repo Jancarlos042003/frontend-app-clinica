@@ -20,7 +20,7 @@ const PasswordInput = ({
     <View>
       <View className="relative">
         <TextInput
-          className={`border bg-white ${error ? 'border-red-500' : 'border-[#D4D4D8]'} mb-2 rounded-lg p-4 pr-12 text-base text-[#101010]`}
+          className={`border bg-white ${error ? 'border-red-500' : 'border-[#D4D4D8]'} mb-2 rounded-lg p-4 pr-12 text-lg text-[#101010] focus:border-primary`}
           placeholder={placeholder}
           secureTextEntry={!showPassword}
           value={value}

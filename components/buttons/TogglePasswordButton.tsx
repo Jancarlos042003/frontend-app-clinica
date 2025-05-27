@@ -10,7 +10,7 @@ const TogglePasswordButton = ({
 }) => {
   return (
     <Pressable className="absolute right-4 top-4" onPress={onToggle}>
-      {showPassword ? <Eye size={24} color="#4C4DDC" /> : <EyeOff size={24} color="#4C4DDC" />}
+      {showPassword ? <Eye size={24} color="#32729F" /> : <EyeOff size={24} color="#32729F" />}
     </Pressable>
   );
 };
