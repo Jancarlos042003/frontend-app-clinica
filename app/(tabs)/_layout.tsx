@@ -1,9 +1,9 @@
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Calendar, Home, Message } from '../../components/icons/icons';
+import { Calendar, Health, Home, Message } from '../../components/icons/icons';
 
 const TabsLayout = () => {
   const insets = useSafeAreaInsets();
@@ -12,14 +12,27 @@ const TabsLayout = () => {
       screenOptions={{
         tabBarStyle: {
           position: 'absolute',
-          elevation: 0, // Ya que en android viene con elevation: 8 por defecto
+          elevation: 0,
           borderTopWidth: 0,
-          height: 81,
-          paddingTop: 10,
-          marginHorizontal: 7,
-          marginBottom: 7,
-          borderRadius: 20,
-          overflow: 'hidden',
+          height: Platform.OS === 'android' ? 70 + insets.bottom : 60 + insets.bottom, // Agregar el bottom inset
+          paddingTop: 7,
+          paddingBottom: insets.bottom, // Espacio para la barra del sistema
+          ...Platform.select({
+            ios: {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.5,
+            },
+            android: {
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
+            },
+          }),
+          bottom: 0, // Asegurar que esté en el bottom
+          left: 0,
+          right: 0,
+          overflow: 'hidden', // Evitar que el contenido se desborde
         },
         tabBarActiveTintColor: '#4189b6',
         tabBarInactiveTintColor: '#7f7f83',
@@ -27,6 +40,7 @@ const TabsLayout = () => {
           fontSize: 12,
           fontWeight: '600',
           marginTop: 1,
+          marginBottom: insets.bottom > 0 ? 5 : 0, // Ajuste extra para iOS
         },
         tabBarIconStyle: {
           marginTop: 4,
@@ -61,6 +75,22 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="health"
+        options={{
+          title: 'Mi Salud',
+          headerTitle: 'Mi Salud',
+          tabBarIcon: ({ color, focused }) => (
+            <Health
+              color={color}
+              size={focused ? 27 : 26}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="calendar"
         options={{
           title: 'Calendario',
@@ -79,7 +109,7 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="chatbot"
         options={{
-          title: 'Chatbot',
+          title: 'Medibot',
           headerTitle: 'Asistente Virtual',
           tabBarIcon: ({ color, focused }) => (
             <Message

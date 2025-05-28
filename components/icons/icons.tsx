@@ -20,6 +20,10 @@ export const Message = ({ size, color, style }: IconProps) => {
   return <Feather name="message-circle" size={size} color={color} style={style} />;
 };
 
+export const Health = ({ size, color, style }: IconProps) => {
+  return <FontAwesome6 name="hand-holding-medical" size={size} color={color} style={style} />;
+};
+
 export const UserLarge = ({ size, color }: IconProps) => {
   return <FontAwesome6 name="user-large" size={size} color={color} />;
 };
