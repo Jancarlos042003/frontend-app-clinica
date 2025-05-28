@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 
 import RegisterSection from '../../components/auth/RegisterSection';
+import VerificationModal from '../../components/auth/VerificationModal';
 import BackButton from '../../components/buttons/BackButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { UserLarge } from '../../components/icons/icons';
@@ -16,9 +18,11 @@ import { DniSchema, dniSchema } from '../../schemas/DniSchema';
 const VerifyDni = () => {
   const router = useRouter();
   const { error, loading, fetchData, clearError } = useApi<any>();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const {
     control,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<DniSchema>({
@@ -37,13 +41,7 @@ const VerifyDni = () => {
       );
 
       if (response) {
-        router.push({
-          pathname: 'verify-code', // Ruta a la que redirigir
-          // Parámetros a pasar
-          params: {
-            dni: data.dni,
-          },
-        });
+        setModalVisible(true); // Mostrar el modal de verificación
       }
     } catch (error) {
       console.error('Error al llamar a la API:', error);
@@ -101,6 +99,12 @@ const VerifyDni = () => {
               loading={loading}
               text="Verificar DNI"
               className="mt-6"
+            />
+
+            <VerificationModal
+              visible={modalVisible}
+              onClose={() => setModalVisible(false)}
+              dni={Number(watch('dni'))}
             />
 
             <RegisterSection
