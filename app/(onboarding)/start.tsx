@@ -13,7 +13,7 @@ const Start = () => {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1" edges={['bottom']}>
+    <SafeAreaView className="flex-1" edges={[]}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" />
       <ImageBackground source={img_presentation} className="flex-1" resizeMode="cover">
         <LinearGradient colors={['rgba(41,75,110,0.3)', 'rgba(27,62,89,0.3)']} style={{ flex: 1 }}>
