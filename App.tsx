@@ -1,13 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-
-import './global.css';
-import Intro from './app/(onboarding)/intro';
+import { Slot } from 'expo-router';
 
 export default function App() {
-  return (
-    <>
-      <Intro />
-      <StatusBar style="auto" />
-    </>
-  );
+  return <Slot />;
 }

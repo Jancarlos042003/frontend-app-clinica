@@ -1,0 +1,129 @@
+import { BlurView } from 'expo-blur';
+import { Tabs } from 'expo-router';
+import { Platform, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Calendar, Health, Home, Message } from '../../components/icons/icons';
+
+const TabsLayout = () => {
+  const insets = useSafeAreaInsets();
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarStyle: {
+          position: 'absolute',
+          elevation: 0,
+          borderTopWidth: 0,
+          height: Platform.OS === 'android' ? 70 + insets.bottom : 60 + insets.bottom, // Agregar el bottom inset
+          paddingTop: 7,
+          paddingBottom: insets.bottom, // Espacio para la barra del sistema
+          ...Platform.select({
+            ios: {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.5,
+            },
+            android: {
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
+            },
+          }),
+          bottom: 0, // Asegurar que esté en el bottom
+          left: 0,
+          right: 0,
+          overflow: 'hidden', // Evitar que el contenido se desborde
+        },
+        tabBarActiveTintColor: '#4189b6',
+        tabBarInactiveTintColor: '#7f7f83',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 1,
+          marginBottom: insets.bottom > 0 ? 5 : 0, // Ajuste extra para iOS
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
+        headerStyle: {
+          backgroundColor: '#4189b6',
+        },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+          fontSize: 18,
+        },
+        animation: 'fade',
+        tabBarBackground: () => (
+          <BlurView tint="regular" intensity={100} style={StyleSheet.absoluteFill} />
+        ),
+      }}>
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Inicio',
+          headerTitle: 'Bienvenido',
+          tabBarIcon: ({ color, focused }) => (
+            <Home
+              color={color}
+              size={focused ? 27 : 26}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="health"
+        options={{
+          title: 'Mi Salud',
+          headerTitle: 'Mi Salud',
+          tabBarIcon: ({ color, focused }) => (
+            <Health
+              color={color}
+              size={focused ? 27 : 26}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          title: 'Calendario',
+          headerTitle: 'Mi Calendario',
+          tabBarIcon: ({ color, focused }) => (
+            <Calendar
+              color={color}
+              size={focused ? 27 : 26}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="chatbot"
+        options={{
+          title: 'Medibot',
+          headerTitle: 'Asistente Virtual',
+          tabBarIcon: ({ color, focused }) => (
+            <Message
+              color={color}
+              size={focused ? 27 : 26}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+};
+
+export default TabsLayout;
