@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import RegisterSection from '../../components/auth/RegisterSection';
@@ -12,7 +12,6 @@ import TogglePasswordButton from '../../components/buttons/TogglePasswordButton'
 import HeaderBackground from '../../components/layouts/HeaderBackground';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { LoginSchema, loginSchema } from '../../schemas/LoginSchema';
 
@@ -40,19 +39,17 @@ const Login = () => {
   const onSubmit = async (data: LoginSchema) => {
     const requestData = {
       identifier: data.dni,
-      password: data.password,
+      password: data.password.trim(),
     };
 
     try {
-      const response = await fetchData(`${API_URL}/api/auth/login`, '', 'POST', requestData);
-      console.log(response);
+      const response = await fetchData(`/api/auth/login`, 'POST', requestData);
 
       if (response) {
-        Alert.alert('Éxito', 'Inicio de sesión exitoso');
         router.push('home');
       }
     } catch (error) {
-      Alert.alert('Error', 'Credenciales incorrectas. Por favor, inténtalo de nuevo.');
+      console.error('Error al iniciar sesión:', error);
     }
   };
 

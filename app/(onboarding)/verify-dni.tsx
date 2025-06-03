@@ -11,7 +11,6 @@ import SubmitButton from '../../components/buttons/SubmitButton';
 import { UserLarge } from '../../components/icons/icons';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { DniSchema, dniSchema } from '../../schemas/DniSchema';
 
@@ -34,11 +33,7 @@ const VerifyDni = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await fetchData(
-        `${API_URL}/api/auth/check-user?identifier=${data.dni}`,
-        '',
-        'GET'
-      );
+      const response = await fetchData(`/api/auth/check-user?identifier=${data.dni}`, 'GET');
 
       if (response) {
         setModalVisible(true); // Mostrar el modal de verificación

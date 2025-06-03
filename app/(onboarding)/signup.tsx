@@ -10,7 +10,6 @@ import SubmitButton from '../../components/buttons/SubmitButton';
 import { LockClosed } from '../../components/icons/icons';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
 import { PasswordSchema, passwordSchema } from '../../schemas/PasswordSchema';
 
@@ -34,12 +33,12 @@ const Signup = () => {
   const onSubmit = async (data: PasswordSchema) => {
     const requestData = {
       identifier: dni,
-      password: data.password,
-      confirm_password: data.confirmPassword,
+      password: data.password.trim(),
+      confirm_password: data.confirmPassword.trim(),
     };
 
     try {
-      const response = await fetchData(`${API_URL}/api/credentials`, '', 'POST', requestData);
+      const response = await fetchData(`/api/credentials`, 'POST', requestData);
       console.log(response);
 
       if (response) {
@@ -51,7 +50,7 @@ const Signup = () => {
         ]);
       }
     } catch (error) {
-      Alert.alert('Error', 'No pudimos crear tu contraseña. Por favor, inténtalo de nuevo.');
+      console.error('Error al crear la cuenta:', error);
     }
   };
   return (

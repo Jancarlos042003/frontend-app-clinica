@@ -1,5 +1,6 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
   Modal,
@@ -11,8 +12,8 @@ import {
   View,
 } from 'react-native';
 
-import { API_URL } from '../../config/env';
 import useApi from '../../hooks/useApi';
+import { codeSchema, CodeSchema } from '../../schemas/CodeSchema';
 
 type VerificationModalProps = {
   visible: boolean;
@@ -21,32 +22,39 @@ type VerificationModalProps = {
 };
 
 const VerificationModal = ({ visible, onClose, dni }: VerificationModalProps) => {
-  const [code, setCode] = useState('');
   const router = useRouter();
-  const { error, loading, fetchData } = useApi<any>();
+  const { error, loading, fetchData, clearError } = useApi<any>();
 
-  const verifyCode = async (code: number, dni: number) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CodeSchema>({
+    defaultValues: {
+      code: '',
+    },
+    resolver: zodResolver(codeSchema),
+  });
+
+  const verifyCode = async (data: any) => {
     const requestData = {
       identifier: dni,
-      code,
+      code: data.code,
     };
 
-    fetchData(`${API_URL}/api/auth/verify-code`, '', 'POST', requestData)
-      .then((response) => {
-        console.log(response);
+    try {
+      const response = await fetchData('/api/auth/verify-code', 'POST', requestData);
 
-        // Verifica si la respuesta confirma que el código es válido
-        if (response && !response.error) {
-          onClose(); // Cierra el modal
-          router.push({
-            pathname: 'signup', // Ruta a la que redirigir
-            params: { dni },
-          });
-        }
-      })
-      .catch((error) => {
-        console.error('Error al verificar el código:', error);
-      });
+      if (response && !response.error) {
+        onClose(); // Cierra el modal
+        router.push({
+          pathname: 'signup', // Ruta a la que redirigir
+          params: { dni },
+        });
+      }
+    } catch (error) {
+      console.error('Error al verificar el código:', error);
+    }
   };
 
   return (
@@ -65,26 +73,46 @@ const VerificationModal = ({ visible, onClose, dni }: VerificationModalProps) =>
             Ingresa el código enviado a tu dispositivo
           </Text>
 
+          {errors.code && (
+            <Text className="mt-1 text-center text-sm text-red-500">
+              {errors.code.message?.toString()}
+            </Text>
+          )}
+
           {error && <Text className="mb-1 text-center text-sm text-red-500">{error}</Text>}
 
-          <TextInput
-            className="mb-5 rounded-lg border-2 border-[#ddd] p-3 text-base focus:border-primary focus:outline-none"
-            value={code}
-            onChangeText={setCode}
-            placeholder="Código de verificación"
-            keyboardType="number-pad"
-            maxLength={6}
-          />
+          <View className="mb-5">
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  className="h-14 w-full rounded-lg border border-[#D4D4D8] bg-white text-center text-2xl font-bold text-[#101010] focus:border-primary"
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  onBlur={onBlur}
+                  value={value}
+                  onChangeText={(text) => {
+                    // Solo permitir números
+                    onChange(text.replace(/[^0-9]/g, ''));
+                    clearError();
+                  }}
+                  selectTextOnFocus
+                  autoFocus // Enfocar automáticamente el campo de entrada
+                />
+              )}
+              name="code"
+            />
+          </View>
 
           <View className="flex-row justify-between">
             <TouchableOpacity className="rounded-lg bg-[#f2f2f2] px-5 py-3" onPress={onClose}>
               <Text className="font-semibold text-[#7f7f83]">Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="rounded-lg bg-[#4189b6] px-5 py-3"
-              onPress={() => verifyCode(parseInt(code, 10), dni)}>
+              className="rounded-lg bg-primary px-5 py-3"
+              onPress={handleSubmit(verifyCode)}>
               {loading ? (
-                <ActivityIndicator color="#4C4DDC" />
+                <ActivityIndicator color="#65a5cb" />
               ) : (
                 <Text className="font-semibold text-white">Verificar</Text>
               )}
