@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { saveTokens } from '../../auth/tokenService';
 import RegisterSection from '../../components/auth/RegisterSection';
 import BackButton from '../../components/buttons/BackButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
@@ -13,6 +14,7 @@ import HeaderBackground from '../../components/layouts/HeaderBackground';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
 import useApi from '../../hooks/useApi';
+import { useUser } from '../../hooks/useUser';
 import { LoginSchema, loginSchema } from '../../schemas/LoginSchema';
 
 const Login = () => {
@@ -20,6 +22,7 @@ const Login = () => {
   const router = useRouter();
   const { error, loading, fetchData, clearError } = useApi<any>();
   const insets = useSafeAreaInsets();
+  const { user, loginUser } = useUser();
 
   // Ajuste del padding superior para el botón de retroceso
   const paddingTopBackButton = insets.top > 0 ? insets.top + 24 : 24;
@@ -36,6 +39,13 @@ const Login = () => {
     },
   });
 
+  // Redirige a home cuando el usuario esté cargado
+  useEffect(() => {
+    if (user) {
+      router.push('home');
+    }
+  }, [user]);
+
   const onSubmit = async (data: LoginSchema) => {
     const requestData = {
       identifier: data.dni,
@@ -46,7 +56,17 @@ const Login = () => {
       const response = await fetchData(`/api/auth/login`, 'POST', requestData);
 
       if (response) {
-        router.push('home');
+        console.log('Inicio de sesión exitoso:', response); // <- Eliminar log
+
+        // Guardar el token de acceso en el almacenamiento local
+        const { token, refreshToken } = response;
+        await saveTokens(token, refreshToken);
+
+        // Actualizar el usuario en el contexto
+        loginUser(token);
+
+        // Redirige a la pantalla de inicio
+        // El useEffect se encargará de redirigir a home
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
