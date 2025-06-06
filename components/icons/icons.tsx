@@ -95,3 +95,7 @@ export const MailIcon = ({ size, color }: IconProps) => {
 export const GenderIcon = ({ size, color }: IconProps) => {
   return <Ionicons name="male-female" size={size} color={color} />;
 };
+
+export const LogoutIcon = ({ size, color }: IconProps) => {
+  return <Ionicons name="log-out-outline" size={size} color={color} />;
+};
