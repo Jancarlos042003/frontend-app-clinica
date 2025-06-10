@@ -42,7 +42,7 @@ const Login = () => {
   // Redirige a home cuando el usuario esté cargado
   useEffect(() => {
     if (user) {
-      router.push('home');
+      router.replace('/(tabs)/home');
     }
   }, [user]);
 
