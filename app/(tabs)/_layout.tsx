@@ -3,10 +3,13 @@ import { Tabs } from 'expo-router';
 import { Platform, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import UserProfile from '../../components/buttons/UserProfile';
+import Welcome from '../../components/headers/Welcome';
 import { Calendar, Health, Home, Message } from '../../components/icons/icons';
 
 const TabsLayout = () => {
   const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
@@ -62,7 +65,9 @@ const TabsLayout = () => {
         name="home"
         options={{
           title: 'Inicio',
-          headerTitle: 'Bienvenido',
+          headerTitle: '',
+          headerLeft: () => <Welcome />,
+          headerRight: () => <UserProfile />,
           tabBarIcon: ({ color, focused }) => (
             <Home
               color={color}
