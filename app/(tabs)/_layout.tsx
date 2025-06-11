@@ -1,6 +1,6 @@
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import UserProfile from '../../components/buttons/UserProfile';
@@ -14,12 +14,15 @@ const TabsLayout = () => {
     <Tabs
       screenOptions={{
         tabBarStyle: {
+          // Para permitir que el BlurView se vea correctamente detrás de la barra de navegación.
+          // En android no es necesario porque no se usaBlurView, pero mantenerlo ayuda a un diseño más consistente entre plataformas.
           position: 'absolute',
           elevation: 0,
           borderTopWidth: 0,
-          height: Platform.OS === 'android' ? 70 + insets.bottom : 60 + insets.bottom, // Agregar el bottom inset
+          // Definimos el alto del tabBar
+          height: (Platform.OS === 'android' ? 70 : 60) + insets.bottom, // Agregamos el espacio de la barra de navegación del sistema
           paddingTop: 7,
-          paddingBottom: insets.bottom, // Espacio para la barra del sistema
+          paddingBottom: insets.bottom, // Espacio para la barra de navegación del sistema
           ...Platform.select({
             ios: {
               shadowColor: '#000',
@@ -32,7 +35,7 @@ const TabsLayout = () => {
               borderTopLeftRadius: 20,
             },
           }),
-          bottom: 0, // Asegurar que esté en el bottom
+          bottom: 0, // Asegurar que esté en la parte inferior y que ocupe el ancho de la pantalla
           left: 0,
           right: 0,
           overflow: 'hidden', // Evitar que el contenido se desborde
@@ -57,9 +60,12 @@ const TabsLayout = () => {
           fontSize: 18,
         },
         animation: 'fade',
-        tabBarBackground: () => (
-          <BlurView tint="regular" intensity={100} style={StyleSheet.absoluteFill} />
-        ),
+        tabBarBackground: () =>
+          Platform.OS === 'ios' ? (
+            <BlurView tint="regular" intensity={50} style={StyleSheet.absoluteFill} /> // Usar BlurView para iOS
+          ) : (
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: '#afafaf' }]} /> // Color sólido de fondo para Android
+          ),
       }}>
       <Tabs.Screen
         name="home"
@@ -83,7 +89,7 @@ const TabsLayout = () => {
         name="health"
         options={{
           title: 'Mi Salud',
-          headerTitle: 'Mi Salud',
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Health
               color={color}

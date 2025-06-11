@@ -1,3 +1,4 @@
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { FlatList, View } from 'react-native';
 
 import { StateSymptom } from '../../../../components/badge/Badge';
@@ -57,21 +58,26 @@ const SYMPTOMS: Symptom[] = [
 ];
 
 const Index = () => {
+  // Utilizamos useBottomTabBarHeight para obtener la altura del tabBar
+  const tabBarHeight = useBottomTabBarHeight();
+
   return (
-    <FlatList
-      data={SYMPTOMS}
-      renderItem={({ item }) => (
-        <CardSymptom
-          symptom={item.symptom}
-          date={item.date}
-          intensity={item.intensity}
-          notes={item.notes}
-        />
-      )}
-      keyExtractor={(item) => item.id.toString()}
-      ItemSeparatorComponent={() => <View style={{ height: 8 }} />} // Define un componente separador entre los elementos de la lista
-      contentContainerStyle={{ padding: 14 }} // Aplica estilos al contenedor interno de la FlatList
-    />
+    <View style={{ paddingBottom: tabBarHeight }}>
+      <FlatList
+        data={SYMPTOMS}
+        renderItem={({ item }) => (
+          <CardSymptom
+            symptom={item.symptom}
+            date={item.date}
+            intensity={item.intensity}
+            notes={item.notes}
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        ItemSeparatorComponent={() => <View style={{ height: 8 }} />} // Define un componente separador entre los elementos de la lista
+        contentContainerStyle={{ padding: 14 }} // Aplica estilos al contenedor interno de la FlatList
+      />
+    </View>
   );
 };
 
