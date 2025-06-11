@@ -13,7 +13,7 @@ export default function ProfileLayout() {
           headerTitleAlign: 'center',
           headerStyle: { backgroundColor: '#4189b6' },
           headerTitleStyle: { color: '#fff', fontWeight: 'bold' },
-          headerTintColor: '#fff',
+          headerTintColor: '#fff', // Define el color del icono de retroceso
           ...(Platform.OS === 'ios' ? { animation: 'default' } : { animation: 'slide_from_right' }),
         }}
       />
