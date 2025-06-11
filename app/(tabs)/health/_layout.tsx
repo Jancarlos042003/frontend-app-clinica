@@ -8,7 +8,10 @@ const _HealthLayout = () => {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          headerTitle: 'Mi Salud',
+          headerStyle: { backgroundColor: '#4189b6' },
+          headerTitleStyle: { color: '#fff', fontWeight: 'bold' },
+          headerTintColor: '#fff', // Define el color del icono de retroceso
         }}
       />
 
