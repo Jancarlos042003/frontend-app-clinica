@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 import { getAccessToken, getRefreshToken, saveTokens } from '../auth/tokenService';
 import { API_URL } from '../config/env';
+console.log('✅ API_URL cargado desde .env:', API_URL);
 
 class ApiService {
   private axiosInstance: AxiosInstance;

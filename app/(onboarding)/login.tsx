@@ -37,21 +37,23 @@ const Login = () => {
   });
 
   const onSubmit = async (data: LoginSchema) => {
-    const requestData = {
-      identifier: data.dni,
-      password: data.password.trim(),
-    };
-
-    try {
-      const response = await fetchData(`/api/auth/login`, 'POST', requestData);
-
-      if (response) {
-        router.push('home');
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-    }
+  const requestData = {
+    identifier: data.dni,
+    password: data.password.trim(),
   };
+
+  try {
+    const response = await fetchData(`/api/auth/login`, 'POST', requestData);
+
+    if (response) {
+      // Redirige a la pantalla principal "Home" dentro de tabs
+      router.replace('/(tabs)/home');
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+  }
+};
+
 
   return (
     <KeyboardAwareFormLayout>
