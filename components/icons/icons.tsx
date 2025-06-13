@@ -88,6 +88,10 @@ export const PhoneIcon = ({ size, color }: IconProps) => {
   return <Feather name="phone" size={size} color={color} />;
 };
 
+export const PlusCircleIcon = ({ size, color }: IconProps) => {
+  return <Feather name="plus-circle" size={size} color={color} />;
+};
+
 export const MailIcon = ({ size, color }: IconProps) => {
   return <Feather name="mail" size={size} color={color} />;
 };
@@ -102,6 +106,10 @@ export const LogoutIcon = ({ size, color }: IconProps) => {
 
 export const ActivityIcon = ({ size, color }: IconProps) => {
   return <Feather name="activity" size={size} color={color} />;
+};
+
+export const ClockIcon = ({ size, color }: IconProps) => {
+  return <Feather name="clock" size={size} color={color} />;
 };
 
 export const FaceSmileIcon = ({ size, color }: IconProps) => {
