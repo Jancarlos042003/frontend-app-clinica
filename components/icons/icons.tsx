@@ -104,8 +104,8 @@ export const LogoutIcon = ({ size, color }: IconProps) => {
   return <Ionicons name="log-out-outline" size={size} color={color} />;
 };
 
-export const ActivityIcon = ({ size, color }: IconProps) => {
-  return <Feather name="activity" size={size} color={color} />;
+export const ActivityIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="activity" size={size} color={color} style={style} />;
 };
 
 export const ClockIcon = ({ size, color }: IconProps) => {
