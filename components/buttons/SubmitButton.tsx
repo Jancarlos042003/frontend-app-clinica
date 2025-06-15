@@ -1,19 +1,13 @@
 import { useRef } from 'react';
-import { ActivityIndicator, Animated, Pressable, Text } from 'react-native';
+import { ActivityIndicator, Animated, Pressable, StyleSheet, Text } from 'react-native';
 
 interface SubmitButtonProps {
   onPress: () => void;
   loading?: boolean;
   text?: string;
-  className?: string;
 }
 
-const SubmitButton = ({
-  onPress,
-  loading = false,
-  text = 'Iniciar sesión',
-  className = '',
-}: SubmitButtonProps) => {
+const SubmitButton = ({ onPress, loading = false, text = 'Iniciar sesión' }: SubmitButtonProps) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -39,20 +33,40 @@ const SubmitButton = ({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={onPress}
-      disabled={loading}>
+      disabled={loading}
+      style={styles.pressable}>
       <Animated.View
-        style={{
-          transform: [{ scale: scaleAnim }],
-        }}
-        className={`items-center rounded-lg py-5 ${loading ? 'bg-primary_300' : 'bg-primary'} ${className}`}>
-        {loading ? (
-          <ActivityIndicator color="#65a5cb" />
-        ) : (
-          <Text className="text-lg font-bold text-white">{text}</Text>
-        )}
+        style={[
+          {
+            transform: [{ scale: scaleAnim }],
+            backgroundColor: loading ? '#65a5cb' : '#32729F',
+          },
+          styles.animatedView,
+        ]}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.text}>{text}</Text>}
       </Animated.View>
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  pressable: {
+    alignItems: 'center',
+    borderRadius: 12,
+    marginVertical: 4,
+  },
+  animatedView: {
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 8,
+    width: '100%',
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});
 
 export default SubmitButton;
