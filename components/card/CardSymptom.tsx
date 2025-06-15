@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import CardContainer from './CardContainer';
 import Badge, { StateSymptom } from '../badge/Badge';
@@ -13,14 +13,33 @@ type CardSymptomProps = {
 const CardSymptom = ({ symptom, date, intensity, notes }: CardSymptomProps) => {
   return (
     <CardContainer onPress={() => 'Card presionado'}>
-      <View className="flex-row justify-between">
-        <Text className="text-xl font-bold">{symptom}</Text>
+      <View style={styles.rowBetween}>
+        <Text style={styles.symptomText}>{symptom}</Text>
         <Badge content={intensity} state={intensity} />
       </View>
-      <Text className="text-base">{date}</Text>
-      <Text className="mt-3 text-base">{notes}</Text>
+      <Text style={styles.dateText}>{date}</Text>
+      <Text style={styles.notesText}>{notes}</Text>
     </CardContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  symptomText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  dateText: {
+    fontSize: 15,
+  },
+  notesText: {
+    marginTop: 12,
+    fontSize: 14,
+  },
+});
 
 export default CardSymptom;

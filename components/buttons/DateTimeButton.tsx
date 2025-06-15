@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 type DateButtonProps = {
   title: string;
@@ -11,15 +11,36 @@ type DateButtonProps = {
 const DateTimeButton = ({ title, icon, formattedDate, setShowPicker }: DateButtonProps) => {
   return (
     <>
-      <Text className="text-xl font-bold text-primary">{title}</Text>
-      <Pressable
-        onPress={() => setShowPicker(true)}
-        className="w-full flex-row items-center rounded-lg border border-gray-300 p-3">
+      <Text style={styles.title}>{title}</Text>
+      <Pressable onPress={() => setShowPicker(true)} style={styles.button}>
         {icon}
-        <Text className="ml-2 text-base">{formattedDate}</Text>
+        <Text style={styles.dateText}>{formattedDate}</Text>
       </Pressable>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    marginBottom: 8,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#32729F',
+  },
+  button: {
+    height: 50,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#d1d5db', // gray-300
+    paddingHorizontal: 8,
+  },
+  dateText: {
+    marginLeft: 8,
+    fontSize: 14,
+  },
+});
 
 export default DateTimeButton;
