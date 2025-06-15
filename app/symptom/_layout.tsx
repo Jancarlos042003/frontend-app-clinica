@@ -9,7 +9,7 @@ const SymptomLayout = () => {
         options={{
           headerTitle: 'Nuevo Síntoma',
           headerStyle: { backgroundColor: '#32729F' },
-          headerTitleStyle: { color: '#fff', fontWeight: 'bold' },
+          headerTitleStyle: { color: '#fff' },
           headerShadowVisible: false,
           headerTintColor: '#fff',
         }}

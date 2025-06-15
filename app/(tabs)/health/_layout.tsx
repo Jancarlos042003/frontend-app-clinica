@@ -9,7 +9,7 @@ const _HealthLayout = () => {
         name="index"
         options={{
           headerTitle: 'Mi Salud',
-          headerStyle: { backgroundColor: '#4189b6' },
+          headerStyle: { backgroundColor: '#32729F' },
           headerTitleStyle: { color: '#fff', fontWeight: 'bold' },
           headerTintColor: '#fff', // Define el color del icono de retroceso
         }}
@@ -18,10 +18,9 @@ const _HealthLayout = () => {
       <Stack.Screen
         name="symptoms/index"
         options={{
-          title: 'Síntomas Diarios',
-          headerStyle: { backgroundColor: 'transparent' },
-          headerTintColor: '#000',
-          headerTitleAlign: 'left',
+          headerTitle: 'Síntomas Diarios',
+          headerStyle: { backgroundColor: '#32729F' },
+          headerTintColor: '#fff',
           headerShadowVisible: false,
           ...(Platform.OS === 'ios' ? { animation: 'default' } : { animation: 'slide_from_right' }),
         }}
@@ -30,11 +29,10 @@ const _HealthLayout = () => {
       <Stack.Screen
         name="treatments/index"
         options={{
-          title: 'Tratamientos Médicos',
-          headerStyle: { backgroundColor: 'transparent' },
-          headerTitleAlign: 'left',
+          headerTitle: 'Tratamientos Médicos',
+          headerStyle: { backgroundColor: '#32729F' },
           headerShadowVisible: false,
-          headerTintColor: '#000',
+          headerTintColor: '#fff',
           ...(Platform.OS === 'ios' ? { animation: 'default' } : { animation: 'slide_from_right' }),
         }}
       />
