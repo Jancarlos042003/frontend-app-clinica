@@ -10,6 +10,8 @@ type TextInputControllerProps = {
   keyboardType?: KeyboardTypeOptions;
   editable?: boolean;
   autoFocus?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
 };
 
 const TextInputController = ({
@@ -20,6 +22,8 @@ const TextInputController = ({
   keyboardType = 'default',
   editable = true,
   autoFocus = false,
+  multiline = false,
+  numberOfLines = 1,
 }: TextInputControllerProps) => {
   return (
     <Controller
@@ -35,6 +39,11 @@ const TextInputController = ({
           keyboardType={keyboardType}
           editable={editable}
           autoFocus={autoFocus}
+          multiline={multiline}
+          numberOfLines={numberOfLines}
+          style={[
+            multiline && { textAlignVertical: 'top', minHeight: 100 }, // Ajustar altura para multiline
+          ]}
         />
       )}
     />
