@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useUser } from '../../hooks/useUser';
 
@@ -8,10 +8,21 @@ const Welcome = () => {
   const name: string = user?.name || '';
 
   return (
-    <View className="ml-4">
-      <Text className="text-xl font-bold text-white">Bienvenido {name}</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>Bienvenido {name}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginLeft: 16,
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+});
 
 export default Welcome;
