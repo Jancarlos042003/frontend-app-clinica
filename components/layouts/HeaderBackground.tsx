@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ImageBackground, ImageSourcePropType, View } from 'react-native';
+import { ImageBackground, ImageSourcePropType, StyleSheet, View } from 'react-native';
 
 import Logo from '../icons/Logo';
 
@@ -15,13 +15,36 @@ const HeaderBackground = ({
   children = <Logo />, // Default children if none are provided
 }: HeaderBackgroundProps) => {
   return (
-    <View className="absolute left-0 right-0 top-0 h-[390px] w-full">
-      <ImageBackground source={image} className="flex-1" resizeMode="cover">
-        <View className="absolute inset-0 bg-black/45" />
-        <View className="flex-1 items-center justify-center">{children}</View>
+    <View style={styles.headerContainer}>
+      <ImageBackground source={image} style={styles.imageBackground} resizeMode="cover">
+        <View style={styles.overlay} />
+        <View style={styles.centerContent}>{children}</View>
       </ImageBackground>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 390,
+    width: '100%',
+  },
+  imageBackground: {
+    flex: 1,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+  },
+  centerContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default HeaderBackground;

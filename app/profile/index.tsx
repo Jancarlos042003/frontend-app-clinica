@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import LogoutButton from '../../components/buttons/LogoutButton';
 import {
@@ -40,12 +40,12 @@ const Index = () => {
   };
 
   return (
-    <View className="flex-1 p-5">
-      <View className="mb-5 items-center justify-center pt-8">
+    <View style={styles.container}>
+      <View style={styles.avatarContainer}>
         <UserCircle color="#32729F" size={110} />
       </View>
-      <View className="w-full rounded-lg border border-gray-300 p-4">
-        <View className="gap-6">
+      <View style={styles.infoCard}>
+        <View style={styles.infoList}>
           <UserProfileInfo
             content={`${user?.name} ${user?.lastname}`}
             icon={<UserIcon color="#32729F" size={24} />}
@@ -83,11 +83,40 @@ const Index = () => {
           </Pressable>
         </View>
       </View>
-      <View className="mt-5">
+      <View style={styles.logoutButtonContainer}>
         <LogoutButton />
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#F3F7FA',
+  },
+  avatarContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 32,
+  },
+  infoCard: {
+    width: '100%',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#fff',
+    padding: 16,
+    marginBottom: 16,
+  },
+  infoList: {
+    gap: 24,
+  },
+  logoutButtonContainer: {
+    marginTop: 20,
+  },
+});
 
 export default Index;
