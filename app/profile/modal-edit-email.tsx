@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import SubmitButton from '../../components/buttons/SubmitButton';
 import TextInputController from '../../components/inputs/TextInputController';
@@ -21,9 +21,9 @@ const ModalEditEmail = () => {
 
   return (
     <KeyboardAvoidingWrapper>
-      <View className="flex-1 justify-between p-6">
+      <View style={styles.container}>
         <View>
-          <Text className="text-base font-bold text-primary">Tu correo electrónico</Text>
+          <Text style={styles.label}>Tu correo electrónico</Text>
           <TextInputController
             name="email"
             control={control}
@@ -38,5 +38,19 @@ const ModalEditEmail = () => {
     </KeyboardAvoidingWrapper>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    padding: 24, // p-6
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#32729F',
+    marginBottom: 8,
+  },
+});
 
 export default ModalEditEmail;

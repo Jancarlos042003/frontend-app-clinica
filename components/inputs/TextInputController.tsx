@@ -1,12 +1,11 @@
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
-import { KeyboardTypeOptions, TextInput } from 'react-native';
+import { KeyboardTypeOptions, StyleSheet, TextInput } from 'react-native';
 
 type TextInputControllerProps = {
   name: string;
   control: Control<any>;
   placeholder: string;
-  className?: string;
   keyboardType?: KeyboardTypeOptions;
   editable?: boolean;
   autoFocus?: boolean;
@@ -18,7 +17,6 @@ const TextInputController = ({
   name,
   control,
   placeholder,
-  className = 'w-full rounded border-2 border-gray-300 p-4',
   keyboardType = 'default',
   editable = true,
   autoFocus = false,
@@ -31,7 +29,7 @@ const TextInputController = ({
       control={control}
       render={({ field: { onChange, onBlur, value } }) => (
         <TextInput
-          className={className}
+          style={[styles.input, multiline && styles.multiline]}
           placeholder={placeholder}
           onChangeText={onChange}
           onBlur={onBlur}
@@ -41,13 +39,27 @@ const TextInputController = ({
           autoFocus={autoFocus}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          style={[
-            multiline && { textAlignVertical: 'top', minHeight: 100 }, // Ajustar altura para multiline
-          ]}
         />
       )}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    width: '100%',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    padding: 16,
+    backgroundColor: '#fff',
+    fontSize: 16,
+    color: '#111827',
+  },
+  multiline: {
+    textAlignVertical: 'top',
+    minHeight: 100,
+  },
+});
 
 export default TextInputController;
