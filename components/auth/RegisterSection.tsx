@@ -1,28 +1,58 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 interface RegisterSectionProps {
   onPress: () => void;
   questionText?: string;
   actionText?: string;
-  questionTextClassName?: string;
-  actionTextClassName?: string;
+  // Estilos para el contenedor principal
+  containerStyle?: ViewStyle;
+  // Estilos para el texto de la pregunta
+  questionTextStyle?: TextStyle;
+  // Estilos para el botón
+  buttonStyle?: ViewStyle;
+  // Estilos para el texto del botón
+  actionTextStyle?: TextStyle;
 }
 
 const RegisterSection = ({
   onPress,
   questionText = '¿No tienes una cuenta?',
-  questionTextClassName = '',
   actionText = 'Regístrate',
-  actionTextClassName = 'text-center text-base font-bold text-primary',
+  containerStyle,
+  questionTextStyle,
+  buttonStyle,
+  actionTextStyle,
 }: RegisterSectionProps) => {
   return (
-    <View className="mt-3 flex flex-row items-center justify-center">
-      <Text className={questionTextClassName}>{questionText}</Text>
-      <Pressable className="px-2" onPress={onPress}>
-        <Text className={actionTextClassName}>{actionText}</Text>
+    <View style={[styles.container, containerStyle]}>
+      <Text style={[styles.questionText, questionTextStyle]}>{questionText}</Text>
+      <Pressable style={[styles.pressable, buttonStyle]} onPress={onPress}>
+        <Text style={[styles.actionText, actionTextStyle]}>{actionText}</Text>
       </Pressable>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  questionText: {
+    fontSize: 16,
+    color: '#222',
+  },
+  pressable: {
+    paddingHorizontal: 8,
+  },
+  actionText: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#32729F',
+  },
+});
 
 export default RegisterSection;

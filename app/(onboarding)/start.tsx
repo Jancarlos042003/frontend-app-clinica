@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ImageBackground, StatusBar, View } from 'react-native';
+import { ImageBackground, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import RegisterSection from '../../components/auth/RegisterSection';
@@ -13,20 +13,18 @@ const Start = () => {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1" edges={[]}>
+    <SafeAreaView style={styles.flex1} edges={[]}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" />
-      <ImageBackground source={img_presentation} className="flex-1" resizeMode="cover">
-        <LinearGradient colors={['rgba(41,75,110,0.3)', 'rgba(27,62,89,0.3)']} style={{ flex: 1 }}>
-          <View className="flex-1 justify-between px-8 py-20">
+      <ImageBackground source={img_presentation} style={styles.flex1} resizeMode="cover">
+        <LinearGradient colors={['rgba(41,75,110,0.3)', 'rgba(27,62,89,0.3)']} style={styles.flex1}>
+          <View style={styles.innerContainer}>
             <Logo />
-
             <View>
               <SubmitButton onPress={() => router.push('login')} />
-
               <RegisterSection
                 onPress={() => router.push('verify-dni')}
-                questionTextClassName="text-white text-base"
-                actionTextClassName="text-white text-base font-bold"
+                questionTextStyle={{ color: '#FFFFFF', fontSize: 16 }}
+                actionTextStyle={{ color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' }}
               />
             </View>
           </View>
@@ -35,5 +33,17 @@ const Start = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: 32,
+    paddingVertical: 80,
+  },
+});
 
 export default Start;

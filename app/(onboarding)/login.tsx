@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { saveTokens } from '../../auth/tokenService';
@@ -77,23 +77,27 @@ const Login = () => {
     <KeyboardAwareFormLayout>
       <ScreenWrapper edges={['bottom']}>
         <HeaderBackground />
-        <View className="ml-6" style={{ marginTop: paddingTopBackButton }}>
+        <View
+          style={{
+            marginLeft: 24,
+            marginTop: paddingTopBackButton,
+          }}>
           <BackButton onPress={router.back} color="white" />
         </View>
 
-        <View className="mt-[255px] flex-1 rounded-t-2xl bg-primary_100 px-7 py-9">
-          <Text className="text-4xl font-bold text-primary">Iniciar Sesión</Text>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Iniciar Sesión</Text>
 
-          <Text className="mb-4 text-base text-black">Ingresa tus credenciales</Text>
+          <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
 
-          <View className="w-full">
+          <View style={styles.inputWrapper}>
             <Controller
               control={control}
               name="dni"
               render={({ field: { onChange, onBlur, value } }) => (
-                <View className="mb-4">
+                <View style={styles.inputContainer}>
                   <TextInput
-                    className={`border bg-white ${errors.dni ? 'border-red-500' : 'border-[#D4D4D8]'} mb-2 rounded-md p-4 text-lg text-[#101010] focus:border-primary`}
+                    style={[styles.input, errors.dni ? styles.inputError : styles.inputDefault]}
                     placeholder="DNI"
                     keyboardType="number-pad"
                     maxLength={8}
@@ -101,9 +105,7 @@ const Login = () => {
                     onChangeText={onChange}
                     onBlur={onBlur}
                   />
-                  {errors.dni && (
-                    <Text className=" text-sm text-red-500">{errors.dni.message}</Text>
-                  )}
+                  {errors.dni && <Text style={styles.errorText}>{errors.dni.message}</Text>}
                 </View>
               )}
             />
@@ -112,10 +114,13 @@ const Login = () => {
               control={control}
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
-                <View className="mb-1">
-                  <View className="relative">
+                <View style={styles.inputContainer}>
+                  <View style={styles.passwordWrapper}>
                     <TextInput
-                      className={`border bg-white ${errors.password ? 'border-red-500' : 'border-[#D4D4D8]'} mb-2 rounded-md p-4 pr-12 text-lg text-[#101010] focus:border-primary`}
+                      style={[
+                        styles.input,
+                        errors.password ? styles.inputError : styles.inputDefault,
+                      ]}
                       placeholder="Contraseña"
                       secureTextEntry={!showPassword}
                       value={value}
@@ -131,17 +136,17 @@ const Login = () => {
                     />
                   </View>
                   {errors.password && (
-                    <Text className="text-sm text-red-500">{errors.password.message}</Text>
+                    <Text style={styles.errorText}>{errors.password.message}</Text>
                   )}
-                  <Pressable className="mb-4 self-end">
-                    <Text className="font-semibold text-primary">¿Olvidaste tu contraseña?</Text>
+                  <Pressable style={styles.forgotPassword}>
+                    <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
                   </Pressable>
                 </View>
               )}
             />
             <SubmitButton onPress={handleSubmit(onSubmit)} loading={loading} />
 
-            {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
+            {error && <Text style={styles.errorMessage}>{error}</Text>}
 
             <RegisterSection onPress={() => router.push('verify-dni')} />
           </View>
@@ -150,5 +155,70 @@ const Login = () => {
     </KeyboardAwareFormLayout>
   );
 };
+
+const styles = StyleSheet.create({
+  formContainer: {
+    marginTop: 255,
+    flex: 1,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    backgroundColor: '#F3F7FA',
+    paddingHorizontal: 28,
+    paddingVertical: 36,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#32729F',
+  },
+  subtitle: {
+    marginBottom: 16,
+    fontSize: 16,
+    color: '#101010',
+  },
+  inputWrapper: {
+    width: '100%',
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  input: {
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    padding: 16,
+    fontSize: 18,
+    color: '#101010',
+    marginBottom: 8,
+    borderWidth: 1,
+    textAlign: 'left',
+  },
+  inputDefault: {
+    borderColor: '#D4D4D8',
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#ef4444',
+  },
+  passwordWrapper: {
+    position: 'relative',
+  },
+  forgotPassword: {
+    marginBottom: 16,
+    alignSelf: 'flex-end',
+  },
+  forgotPasswordText: {
+    fontWeight: '600',
+    color: '#32729F',
+  },
+  errorMessage: {
+    marginTop: 4,
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#ef4444',
+  },
+});
 
 export default Login;
