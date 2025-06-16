@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 type ProfileDisplayProps = {
   icon: ReactNode;
@@ -9,16 +9,35 @@ type ProfileDisplayProps = {
 
 const UserProfileInfo = ({ icon, title, content }: ProfileDisplayProps) => {
   return (
-    <View className="w-full flex-row items-center">
-      <View className="w-12">{icon}</View>
+    <View style={styles.container}>
+      <View style={styles.icon}>{icon}</View>
       <View>
-        <Text className="text-xl font-bold text-primary">{title}</Text>
-        <Text className="text-base">
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.content}>
           {content.toLowerCase() === 'null' ? 'No registrado' : content}
         </Text>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 48,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#32729F',
+  },
+  content: {
+    fontSize: 16,
+  },
+});
 
 export default UserProfileInfo;
