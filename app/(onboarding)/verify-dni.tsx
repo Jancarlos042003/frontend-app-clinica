@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
 
 import RegisterSection from "../../components/auth/RegisterSection";
 import VerificationModal from "../../components/auth/VerificationModal";
@@ -45,6 +45,7 @@ const VerifyDni = () => {
 
   return (
     <KeyboardAwareFormLayout>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent={true} animated={true} />
       <ScreenWrapper edges={["top", "bottom"]}>
         <View style={{ padding: 24, flex: 1 }}>
           <BackButton onPress={router.back} />

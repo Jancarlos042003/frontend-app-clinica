@@ -1,21 +1,21 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { saveTokens } from '../../auth/tokenService';
-import RegisterSection from '../../components/auth/RegisterSection';
-import BackButton from '../../components/buttons/BackButton';
-import SubmitButton from '../../components/buttons/SubmitButton';
-import TogglePasswordButton from '../../components/buttons/TogglePasswordButton';
-import HeaderBackground from '../../components/layouts/HeaderBackground';
-import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
-import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import useApi from '../../hooks/useApi';
-import { useUser } from '../../hooks/useUser';
-import { LoginSchema, loginSchema } from '../../schemas/LoginSchema';
+import { saveTokens } from "../../auth/tokenService";
+import RegisterSection from "../../components/auth/RegisterSection";
+import BackButton from "../../components/buttons/BackButton";
+import SubmitButton from "../../components/buttons/SubmitButton";
+import TogglePasswordButton from "../../components/buttons/TogglePasswordButton";
+import HeaderBackground from "../../components/layouts/HeaderBackground";
+import KeyboardAwareFormLayout from "../../components/layouts/KeyboardAwareFormLayout";
+import { ScreenWrapper } from "../../components/layouts/ScreenWrapper";
+import useApi from "../../hooks/useApi";
+import { useUser } from "../../hooks/useUser";
+import { LoginSchema, loginSchema } from "../../schemas/LoginSchema";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,33 +30,33 @@ const Login = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      dni: '',
-      password: '',
-    },
+      dni: "",
+      password: ""
+    }
   });
 
   // Redirige a home cuando el usuario esté cargado
   useEffect(() => {
     if (user) {
-      router.replace('/(tabs)/home');
+      router.replace("/(tabs)/home");
     }
   }, [user]);
 
   const onSubmit = async (data: LoginSchema) => {
     const requestData = {
       identifier: data.dni,
-      password: data.password.trim(),
+      password: data.password.trim()
     };
 
     try {
-      const response = await fetchData(`/api/auth/login`, 'POST', requestData);
+      const response = await fetchData(`/api/auth/login`, "POST", requestData);
 
       if (response) {
-        console.log('Inicio de sesión exitoso:', response); // <- Eliminar log
+        console.log("Inicio de sesión exitoso:", response); // <- Eliminar log
 
         // Guardar el token de acceso en el almacenamiento local
         const { token, refreshToken } = response;
@@ -69,18 +69,18 @@ const Login = () => {
         // El useEffect se encargará de redirigir a home
       }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      console.error("Error al iniciar sesión:", error);
     }
   };
 
   return (
     <KeyboardAwareFormLayout>
-      <ScreenWrapper edges={['bottom']}>
+      <ScreenWrapper edges={["top", "bottom"]}>
         <HeaderBackground />
         <View
           style={{
             marginLeft: 24,
-            marginTop: paddingTopBackButton,
+            marginTop: 24
           }}>
           <BackButton onPress={router.back} color="white" />
         </View>
@@ -119,7 +119,7 @@ const Login = () => {
                     <TextInput
                       style={[
                         styles.input,
-                        errors.password ? styles.inputError : styles.inputDefault,
+                        errors.password ? styles.inputError : styles.inputDefault
                       ]}
                       placeholder="Contraseña"
                       secureTextEntry={!showPassword}
@@ -148,7 +148,7 @@ const Login = () => {
 
             {error && <Text style={styles.errorMessage}>{error}</Text>}
 
-            <RegisterSection onPress={() => router.push('verify-dni')} />
+            <RegisterSection onPress={() => router.push("verify-dni")} />
           </View>
         </View>
       </ScreenWrapper>
@@ -162,63 +162,63 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    backgroundColor: '#F3F7FA',
+    backgroundColor: "#F3F7FA",
     paddingHorizontal: 28,
-    paddingVertical: 36,
+    paddingVertical: 36
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#32729F',
+    fontWeight: "bold",
+    color: "#32729F"
   },
   subtitle: {
     marginBottom: 16,
     fontSize: 16,
-    color: '#101010',
+    color: "#101010"
   },
   inputWrapper: {
-    width: '100%',
+    width: "100%"
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 16
   },
   input: {
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     fontSize: 18,
-    color: '#101010',
+    color: "#101010",
     marginBottom: 8,
     borderWidth: 1,
-    textAlign: 'left',
+    textAlign: "left"
   },
   inputDefault: {
-    borderColor: '#D4D4D8',
+    borderColor: "#D4D4D8"
   },
   inputError: {
-    borderColor: '#ef4444',
+    borderColor: "#ef4444"
   },
   errorText: {
     fontSize: 14,
-    color: '#ef4444',
+    color: "#ef4444"
   },
   passwordWrapper: {
-    position: 'relative',
+    position: "relative"
   },
   forgotPassword: {
     marginBottom: 16,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end"
   },
   forgotPasswordText: {
-    fontWeight: '600',
-    color: '#32729F',
+    fontWeight: "600",
+    color: "#32729F"
   },
   errorMessage: {
     marginTop: 4,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    color: '#ef4444',
-  },
+    color: "#ef4444"
+  }
 });
 
 export default Login;

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
 
 import PasswordInput from "../../components/auth/PasswordInput";
 import PasswordStrengthIndicator from "../../components/auth/PasswordStrengthIndicator";
@@ -55,6 +55,7 @@ const Signup = () => {
   };
   return (
     <KeyboardAwareFormLayout>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent={true} animated={true} />
       <ScreenWrapper edges={["top", "bottom"]}>
         <View style={styles.container}>
           <BackButton onPress={router.back} />
