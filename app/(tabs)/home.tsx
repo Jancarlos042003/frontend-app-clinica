@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 
 const Home = () => {
   return (
-    <View className="flex-1">
+    <View>
       <Text>Página de inicio</Text>
     </View>
   );
