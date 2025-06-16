@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { UserCircle } from '../icons/icons';
 
@@ -11,10 +11,16 @@ const UserProfile = () => {
   };
 
   return (
-    <Pressable onPress={handlePress} className="mr-4">
+    <Pressable onPress={handlePress} style={styles.button}>
       <UserCircle size={28} color="#ffffff" />
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    marginRight: 16,
+  },
+});
 
 export default UserProfile;

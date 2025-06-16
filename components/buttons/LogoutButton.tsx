@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useRef } from 'react';
-import { Animated, Pressable } from 'react-native';
+import { Animated, Pressable, StyleSheet } from 'react-native';
 
 import { clearTokens } from '../../auth/tokenService';
 
@@ -46,28 +46,36 @@ const LogoutButton = () => {
 
   return (
     <Pressable
-      className="w-full"
+      style={styles.pressable}
       onPress={handleLogout}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}>
-      <Animated.View
-        style={{
-          backgroundColor: animatedBackgroundColor,
-          width: '100%',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 2,
-          borderRadius: 16,
-          borderColor: '#ef4444',
-          padding: 12,
-        }}>
-        <Animated.Text style={{ color: animatedTextColor, fontWeight: 'bold' }}>
+      <Animated.View style={[styles.animatedView, { backgroundColor: animatedBackgroundColor }]}>
+        <Animated.Text style={[styles.animatedText, { color: animatedTextColor }]}>
           Cerrar sesión
         </Animated.Text>
       </Animated.View>
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  pressable: {
+    width: '100%',
+  },
+  animatedView: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderRadius: 16,
+    borderColor: '#ef4444',
+    padding: 12,
+  },
+  animatedText: {
+    fontWeight: 'bold',
+  },
+});
 
 export default LogoutButton;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { CancelIcon, CheckIcon } from '../icons/icons';
 
@@ -10,7 +10,7 @@ type SaveCancelButtonsProps = {
 
 const SaveCancelButtons = ({ handleCancel, handleSave }: SaveCancelButtonsProps) => {
   return (
-    <View className="absolute right-4 top-4 flex-row gap-3">
+    <View style={styles.container}>
       <Pressable onPress={handleCancel}>
         <CancelIcon color="#d32b3b" size={23} />
       </Pressable>
@@ -21,5 +21,15 @@ const SaveCancelButtons = ({ handleCancel, handleSave }: SaveCancelButtonsProps)
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+    flexDirection: 'row',
+    gap: 12, // Si tu versión de RN no soporta gap, usa marginRight en el primer botón
+  },
+});
 
 export default SaveCancelButtons;
