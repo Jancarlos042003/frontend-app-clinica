@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import '../global.css';
 
 import { UserProvider } from '../context/UserContext';
 
