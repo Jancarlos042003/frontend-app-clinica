@@ -64,29 +64,21 @@ const VerificationModal = ({ visible, onClose, dni }: VerificationModalProps) =>
       animationType="fade"
       onRequestClose={onClose}
       statusBarTranslucent>
-      <View
-        className="flex-1 items-center justify-center p-8"
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)' }}>
+      <View style={styles.centered}>
         <View style={styles.modalContent}>
-          <Text className="mb-2 text-center text-xl font-bold text-[#4189b6]">Verificación</Text>
-          <Text className="mb-5 text-center text-sm text-[#7f7f83]">
-            Ingresa el código enviado a tu dispositivo
-          </Text>
+          <Text style={styles.title}>Verificación</Text>
+          <Text style={styles.subtitle}>Ingresa el código enviado a tu dispositivo</Text>
 
-          {errors.code && (
-            <Text className="mt-1 text-center text-sm text-red-500">
-              {errors.code.message?.toString()}
-            </Text>
-          )}
+          {errors.code && <Text style={styles.errorText}>{errors.code.message?.toString()}</Text>}
 
-          {error && <Text className="mb-1 text-center text-sm text-red-500">{error}</Text>}
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
-          <View className="mb-5">
+          <View style={styles.inputWrapper}>
             <Controller
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="h-14 w-full rounded-lg border border-[#D4D4D8] bg-white text-center text-2xl font-bold text-[#101010] focus:border-primary"
+                  style={styles.input}
                   keyboardType="number-pad"
                   maxLength={6}
                   onBlur={onBlur}
@@ -104,17 +96,17 @@ const VerificationModal = ({ visible, onClose, dni }: VerificationModalProps) =>
             />
           </View>
 
-          <View className="flex-row justify-between">
-            <TouchableOpacity className="rounded-lg bg-[#f2f2f2] px-5 py-3" onPress={onClose}>
-              <Text className="font-semibold text-[#7f7f83]">Cancelar</Text>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
+              <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="rounded-lg bg-primary px-5 py-3"
+              style={[styles.button, styles.verifyButton]}
               onPress={handleSubmit(verifyCode)}>
               {loading ? (
                 <ActivityIndicator color="#65a5cb" />
               ) : (
-                <Text className="font-semibold text-white">Verificar</Text>
+                <Text style={[styles.buttonText, styles.verifyButtonText]}>Verificar</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -127,6 +119,13 @@ const VerificationModal = ({ visible, onClose, dni }: VerificationModalProps) =>
 export default VerificationModal;
 
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  },
   modalContent: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -143,5 +142,67 @@ const styles = StyleSheet.create({
         elevation: 8,
       },
     }),
+  },
+  title: {
+    marginBottom: 8,
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4189b6',
+  },
+  subtitle: {
+    marginBottom: 20,
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#7f7f83',
+  },
+  errorText: {
+    marginBottom: 4,
+    marginTop: 4,
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#ef4444',
+  },
+  inputWrapper: {
+    marginBottom: 20,
+  },
+  input: {
+    height: 56,
+    width: '100%',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D4D4D8',
+    backgroundColor: '#fff',
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#101010',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    alignItems: 'center',
+    minWidth: 100,
+  },
+  cancelButton: {
+    backgroundColor: '#f2f2f2',
+  },
+  verifyButton: {
+    backgroundColor: '#32729F',
+  },
+  buttonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  cancelButtonText: {
+    color: '#7f7f83',
+  },
+  verifyButtonText: {
+    color: '#fff',
   },
 });
