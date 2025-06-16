@@ -1,18 +1,18 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
-import RegisterSection from '../../components/auth/RegisterSection';
-import VerificationModal from '../../components/auth/VerificationModal';
-import BackButton from '../../components/buttons/BackButton';
-import SubmitButton from '../../components/buttons/SubmitButton';
-import { UserLarge } from '../../components/icons/icons';
-import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
-import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import useApi from '../../hooks/useApi';
-import { DniSchema, dniSchema } from '../../schemas/DniSchema';
+import RegisterSection from "../../components/auth/RegisterSection";
+import VerificationModal from "../../components/auth/VerificationModal";
+import BackButton from "../../components/buttons/BackButton";
+import SubmitButton from "../../components/buttons/SubmitButton";
+import { UserLarge } from "../../components/icons/icons";
+import KeyboardAwareFormLayout from "../../components/layouts/KeyboardAwareFormLayout";
+import { ScreenWrapper } from "../../components/layouts/ScreenWrapper";
+import useApi from "../../hooks/useApi";
+import { DniSchema, dniSchema } from "../../schemas/DniSchema";
 
 const VerifyDni = () => {
   const router = useRouter();
@@ -23,30 +23,30 @@ const VerifyDni = () => {
     control,
     watch,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<DniSchema>({
     defaultValues: {
-      dni: '',
+      dni: ""
     },
-    resolver: zodResolver(dniSchema),
+    resolver: zodResolver(dniSchema)
   });
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await fetchData(`/api/auth/check-user?identifier=${data.dni}`, 'GET');
+      const response = await fetchData(`/api/auth/check-user?identifier=${data.dni}`, "GET");
 
       if (response) {
         setModalVisible(true); // Mostrar el modal de verificación
       }
     } catch (error) {
-      console.error('Error al llamar a la API:', error);
+      console.error("Error al llamar a la API:", error);
     }
   };
 
   return (
     <KeyboardAwareFormLayout>
-      <ScreenWrapper edges={['top', 'bottom']}>
-        <View style={{ padding: 24 }}>
+      <ScreenWrapper edges={["top", "bottom"]}>
+        <View style={{ padding: 24, flex: 1 }}>
           <BackButton onPress={router.back} />
 
           <View style={styles.centered}>
@@ -66,7 +66,7 @@ const VerifyDni = () => {
                     placeholder="Ingresa tu DNI"
                     onBlur={onBlur}
                     onChangeText={(text) => {
-                      onChange(text.replace(/[^0-9]/g, ''));
+                      onChange(text.replace(/[^0-9]/g, ""));
                       clearError(); // Limpiar el error al cambiar el texto
                     }}
                     value={value}
@@ -93,13 +93,13 @@ const VerifyDni = () => {
               <VerificationModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
-                dni={Number(watch('dni'))}
+                dni={Number(watch("dni"))}
               />
 
               <RegisterSection
                 questionText="¿Ya tienes cuenta?"
                 actionText="Iniciar sesión"
-                onPress={() => router.push('login')}
+                onPress={() => router.push("login")}
               />
             </View>
           </View>
@@ -112,52 +112,52 @@ const VerifyDni = () => {
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center"
   },
   iconContainer: {
     marginBottom: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center"
   },
   title: {
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#32729F',
+    fontWeight: "bold",
+    color: "#32729F"
   },
   subtitle: {
     marginBottom: 32,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
-    color: '#101010',
+    color: "#101010"
   },
   inputContainer: {
-    width: 320,
+    width: 320
   },
   input: {
-    width: '100%',
+    width: "100%",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#D4D4D8',
-    backgroundColor: '#fff',
+    borderColor: "#D4D4D8",
+    backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingVertical: 16,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
-    color: '#101010',
-    marginBottom: 4,
+    color: "#101010",
+    marginBottom: 4
   },
   errorText: {
     marginTop: 4,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    color: '#ef4444',
+    color: "#ef4444"
   },
   submitButtonContainer: {
-    marginTop: 24,
-  },
+    marginTop: 24
+  }
 });
 
 export default VerifyDni;

@@ -1,17 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { Alert, StyleSheet, Text, View } from "react-native";
 
-import PasswordInput from '../../components/auth/PasswordInput';
-import PasswordStrengthIndicator from '../../components/auth/PasswordStrengthIndicator';
-import BackButton from '../../components/buttons/BackButton';
-import SubmitButton from '../../components/buttons/SubmitButton';
-import { LockClosed } from '../../components/icons/icons';
-import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
-import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import useApi from '../../hooks/useApi';
-import { PasswordSchema, passwordSchema } from '../../schemas/PasswordSchema';
+import PasswordInput from "../../components/auth/PasswordInput";
+import PasswordStrengthIndicator from "../../components/auth/PasswordStrengthIndicator";
+import BackButton from "../../components/buttons/BackButton";
+import SubmitButton from "../../components/buttons/SubmitButton";
+import { LockClosed } from "../../components/icons/icons";
+import KeyboardAwareFormLayout from "../../components/layouts/KeyboardAwareFormLayout";
+import { ScreenWrapper } from "../../components/layouts/ScreenWrapper";
+import useApi from "../../hooks/useApi";
+import { PasswordSchema, passwordSchema } from "../../schemas/PasswordSchema";
 
 const Signup = () => {
   const router = useRouter();
@@ -21,41 +21,41 @@ const Signup = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<PasswordSchema>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
-      password: '',
-      confirmPassword: '',
-    },
+      password: "",
+      confirmPassword: ""
+    }
   });
 
   const onSubmit = async (data: PasswordSchema) => {
     const requestData = {
       identifier: dni,
       password: data.password.trim(),
-      confirm_password: data.confirmPassword.trim(),
+      confirm_password: data.confirmPassword.trim()
     };
 
     try {
-      const response = await fetchData(`/api/credentials`, 'POST', requestData);
+      const response = await fetchData(`/api/credentials`, "POST", requestData);
       console.log(response);
 
       if (response) {
-        Alert.alert('Cuenta creada', 'Tu cuenta ha sido creada. Ahora puedes iniciar sesión.', [
+        Alert.alert("Cuenta creada", "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.", [
           {
-            text: 'Iniciar sesión',
-            onPress: () => router.push('login'),
-          },
+            text: "Iniciar sesión",
+            onPress: () => router.push("login")
+          }
         ]);
       }
     } catch (error) {
-      console.error('Error al crear la cuenta:', error);
+      console.error("Error al crear la cuenta:", error);
     }
   };
   return (
     <KeyboardAwareFormLayout>
-      <ScreenWrapper edges={['top', 'bottom']}>
+      <ScreenWrapper edges={["top", "bottom"]}>
         <View style={styles.container}>
           <BackButton onPress={router.back} />
 
@@ -124,45 +124,46 @@ const Signup = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 24,
+    flex: 1
   },
   centered: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center"
   },
   iconContainer: {
     marginBottom: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center"
   },
   title: {
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#32729F',
+    fontWeight: "bold",
+    color: "#32729F"
   },
   subtitle: {
     marginBottom: 32,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
-    color: '#101010',
+    color: "#101010"
   },
   inputContainer: {
-    width: 320,
+    width: 320
   },
   inputMargin: {
-    marginBottom: 16,
+    marginBottom: 16
   },
   submitButtonContainer: {
-    marginTop: 16,
+    marginTop: 16
   },
   errorText: {
     marginTop: 4,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    color: '#ef4444',
-  },
+    color: "#ef4444"
+  }
 });
 
 export default Signup;
