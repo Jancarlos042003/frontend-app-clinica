@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import PasswordInput from '../../components/auth/PasswordInput';
 import PasswordStrengthIndicator from '../../components/auth/PasswordStrengthIndicator';
@@ -55,71 +55,114 @@ const Signup = () => {
   };
   return (
     <KeyboardAwareFormLayout>
-      <ScreenWrapper edges={['top', 'bottom']} className="p-6">
-        <BackButton onPress={router.back} />
+      <ScreenWrapper edges={['top', 'bottom']}>
+        <View style={styles.container}>
+          <BackButton onPress={router.back} />
 
-        <View className="flex-1 items-center justify-center">
-          <View className="mb-8 items-center justify-center">
-            <LockClosed size={100} color="#32729F" />
-          </View>
+          <View style={styles.centered}>
+            <View style={styles.iconContainer}>
+              <LockClosed size={100} color="#32729F" />
+            </View>
 
-          <Text className="mb-2 text-center text-3xl font-bold text-primary">
-            Crea tu contraseña
-          </Text>
+            <Text style={styles.title}>Crea tu contraseña</Text>
 
-          <Text className="mb-8 text-center text-base text-[#101010]">
-            Crea una contraseña segura para proteger tu cuenta
-          </Text>
+            <Text style={styles.subtitle}>Crea una contraseña segura para proteger tu cuenta</Text>
 
-          <View className="w-96">
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
-                <View className="mb-4">
+            <View style={styles.inputContainer}>
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.inputMargin}>
+                    <PasswordInput
+                      value={value}
+                      onChangeText={(text) => {
+                        onChange(text);
+                        clearError();
+                      }}
+                      placeholder="Contraseña"
+                      error={errors.password?.message}
+                    />
+                    {value.length > 0 && <PasswordStrengthIndicator value={value} />}
+                  </View>
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, value } }) => (
                   <PasswordInput
                     value={value}
                     onChangeText={(text) => {
                       onChange(text);
                       clearError();
                     }}
-                    placeholder="Contraseña"
-                    error={errors.password?.message}
+                    placeholder="Confirmar contraseña"
+                    error={errors.confirmPassword?.message}
                   />
-                  {value.length > 0 && <PasswordStrengthIndicator value={value} />}
-                </View>
-              )}
-            />
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="confirmPassword"
-              render={({ field: { onChange, value } }) => (
-                <PasswordInput
-                  value={value}
-                  onChangeText={(text) => {
-                    onChange(text);
-                    clearError();
-                  }}
-                  placeholder="Confirmar contraseña"
-                  error={errors.confirmPassword?.message}
+              <View style={styles.submitButtonContainer}>
+                <SubmitButton
+                  onPress={handleSubmit(onSubmit)}
+                  loading={loading}
+                  text="Crear cuenta"
                 />
-              )}
-            />
+              </View>
 
-            <SubmitButton
-              onPress={handleSubmit(onSubmit)}
-              loading={loading}
-              text="Crear cuenta"
-              className="mt-4"
-            />
-
-            {error && <Text className="mt-1 text-center text-sm text-red-500">{error}</Text>}
+              {error && <Text style={styles.errorText}>{error}</Text>}
+            </View>
           </View>
         </View>
       </ScreenWrapper>
     </KeyboardAwareFormLayout>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconContainer: {
+    marginBottom: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    marginBottom: 8,
+    textAlign: 'center',
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#32729F',
+  },
+  subtitle: {
+    marginBottom: 32,
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#101010',
+  },
+  inputContainer: {
+    width: 320,
+  },
+  inputMargin: {
+    marginBottom: 16,
+  },
+  submitButtonContainer: {
+    marginTop: 16,
+  },
+  errorText: {
+    marginTop: 4,
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#ef4444',
+  },
+});
 
 export default Signup;
