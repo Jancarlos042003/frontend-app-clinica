@@ -11,7 +11,7 @@ export default function ProfileLayout() {
         options={{
           title: 'Perfil',
           headerTitleAlign: 'center',
-          headerStyle: { backgroundColor: '#4189b6' },
+          headerStyle: { backgroundColor: '#32729F' },
           headerTitleStyle: { color: '#fff', fontWeight: 'bold' },
           headerTintColor: '#fff', // Define el color del icono de retroceso
           ...(Platform.OS === 'ios' ? { animation: 'default' } : { animation: 'slide_from_right' }),

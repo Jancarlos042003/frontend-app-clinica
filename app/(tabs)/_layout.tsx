@@ -52,7 +52,7 @@ const TabsLayout = () => {
           marginTop: 4,
         },
         headerStyle: {
-          backgroundColor: '#4189b6',
+          backgroundColor: '#32729F',
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {

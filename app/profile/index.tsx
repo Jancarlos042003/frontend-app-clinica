@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, StatusBar } from 'react-native';
 
 import LogoutButton from '../../components/buttons/LogoutButton';
 import {
@@ -40,6 +40,8 @@ const Index = () => {
   };
 
   return (
+    <>
+    <StatusBar barStyle="light-content" />
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <UserCircle color="#32729F" size={110} />
@@ -87,6 +89,7 @@ const Index = () => {
         <LogoutButton />
       </View>
     </View>
+    </>
   );
 };
 

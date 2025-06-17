@@ -24,9 +24,6 @@ const Login = () => {
   const insets = useSafeAreaInsets();
   const { user, loginUser } = useUser();
 
-  // Ajuste del padding superior para el botón de retroceso
-  const paddingTopBackButton = insets.top > 0 ? insets.top + 24 : 24;
-
   const {
     control,
     handleSubmit,
