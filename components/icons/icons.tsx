@@ -28,6 +28,10 @@ export const UserLarge = ({ size, color }: IconProps) => {
   return <FontAwesome6 name="user-large" size={size} color={color} />;
 };
 
+export const UserCircle = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="user-circle" size={size} color={color} />;
+};
+
 export const ArrowBack = ({ size, color }: IconProps) => {
   return <Feather name="arrow-left" size={size} color={color} />;
 };
@@ -54,4 +58,68 @@ export const LoginIcon = ({ size, color }: IconProps) => {
 
 export const LogoIcon = ({ size, color }: IconProps) => {
   return <FontAwesome6 name="heart-pulse" size={size} color={color} />;
+};
+
+export const EditIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="edit" size={size} color={color} />;
+};
+
+export const CancelIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="circle-xmark" size={size} color={color} />;
+};
+
+export const SaveIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="save" size={size} color={color} />;
+};
+
+export const CheckIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="check-circle" size={size} color={color} />;
+};
+
+export const UserIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="user" size={size} color={color} />;
+};
+
+export const DniIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="vcard" size={size} color={color} />;
+};
+
+export const PhoneIcon = ({ size, color }: IconProps) => {
+  return <Feather name="phone" size={size} color={color} />;
+};
+
+export const PlusCircleIcon = ({ size, color }: IconProps) => {
+  return <Feather name="plus-circle" size={size} color={color} />;
+};
+
+export const MailIcon = ({ size, color }: IconProps) => {
+  return <Feather name="mail" size={size} color={color} />;
+};
+
+export const GenderIcon = ({ size, color }: IconProps) => {
+  return <Ionicons name="male-female" size={size} color={color} />;
+};
+
+export const LogoutIcon = ({ size, color }: IconProps) => {
+  return <Ionicons name="log-out-outline" size={size} color={color} />;
+};
+
+export const ActivityIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="activity" size={size} color={color} style={style} />;
+};
+
+export const ClockIcon = ({ size, color }: IconProps) => {
+  return <Feather name="clock" size={size} color={color} />;
+};
+
+export const FaceSmileIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="face-smile" size={size} color={color} />;
+};
+
+export const FaceMehIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="face-meh" size={size} color={color} />;
+};
+
+export const FaceFrownIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="face-frown" size={size} color={color} />;
 };
