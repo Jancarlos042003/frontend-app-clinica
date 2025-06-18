@@ -1,19 +1,21 @@
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, Text, View } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
-import { RadioButton } from 'react-native-paper';
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, Text, View } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
+import { RadioButton } from "react-native-paper";
+import { formatDate, formatTime } from "../../utils/dateFormatter";
 
-import DateTimeButton from '../../components/buttons/DateTimeButton';
-import SubmitButton from '../../components/buttons/SubmitButton';
-import { ActivityIcon, Calendar, ClockIcon } from '../../components/icons/icons';
-import DateTimeInput from '../../components/inputs/DateTimeInput';
-import TextInputController from '../../components/inputs/TextInputController';
-import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
-import { ScreenWrapper } from '../../components/layouts/ScreenWrapper';
-import { durationOptions, intensityOptions, symptomOptions } from '../../utils/symptomOptions';
+import DateTimeButton from "../../components/buttons/DateTimeButton";
+import SubmitButton from "../../components/buttons/SubmitButton";
+import { ActivityIcon, Calendar, ClockIcon } from "../../components/icons/icons";
+import DateTimeInput from "../../components/inputs/DateTimeInput";
+import TextInputController from "../../components/inputs/TextInputController";
+import KeyboardAwareFormLayout from "../../components/layouts/KeyboardAwareFormLayout";
+import { ScreenWrapper } from "../../components/layouts/ScreenWrapper";
+import { durationOptions, intensityOptions, symptomOptions } from "../../utils/symptomOptions";
+import { SymptomSchema, SymptomSchemaType } from "schemas/SymptomSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ValidationError from "components/card/ValidationError";
 
 const NewSymptom = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -25,28 +27,40 @@ const NewSymptom = () => {
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<SymptomSchemaType>({
+    resolver: zodResolver(SymptomSchema),
     defaultValues: {
-      sintoma: '',
-      intensidad: 'leve',
-      fecha: new Date(),
-      hora: new Date(new Date().setSeconds(0, 0)),
-      duracion: '0',
-      notas: '',
+      symptom: '',
+      intensity: '255604002',
+      date: new Date(),
+      time: new Date(new Date().setSeconds(0, 0)),
+      duration: '59',
+      notes: '',
     },
   });
 
-  // Obtenemos la fecha seleccionada del formulario
-  const selectedDate = watch('fecha');
-  // Obtenemos la hora seleccionada del formulario
-  const selectedTime = watch('hora');
+  // Obtenemos la fecha y hora seleccionada del formulario
+  const selectedDate = watch('date');
+  const selectedTime = watch('time');
 
-  // Formateamos la fecha al español
-  const formattedDate = format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: es });
-  const formattedTime = format(selectedTime, 'hh:mm a', { locale: es });
+  // Formateamos la fecha y hora al español
+  const formattedDate = formatDate(selectedDate);
+  const formattedTime = formatTime(selectedTime);
 
   const onSubmit = (data: any) => {
+    // Combinar fecha y hora en un solo objeto Date
+    const fechaCompleta = new Date(data.date);
+    const hora = new Date(data.time);
+    
+    // Establecer la hora de la fecha seleccionada
+    fechaCompleta.setHours(
+      hora.getHours(),
+      hora.getMinutes(),
+      0, // segundos
+      0  // milisegundos
+    );
     console.log('Datos del síntoma:', data);
+    console.log('Fecha y hora combinadas:', fechaCompleta);
   };
 
   return (
@@ -56,7 +70,7 @@ const NewSymptom = () => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Síntoma</Text>
             <Controller
-              name="sintoma"
+              name="symptom"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <Dropdown
@@ -89,6 +103,9 @@ const NewSymptom = () => {
                 />
               )}
             />
+            {errors.symptom && (
+              <ValidationError message={errors.symptom.message} />
+            )}
           </View>
 
           <View style={styles.sectionContainer}>
@@ -98,6 +115,9 @@ const NewSymptom = () => {
               setShowPicker={setShowDatePicker}
               formattedDate={formattedDate}
             />
+            {errors.date && (
+              <ValidationError message={errors.date.message} />
+            )}
           </View>
 
           <View style={styles.sectionContainer}>
@@ -108,12 +128,15 @@ const NewSymptom = () => {
               formattedDate={formattedTime}
             />
           </View>
+          {errors.time && (
+            <ValidationError message={errors.time.message} />
+          )}
 
           {showDatePicker && (
             <DateTimeInput
               control={control}
               mode="date"
-              name="fecha"
+              name="date"
               setShowPicker={setShowDatePicker}
             />
           )}
@@ -122,7 +145,7 @@ const NewSymptom = () => {
             <DateTimeInput
               control={control}
               mode="time"
-              name="hora"
+              name="time"
               setShowPicker={setShowTimePicker}
             />
           )}
@@ -130,7 +153,7 @@ const NewSymptom = () => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Intensidad</Text>
             <Controller
-              name="intensidad"
+              name="intensity"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <RadioButton.Group onValueChange={onChange} value={value}>
@@ -146,12 +169,15 @@ const NewSymptom = () => {
                 </RadioButton.Group>
               )}
             />
+            {errors.intensity && (
+              <ValidationError message={errors.intensity.message} />
+            )}
           </View>
 
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Duración</Text>
             <Controller
-              name="duracion"
+              name="duration"
               control={control}
               render={({ field: { onChange, value } }) => (
                 <RadioButton.Group onValueChange={onChange} value={value}>
@@ -168,17 +194,23 @@ const NewSymptom = () => {
                 </RadioButton.Group>
               )}
             />
+            {errors.duration && (
+              <ValidationError message={errors.duration.message} />
+            )}
           </View>
 
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Notas</Text>
             <TextInputController
               control={control}
-              name="notas"
+              name="notes"
               placeholder="Añadir detalles sobre el síntoma..."
               multiline
               numberOfLines={4}
             />
+            {errors.notes && (
+              <ValidationError message={errors.notes.message} />
+            )}
           </View>
 
           <View style={styles.submitButtonContainer}>

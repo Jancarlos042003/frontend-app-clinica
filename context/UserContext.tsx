@@ -10,7 +10,7 @@ export type User = {
   name: string;
   lastname: string;
   dni: string;
-  birthDate: string;
+  birthDate: Date;
   phone: string | null;
   email: string | null;
 };
