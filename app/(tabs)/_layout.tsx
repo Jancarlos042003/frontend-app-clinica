@@ -1,12 +1,15 @@
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import UserProfile from '../../components/buttons/UserProfile';
+import Welcome from '../../components/headers/Welcome';
 import { Calendar, Health, Home, Message } from '../../components/icons/icons';
 
 const TabsLayout = () => {
   const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
@@ -14,7 +17,7 @@ const TabsLayout = () => {
           position: 'absolute',
           elevation: 0,
           borderTopWidth: 0,
-          height: Platform.OS === 'android' ? 70 + insets.bottom : 60 + insets.bottom, // Agregar el bottom inset
+          height: (Platform.OS === 'android' ? 70 : 60) + insets.bottom, // Agregar el bottom inset
           paddingTop: 7,
           paddingBottom: insets.bottom, // Espacio para la barra del sistema
           ...Platform.select({
@@ -46,7 +49,7 @@ const TabsLayout = () => {
           marginTop: 4,
         },
         headerStyle: {
-          backgroundColor: '#4189b6',
+          backgroundColor: '#32729F',
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {
@@ -54,15 +57,20 @@ const TabsLayout = () => {
           fontSize: 18,
         },
         animation: 'fade',
-        tabBarBackground: () => (
-          <BlurView tint="regular" intensity={100} style={StyleSheet.absoluteFill} />
-        ),
+        tabBarBackground: () =>
+          Platform.OS === 'ios' ? (
+            <BlurView tint="dark" intensity={50} style={StyleSheet.absoluteFill} /> // Usar BlurView para iOS
+          ) : (
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: '#afafaf' }]} /> // Color sólido de fondo para Android
+          ),
       }}>
       <Tabs.Screen
         name="home"
         options={{
           title: 'Inicio',
-          headerTitle: 'Bienvenido',
+          headerTitle: '',
+          headerLeft: () => <Welcome />,
+          headerRight: () => <UserProfile />,
           tabBarIcon: ({ color, focused }) => (
             <Home
               color={color}
