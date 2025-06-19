@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ImageBackground, StatusBar, View } from 'react-native';
+import { ImageBackground, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import RegisterSection from '../../components/auth/RegisterSection';
@@ -14,7 +14,6 @@ const Start = () => {
 
   return (
     <SafeAreaView className="flex-1" edges={[]}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" />
       <ImageBackground source={img_presentation} className="flex-1" resizeMode="cover">
         <LinearGradient colors={['rgba(41,75,110,0.3)', 'rgba(27,62,89,0.3)']} style={{ flex: 1 }}>
           <View className="flex-1 justify-between px-8 py-20">
