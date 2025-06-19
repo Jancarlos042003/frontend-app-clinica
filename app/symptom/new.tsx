@@ -5,7 +5,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { RadioButton } from 'react-native-paper';
-import { SymptomSchema, SymptomSchemaType } from 'schemas/SymptomSchema';
 
 import DateTimeButton from '../../components/buttons/DateTimeButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
@@ -13,6 +12,7 @@ import { ActivityIcon, Calendar, ClockIcon } from '../../components/icons/icons'
 import DateTimeInput from '../../components/inputs/DateTimeInput';
 import TextInputController from '../../components/inputs/TextInputController';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
+import { SymptomSchema, useSymptomSchema } from '../../hooks/useSymptomSchema';
 import { formatDate, formatTime } from '../../utils/dateFormatter';
 import { durationOptions, intensityOptions, symptomOptions } from '../../utils/symptomOptions';
 
@@ -20,14 +20,15 @@ const NewSymptom = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
+  const schema = useSymptomSchema();
 
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<SymptomSchemaType>({
-    resolver: zodResolver(SymptomSchema),
+  } = useForm<SymptomSchema>({
+    resolver: zodResolver(schema),
     defaultValues: {
       symptom: '',
       intensity: '255604002',
@@ -58,8 +59,18 @@ const NewSymptom = () => {
       0, // segundos
       0 // milisegundos
     );
-    console.log('Datos del síntoma:', data);
-    console.log('Fecha y hora combinadas:', fechaCompleta);
+
+    const fechaISO = fechaCompleta.toISOString();
+
+    const symptomData = {
+      symptom: Number(data.symptom),
+      date_time: new Date(fechaISO),
+      intensity: Number(data.intensity),
+      duration: Number(data.duration),
+      notes: data.notes,
+    };
+
+    console.log('Data de síntoma:', symptomData);
   };
 
   return (
@@ -88,6 +99,7 @@ const NewSymptom = () => {
                 iconStyle={{ width: 20, height: 20 }}
                 data={symptomOptions}
                 search
+                dropdownPosition="bottom"
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
