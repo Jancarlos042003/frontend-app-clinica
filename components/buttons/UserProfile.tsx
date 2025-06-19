@@ -11,8 +11,8 @@ const UserProfile = () => {
   };
 
   return (
-    <Pressable onPress={handlePress} className="mr-4">
-      <UserCircle size={28} color="#ffffff" />
+    <Pressable onPress={handlePress} className="pr-4">
+      <UserCircle size={30} color="#ffffff" />
     </Pressable>
   );
 };
