@@ -1,12 +1,19 @@
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import LogoutButton from '../../components/buttons/LogoutButton';
-import { Calendar, DniIcon, MailIcon, PhoneIcon, UserCircle, UserIcon, } from '../../components/icons/icons';
+import {
+  Calendar,
+  DniIcon,
+  MailIcon,
+  PhoneIcon,
+  UserCircle,
+  UserIcon,
+} from '../../components/icons/icons';
 import UserProfileInfo from '../../components/profile/UserProfileInfo';
 import { useUser } from '../../hooks/useUser';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Index = () => {
   const { user } = useUser();
