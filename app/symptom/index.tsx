@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { FlatList, Pressable, StatusBar, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { StateSymptom } from '../../components/badge/Badge';
 import CardSymptom from '../../components/card/CardSymptom';
@@ -60,6 +61,7 @@ const SYMPTOMS: Symptom[] = [
 
 const Index = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets(); // Obtiene los insets de la zona segura para ajustar el padding inferior
 
   useEffect(() => {
     StatusBar.setBarStyle('light-content');
@@ -67,7 +69,7 @@ const Index = () => {
   }, []);
 
   return (
-    <View className="flex-1 px-4 pb-4">
+    <View className="flex-1 px-4" style={{ paddingBottom: insets.bottom + 16 }}>
       <View className="flex-row items-center justify-between py-3">
         <Text className="text-lg text-gray-500">Registra y monitorea tus síntomas</Text>
         <Pressable
