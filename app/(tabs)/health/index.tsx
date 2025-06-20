@@ -20,7 +20,7 @@ const Index = () => {
         </View>
       </CardContainer>
 
-      <CardContainer onPress={() => router.push('/(tabs)/health/treatments/')}>
+      <CardContainer onPress={() => router.push('/medication/')}>
         <View className="flex-row justify-between">
           <Text className="text-xl">Tratamientos Registrados</Text>
           <ActivityIcon color="#000" size={24} />
