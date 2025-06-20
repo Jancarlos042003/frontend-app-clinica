@@ -8,8 +8,7 @@ export const useSymptomSchema = () => {
   const { user } = useUser();
 
   return useMemo(() => {
-    // const birthDate = user?.birthDate || new Date('1900-01-01');
-    const birthDate = new Date('1990-05-15');
+    const birthDate = user?.birthDate || new Date('1900-01-01');
     const today = new Date();
 
     return z.object({
@@ -24,17 +23,19 @@ export const useSymptomSchema = () => {
         invalid_type_error: 'Debe ser una intensidad válida',
       }),
       date: z
-        .date({
+        .string({
           required_error: 'La fecha es requerida',
-          invalid_type_error: 'Debe ser una fecha válida',
         })
-        .refine((date) => normalizeDate(date) >= normalizeDate(birthDate), {
+        .refine((date) => !isNaN(Date.parse(date)), {
+          message: 'Debe ser una fecha válida',
+        })
+        .refine((date) => normalizeDate(new Date(date)) >= normalizeDate(birthDate), {
           message: 'La fecha no puede ser anterior a tu fecha de nacimiento',
         })
-        .refine((date) => normalizeDate(date) <= normalizeDate(today), {
+        .refine((date) => normalizeDate(new Date(date)) <= normalizeDate(today), {
           message: 'La fecha no puede ser futura',
         }),
-      time: z.date({
+      time: z.string({
         required_error: 'La hora es requerida',
         invalid_type_error: 'Debe ser una hora válida',
       }),

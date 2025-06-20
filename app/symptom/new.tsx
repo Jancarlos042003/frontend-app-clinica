@@ -6,25 +6,20 @@ import { Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { RadioButton } from 'react-native-paper';
 
-import DateTimeButton from '../../components/buttons/DateTimeButton';
 import SubmitButton from '../../components/buttons/SubmitButton';
-import { ActivityIcon, Calendar, ClockIcon } from '../../components/icons/icons';
-import DateTimeInput from '../../components/inputs/DateTimeInput';
-import TextInputController from '../../components/inputs/TextInputController';
+import { ActivityIcon } from '../../components/icons/icons';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
+import { CustomDateTimePicker } from '../../components/medicacion/DateTimePicker';
+import { Input } from '../../components/medicacion/Input';
 import { SymptomSchema, useSymptomSchema } from '../../hooks/useSymptomSchema';
-import { formatDate, formatTime } from '../../utils/dateFormatter';
 import { durationOptions, intensityOptions, symptomOptions } from '../../utils/symptomOptions';
 
 const NewSymptom = () => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const schema = useSymptomSchema();
 
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<SymptomSchema>({
@@ -32,42 +27,32 @@ const NewSymptom = () => {
     defaultValues: {
       symptom: '',
       intensity: '255604002',
-      date: new Date(),
-      time: new Date(new Date().setSeconds(0, 0)),
+      date: undefined,
+      time: undefined,
       duration: '59',
       notes: '',
     },
   });
 
-  // Obtenemos la fecha y hora seleccionada del formulario
-  const selectedDate = watch('date');
-  const selectedTime = watch('time');
-
-  // Formateamos la fecha y hora al español
-  const formattedDate = formatDate(selectedDate);
-  const formattedTime = formatTime(selectedTime);
-
   const onSubmit = (data: any) => {
     // Combinar fecha y hora en un solo objeto Date
-    const fechaCompleta = new Date(data.date);
-    const hora = new Date(data.time);
+    const dateTime = new Date(data.date);
+    const timeData = new Date(data.time);
 
     // Establecer la hora de la fecha seleccionada
-    fechaCompleta.setHours(
-      hora.getHours(),
-      hora.getMinutes(),
+    dateTime.setHours(
+      timeData.getHours(),
+      timeData.getMinutes(),
       0, // segundos
       0 // milisegundos
     );
 
-    const fechaISO = fechaCompleta.toISOString();
+    // Eliminamos time de los datos para evitar duplicación
+    const { time, ...dataWithoutTime } = data;
 
     const symptomData = {
-      symptom: Number(data.symptom),
-      date_time: new Date(fechaISO),
-      intensity: Number(data.intensity),
-      duration: Number(data.duration),
-      notes: data.notes,
+      ...dataWithoutTime,
+      date: dateTime.toISOString(),
     };
 
     console.log('Data de síntoma:', symptomData);
@@ -75,11 +60,11 @@ const NewSymptom = () => {
 
   return (
     <KeyboardAwareFormLayout>
-      <View className="flex-1 gap-4 p-4">
+      <View className="flex-1 gap-1 bg-primary_100 p-4">
         <View className="mb-3">
           <View className="flex-row">
-            <Text className="mb-2 text-xl font-bold text-primary">Síntoma</Text>
-            <Text className="text-xl text-red-500">*</Text>
+            <Text className="mb-2 text-lg font-bold text-gray-700">Síntoma</Text>
+            <Text className="ml-1 text-lg font-bold text-red-500">*</Text>
           </View>
           <Controller
             name="symptom"
@@ -88,15 +73,16 @@ const NewSymptom = () => {
               <Dropdown
                 style={{
                   height: 50,
-                  borderColor: isFocus ? '#32729F' : 'gray',
-                  borderWidth: 2,
+                  backgroundColor: '#fff',
+                  borderColor: isFocus ? '#32729F' : '#d1d5db',
+                  borderWidth: 1,
                   borderRadius: 8,
                   paddingHorizontal: 8,
                 }}
-                placeholderStyle={{ fontSize: 14 }}
+                placeholderStyle={{ fontSize: 14, color: '#6b7280' }}
                 selectedTextStyle={{ fontSize: 14 }}
-                inputSearchStyle={{ height: 40, fontSize: 14 }}
                 iconStyle={{ width: 20, height: 20 }}
+                inputSearchStyle={{ height: 40, fontSize: 14 }}
                 data={symptomOptions}
                 search
                 dropdownPosition="bottom"
@@ -114,7 +100,7 @@ const NewSymptom = () => {
                 }}
                 renderLeftIcon={() => (
                   <ActivityIcon
-                    color={isFocus ? '#32729F' : 'black'}
+                    color={isFocus ? '#32729F' : '#6b7280'}
                     size={20}
                     style={{ marginRight: 4 }}
                   />
@@ -125,48 +111,40 @@ const NewSymptom = () => {
           {errors.symptom && <ValidationError message={errors.symptom.message} />}
         </View>
 
-        <View className="mb-3">
-          <DateTimeButton
-            title="Fecha de Inicio"
-            icon={<Calendar color="#000" size={21} />}
-            setShowPicker={setShowDatePicker}
-            formattedDate={formattedDate}
-          />
-          {errors.date && <ValidationError message={errors.date.message} />}
-        </View>
+        <Controller
+          name="date"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <CustomDateTimePicker
+              label="Fecha de Inicio"
+              mode="date"
+              value={value ? new Date(value) : undefined}
+              onChange={(date) => onChange(date.toISOString())}
+              error={errors.date?.message}
+              required
+            />
+          )}
+        />
 
-        {showDatePicker && (
-          <DateTimeInput
-            control={control}
-            mode="date"
-            name="date"
-            setShowPicker={setShowDatePicker}
-          />
-        )}
-
-        <View className="mb-3">
-          <DateTimeButton
-            title="Inicio Aprox."
-            icon={<ClockIcon color="#000" size={21} />}
-            setShowPicker={setShowTimePicker}
-            formattedDate={formattedTime}
-          />
-        </View>
-        {errors.time && <ValidationError message={errors.time.message} />}
-
-        {showTimePicker && (
-          <DateTimeInput
-            control={control}
-            mode="time"
-            name="time"
-            setShowPicker={setShowTimePicker}
-          />
-        )}
+        <Controller
+          name="time"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <CustomDateTimePicker
+              label="Hora de Inicio"
+              mode="time"
+              value={value ? new Date(value) : undefined}
+              onChange={(date) => onChange(date.toISOString())}
+              error={errors.time?.message}
+              required
+            />
+          )}
+        />
 
         <View className="mb-0">
           <View className="flex-row">
-            <Text className="mb-2 text-xl font-bold text-primary">Intensidad</Text>
-            <Text className="text-xl text-red-500">*</Text>
+            <Text className="text-lg font-bold text-gray-700">Intensidad</Text>
+            <Text className="ml-1 text-lg font-bold text-red-500">*</Text>
           </View>
           <Controller
             name="intensity"
@@ -180,7 +158,7 @@ const NewSymptom = () => {
                     value={option.value.toString()}
                     color="#4189b6"
                     uncheckedColor="#4189b6"
-                    labelStyle={{ fontSize: 15 }}
+                    labelStyle={{ fontSize: 14 }}
                   />
                 ))}
               </RadioButton.Group>
@@ -191,8 +169,8 @@ const NewSymptom = () => {
 
         <View className="mb-0">
           <View className="flex-row">
-            <Text className="mb-2 text-xl font-bold text-primary">Duración</Text>
-            <Text className="text-xl text-red-500">*</Text>
+            <Text className="text-lg font-bold text-gray-700">Duración</Text>
+            <Text className="ml-1 text-lg font-bold text-red-500">*</Text>
           </View>
           <Controller
             name="duration"
@@ -206,7 +184,7 @@ const NewSymptom = () => {
                     value={option.value.toString()}
                     color="#4189b6"
                     uncheckedColor="#4189b6"
-                    labelStyle={{ fontSize: 15 }}
+                    labelStyle={{ fontSize: 14 }}
                   />
                 ))}
               </RadioButton.Group>
@@ -216,15 +194,23 @@ const NewSymptom = () => {
         </View>
 
         <View className="mb-2">
-          <Text className="mb-2 text-xl font-bold text-primary">Notas</Text>
-          <TextInputController
-            control={control}
+          <Controller
             name="notes"
-            placeholder="Añadir detalles sobre el síntoma..."
-            multiline
-            numberOfLines={4}
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                label="Notas"
+                placeholder="Añade detalles sobre el síntoma..."
+                error={errors.notes?.message}
+                multiline // Permite múltiples líneas
+                numberOfLines={4} // Número de líneas visibles
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                style={{ height: 110, textAlignVertical: 'top' }} // Asegura que el texto comience desde la parte superior
+              />
+            )}
           />
-          {errors.notes && <ValidationError message={errors.notes.message} />}
         </View>
 
         <View className="mb-14">
