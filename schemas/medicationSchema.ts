@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const medicationSchema = z.object({
   nameMedicine: z
@@ -16,13 +16,23 @@ export const medicationSchema = z.object({
 
   doseUnit: z.string().min(1, 'La unidad de dosis es requerida'),
 
-  frequencyHours: z
+  frequency: z
     .number({
       required_error: 'La frecuencia es requerida',
       invalid_type_error: 'Debe ser un número válido',
     })
     .positive('La frecuencia debe ser mayor a 0')
     .max(168, 'La frecuencia no puede ser mayor a 168 horas (1 semana)'),
+
+  period: z
+    .number({
+      required_error: 'El periodo es requerido',
+      invalid_type_error: 'Debe ser un número válido',
+    })
+    .positive('El periodo debe ser mayor a 0')
+    .max(365, 'El periodo no puede ser mayor a 365 días'),
+
+  periodUnit: z.string().min(1, 'La unidad de periodo es requerida'),
 
   startDate: z
     .string()
@@ -31,6 +41,8 @@ export const medicationSchema = z.object({
       const parsedDate = new Date(date);
       return !isNaN(parsedDate.getTime());
     }, 'Formato de fecha inválido'),
+
+  startTime: z.string().min(1, 'La hora de inicio es requerida'),
 
   duration: z
     .number({
