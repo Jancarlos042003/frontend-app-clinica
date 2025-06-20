@@ -1,7 +1,9 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
-import KeyboardAwareFormLayout from "components/layouts/KeyboardAwareFormLayout";
-import { useState } from "react";
-import { Modal, Platform, Pressable, Text, View } from "react-native";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import KeyboardAwareFormLayout from 'components/layouts/KeyboardAwareFormLayout';
+import { useState } from 'react';
+import { Modal, Platform, Pressable, Text, View } from 'react-native';
+
+import { Calendar, ClockIcon } from '../icons/icons';
 
 interface DateTimePickerProps {
   label: string;
@@ -100,7 +102,7 @@ export const CustomDateTimePicker = ({
                     display="spinner"
                     is24Hour
                     onChange={onDateTimeChange}
-                    style={{ backgroundColor: 'write' }}
+                    style={{ backgroundColor: 'white' }}
                     textColor="black" // Cambia el color del texto
                     locale="es-ES" // Configura el locale para español
                   />
@@ -126,16 +128,21 @@ export const CustomDateTimePicker = ({
 
   return (
     <View className="mb-4">
-      <Text className="mb-2 text-base font-bold text-gray-700">
+      <Text className="mb-2 text-lg font-bold text-gray-700">
         {label}
         {required && <Text className="text-red-500"> *</Text>}
       </Text>
       <View className="flex-row space-x-2">
         <Pressable
           onPress={openPicker}
-          className={`flex-1 rounded-lg border p-4 ${
+          className={`flex-1 flex-row items-center rounded-lg border px-2 py-4 ${
             error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
           }`}>
+          {mode === 'date' ? (
+            <Calendar color="#6b7280" size={21} style={{ marginRight: 5 }} />
+          ) : (
+            <ClockIcon color="#6b7280" size={21} style={{ marginRight: 5 }} />
+          )}
           <Text className={value ? 'text-gray-900' : 'text-gray-500'}>
             {value
               ? mode === 'date'
