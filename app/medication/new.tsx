@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import Title from '../../components/iu/Title';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { CustomDateTimePicker } from '../../components/medicacion/DateTimePicker';
 import { Dropdown } from '../../components/medicacion/Dropdown';
@@ -23,8 +24,11 @@ export default function MedicationFormScreen() {
       nameMedicine: '',
       doseValue: undefined,
       doseUnit: '',
-      frequencyHours: undefined,
+      frequency: undefined,
+      period: undefined,
+      periodUnit: '',
       startDate: '',
+      startTime: undefined,
       duration: undefined,
       durationUnit: '',
     },
@@ -32,10 +36,22 @@ export default function MedicationFormScreen() {
 
   const onSubmit = async (data: MedicationFormData) => {
     try {
+      const dateTime = new Date(data.startDate);
+
+      // Combinar fecha y hora de inicio
+      if (data.startTime) {
+        const hours = new Date(data.startTime).getHours();
+        const minutes = new Date(data.startTime).getMinutes();
+        dateTime.setHours(hours, minutes, 0, 0);
+      }
+
+      // Eliminar startTime del objeto para evitar duplicación
+      const { startTime, ...dataWithoutStartTime } = data;
+
       // Formatear la fecha al formato ISO 8601
       const formattedData = {
-        ...data,
-        startDate: new Date(data.startDate).toISOString(),
+        ...dataWithoutStartTime,
+        startDate: new Date(dateTime).toISOString(),
       };
 
       console.log('Datos del formulario:', JSON.stringify(formattedData, null, 2));
@@ -58,7 +74,10 @@ export default function MedicationFormScreen() {
 
   return (
     <KeyboardAwareFormLayout>
-      <View className="flex-1 px-4 pt-4" style={{ paddingBottom: insets.bottom + 16 }}>
+      <View
+        className="flex-1 bg-primary_100 px-4 pt-4"
+        style={{ paddingBottom: insets.bottom + 16 }}>
+        <Title title="Datos del Medicamento" />
         {/* Nombre de la medicina */}
         <Controller
           control={control}
@@ -114,14 +133,46 @@ export default function MedicationFormScreen() {
           )}
         />
 
-        {/* Frecuencia en horas */}
+        {/* Fecha y hora de inicio */}
+        <Title title="Frecuencia y Horario" />
         <Controller
           control={control}
-          name="frequencyHours"
+          name="startDate"
+          render={({ field: { onChange, value } }) => (
+            <CustomDateTimePicker
+              label="Fecha inicio"
+              mode="date"
+              value={value ? new Date(value) : undefined}
+              onChange={(date) => onChange(date.toISOString())} // Convertir a ISO 8601
+              error={errors.startDate?.message}
+              required
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="startTime"
+          render={({ field: { onChange, value } }) => (
+            <CustomDateTimePicker
+              label="Hora de inicio"
+              mode="time"
+              value={value ? new Date(value) : undefined}
+              onChange={(date) => onChange(date.toISOString())} // Convertir a ISO 8601
+              error={errors.startTime?.message}
+              required
+            />
+          )}
+        />
+
+        {/* Frecuencia */}
+        <Controller
+          control={control}
+          name="frequency"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Frecuencia (cada cuántas horas)"
-              placeholder="Ej: 8 (cada 8 horas)"
+              label="Cantidad por toma"
+              placeholder="Ej: 2"
               value={value?.toString() || ''}
               onChangeText={(text) => {
                 const numValue = Number.parseFloat(text);
@@ -129,34 +180,56 @@ export default function MedicationFormScreen() {
               }}
               onBlur={onBlur}
               keyboardType="numeric"
-              error={errors.frequencyHours?.message}
+              error={errors.frequency?.message}
               required
             />
           )}
         />
 
-        {/* Fecha y hora de inicio */}
         <Controller
           control={control}
-          name="startDate"
+          name="period"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <Input
+              label="Cada cuánto tiempo"
+              placeholder="Ej: 1"
+              value={value?.toString() || ''}
+              onChangeText={(text) => {
+                const numValue = Number.parseFloat(text);
+                onChange(isNaN(numValue) ? undefined : numValue);
+              }}
+              onBlur={onBlur}
+              keyboardType="numeric"
+              error={errors.period?.message}
+              required
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="periodUnit"
           render={({ field: { onChange, value } }) => (
-            <CustomDateTimePicker
-              label="Fecha y hora de inicio"
-              value={value ? new Date(value) : undefined}
-              onChange={(date) => onChange(date.toISOString())}
-              error={errors.startDate?.message}
+            <Dropdown
+              label="Unidad de tiempo"
+              options={DURATION_UNITS}
+              value={value}
+              onSelect={onChange}
+              placeholder="Seleccionar unidad"
+              error={errors.periodUnit?.message}
               required
             />
           )}
         />
 
         {/* Duración */}
+        <Title title="Duración del Tratamiento" />
         <Controller
           control={control}
           name="duration"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Duración del tratamiento"
+              label="Duración"
               placeholder="Ej: 7"
               value={value?.toString() || ''}
               onChangeText={(text) => {
