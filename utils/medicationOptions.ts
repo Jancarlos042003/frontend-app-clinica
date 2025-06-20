@@ -16,4 +16,5 @@ export const DURATION_UNITS: DropdownOption[] = [
   { label: 'Horas', value: 'h' },
   { label: 'Días', value: 'd' },
   { label: 'Semanas', value: 'wk' },
+  { label: 'Meses', value: 'mo' },
 ];
