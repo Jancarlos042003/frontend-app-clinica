@@ -108,8 +108,12 @@ export const ActivityIcon = ({ size, color, style }: IconProps) => {
   return <Feather name="activity" size={size} color={color} style={style} />;
 };
 
-export const ClockIcon = ({ size, color }: IconProps) => {
-  return <Feather name="clock" size={size} color={color} />;
+export const ClockIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="clock" size={size} color={color} style={style} />;
+};
+
+export const TargetIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="target" size={size} color={color} style={style} />;
 };
 
 export const FaceSmileIcon = ({ size, color }: IconProps) => {

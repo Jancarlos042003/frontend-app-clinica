@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FlatList, Modal, Pressable, Text, View } from 'react-native';
 
 import { DropdownOption } from '../../utils/medicationOptions';
+import { TargetIcon } from '../icons/icons';
 
 interface DropdownProps {
   label: string;
@@ -28,14 +29,15 @@ export const Dropdown = ({
 
   return (
     <View className="mb-4">
-      <Text className="mb-2 text-base font-bold text-gray-700">
+      <Text className="mb-2 text-lg font-bold text-gray-700">
         {label}
         {required && <Text className="text-red-500"> *</Text>}
       </Text>
 
       <Pressable
         onPress={() => setIsVisible(true)}
-        className={`rounded-lg border p-4 ${error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'}`}>
+        className={`flex-row items-center rounded-lg border px-2 py-4 ${error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'}`}>
+        <TargetIcon color="#6b7280" size={21} style={{ marginRight: 5 }} />
         <Text className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
