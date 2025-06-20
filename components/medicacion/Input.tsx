@@ -11,15 +11,16 @@ interface InputProps extends TextInputProps {
 export const Input: React.FC<InputProps> = ({ label, error, required = false, ...props }) => {
   return (
     <View className="mb-4">
-      <Text className="mb-2 text-base font-bold text-gray-700">
+      <Text className="mb-2 text-lg font-bold text-gray-700">
         {label}
         {required && <Text className="text-red-500"> *</Text>}
       </Text>
       <TextInput
         className={`rounded-lg border p-4 text-base ${
-          error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white focus:border-blue-500'
+          error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white focus:border-primary'
         }`}
         placeholderTextColor="#9CA3AF"
+        selectionColor="#32729F"
         {...props}
       />
       {error && <Text className="mt-1 text-sm text-red-500">{error}</Text>}
