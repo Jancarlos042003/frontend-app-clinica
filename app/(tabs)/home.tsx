@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, Button, Alert } from 'react-native';
 import Notes from '../../components/home/Notes';
 import MedicationList from '../../components/home/MedicationList';
 import AppointmentList from '../../components/home/AppointmentList';
@@ -18,7 +18,7 @@ interface Cita {
   fecha: string;
 }
 
-const Home = () => { 
+const Home = () => {
   const [medicamentos, setMedicamentos] = useState<Medicamento[]>([
     { id: '1', nombre: 'Colchicina', hora: '2:00 PM', tomado: false },
     { id: '2', nombre: 'Paracetamol', hora: '4:00 PM', tomado: false },
@@ -43,6 +43,17 @@ const Home = () => {
     { id: '3', especialidad: 'MEDICINA GENERAL', doctor: 'Dr. Carlos Rivera', fecha: '29 - 06 - 2025' },
   ];
 
+  const handleSOS = () => {
+    Alert.alert(
+      'Alerta SOS',
+      '¿Deseas enviar una alerta médica a la clínica?',
+      [
+        { text: 'Enviar Alerta', onPress: () => Alert.alert('Notificación SOS enviada') },
+        { text: 'Cancelar', style: 'cancel' },
+      ]
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -61,6 +72,10 @@ const Home = () => {
 
       <Text style={styles.sectionTitle}>Próximas Citas</Text>
       <AppointmentList citas={citas} />
+
+      <View style={styles.sosContainer}>
+        <Button title="SOS" onPress={handleSOS} color="red" />
+      </View>
     </ScrollView>
   );
 };
@@ -90,6 +105,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
   },
+  sosContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
 });
 
-export default Home; 
+export default Home;
