@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, Button, Alert } from 'react-native';
+import { ScrollView, View, Text, Image, StyleSheet, Button, Alert, Modal } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RootStackParamList } from '../../App';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Importar el icono de sirena
 import Notes from '../../components/home/Notes';
 import MedicationList from '../../components/home/MedicationList';
-import AppointmentList from '../../components/home/AppointmentList';
 
 interface Medicamento {
   id: string | number;
@@ -16,6 +19,8 @@ interface Cita {
   especialidad: string;
   doctor: string;
   fecha: string;
+  hora: string;
+  lugar: string;
 }
 
 const Home = () => {
@@ -26,6 +31,7 @@ const Home = () => {
   ]);
   const [notas, setNotas] = useState('• Dolor de cabeza.\n• Mareos.');
   const [modoEdicion, setModoEdicion] = useState(false);
+  const [showModal, setShowModal] = useState(false);  // Estado para mostrar el modal de SOS
 
   const toggleTomado = (id: string | number) => {
     setMedicamentos((prev) =>
@@ -38,20 +44,48 @@ const Home = () => {
   };
 
   const citas: Cita[] = [
-    { id: '1', especialidad: 'TRAUMATOLOGÍA', doctor: 'Dr. Juan Valdez', fecha: '29 - 06 - 2025' },
-    { id: '2', especialidad: 'PSICOLOGÍA', doctor: 'Dra. Karla Ramos', fecha: '29 - 06 - 2025' },
-    { id: '3', especialidad: 'MEDICINA GENERAL', doctor: 'Dr. Carlos Rivera', fecha: '29 - 06 - 2025' },
+    {
+      id: '1',
+      especialidad: 'TRAUMATOLOGÍA',
+      doctor: 'Dr. Juan Valdez',
+      fecha: '29 - 06 - 2025',
+      hora: '10:00 AM',
+      lugar: 'Consultorio 1',
+    },
+    {
+      id: '2',
+      especialidad: 'PSICOLOGÍA',
+      doctor: 'Dra. Karla Ramos',
+      fecha: '29 - 06 - 2025',
+      hora: '12:00 PM',
+      lugar: 'Consultorio 2',
+    },
+    {
+      id: '3',
+      especialidad: 'MEDICINA GENERAL',
+      doctor: 'Dr. Carlos Rivera',
+      fecha: '29 - 06 - 2025',
+      hora: '3:00 PM',
+      lugar: 'Consultorio 3',
+    },
   ];
 
+  // Función para manejar la acción SOS
   const handleSOS = () => {
-    Alert.alert(
-      'Alerta SOS',
-      '¿Deseas enviar una alerta médica a la clínica?',
-      [
-        { text: 'Enviar Alerta', onPress: () => Alert.alert('Notificación SOS enviada') },
-        { text: 'Cancelar', style: 'cancel' },
-      ]
-    );
+    setShowModal(true); 
+  };
+
+  const handleSendAlert = () => {
+    Alert.alert('¡ALERTA ENVIADA!', 'Su ubicación ha sido enviada a la clínica, por favor mantenga la calma.');
+    setShowModal(false); 
+  };
+
+  // Tipamos el hook de navegación para que reconozca la ruta y los parámetros
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
+
+  // Función para navegar a DetallesCita
+  const handleGoToDetails = (cita: Cita) => {
+    navigation.navigate('DetallesCita', { cita });
   };
 
   return (
@@ -71,11 +105,37 @@ const Home = () => {
       />
 
       <Text style={styles.sectionTitle}>Próximas Citas</Text>
-      <AppointmentList citas={citas} />
+      {citas.map((cita) => (
+        <View key={cita.id}>
+          <Text>
+            {cita.especialidad} con {cita.doctor} - {cita.fecha} - {cita.hora}
+          </Text>
+          <Button title="Ver Detalles" onPress={() => handleGoToDetails(cita)} />
+        </View>
+      ))}
 
+      {/* Aquí se coloca el botón con icono de sirena */}
       <View style={styles.sosContainer}>
-        <Button title="SOS" onPress={handleSOS} color="red" />
+        <Icon name="bell" size={40} color="red" onPress={handleSOS} />
       </View>
+
+      {/* Modal para la alerta SOS */}
+      <Modal
+        visible={showModal}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Icon name="bell" size={50} color="red" />
+            <Text style={styles.modalTitle}>SOS</Text>
+            <Text style={styles.modalText}>¿Deseas enviar una alerta médica a la clínica?</Text>
+            <Button title="ENVIAR ALERTA" onPress={handleSendAlert} color="red" />
+            <Button title="Cancelar" onPress={() => setShowModal(false)} color="gray" />
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -106,8 +166,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sosContainer: {
-    marginTop: 20,
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    marginLeft: -25,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
   },
 });
 

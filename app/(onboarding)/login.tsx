@@ -46,7 +46,7 @@ const Login = () => {
     const response = await fetchData(`/api/auth/login`, 'POST', requestData);
 
     if (response) {
-      // Redirige a la pantalla principal "Home" dentro de tabs
+      
       router.replace('/(tabs)/home');
     }
   } catch (error) {

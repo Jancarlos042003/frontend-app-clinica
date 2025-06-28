@@ -1,4 +1,3 @@
-// src/components/MedicationCard.tsx
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Check, Trash2 } from 'lucide-react-native';
@@ -8,7 +7,7 @@ interface Medicamento {
   nombre: string;
   hora: string;
   tomado: boolean;
-  color?: string; // Nuevo campo para el color (para tipos como el rosa)
+  color?: string;
 }
 
 interface MedicationCardProps {
@@ -20,7 +19,6 @@ interface MedicationCardProps {
 const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, toggleTomado, eliminarMedicamento }) => (
   <View style={styles.card}>
     <View style={styles.infoContainer}>
-      {/* Círculo de color (amarillo/verde o cualquier otro color dependiendo del medicamento) */}
       <View style={[styles.circle, { backgroundColor: medicamento.tomado ? 'green' : medicamento.color || 'yellow' }]} />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{medicamento.nombre}</Text>
@@ -28,17 +26,19 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, toggleToma
       </View>
     </View>
 
-    {/* Confirmación de*/}
-    {medicamento.tomado && (
-      <Text style={styles.confirmation}>Confirmacion a las{medicamento.hora}</Text>
+    {/* Confirmación o mensaje de pendiente */}
+    {medicamento.tomado ? (
+      <Text style={styles.confirmation}>Confirmado a las {medicamento.hora}</Text>
+    ) : (
+      <Text style={styles.pending}>Pendiente</Text>
     )}
 
-    {/* Íconos de acciones */}
+    {/* Acciones: Marcar como tomado y eliminar */}
     <View style={styles.actions}>
-      <TouchableOpacity onPress={() => toggleTomado(medicamento.id)}>
+      <TouchableOpacity onPress={() => toggleTomado(medicamento.id)} accessibilityLabel={`Marcar ${medicamento.nombre} como tomado`}>
         <Check color={medicamento.tomado ? 'green' : 'gray'} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => eliminarMedicamento(medicamento.id)}>
+      <TouchableOpacity onPress={() => eliminarMedicamento(medicamento.id)} accessibilityLabel={`Eliminar ${medicamento.nombre}`}>
         <Trash2 color="red" />
       </TouchableOpacity>
     </View>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   circle: {
     width: 24,
     height: 24,
-    borderRadius: 50, 
+    borderRadius: 50,
     marginRight: 10,
   },
   textContainer: {
@@ -85,6 +85,13 @@ const styles = StyleSheet.create({
     color: 'green',
     fontSize: 12,
   },
+  pending: {
+    marginTop: 5,
+    color: 'red',
+    fontSize: 12,
+  },
 });
 
 export default MedicationCard;
+
+

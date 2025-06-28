@@ -1,21 +1,19 @@
-
 import React from 'react';
 import { View } from 'react-native';
 import MedicationCard from './MedicationCard';
 
-type Medicamento = {
+interface Medicamento {
   id: string | number;
   nombre: string;
   hora: string;
   tomado: boolean;
-  [key: string]: any;
-};
+}
 
-type MedicationListProps = {
+interface MedicationListProps {
   medicamentos: Medicamento[];
-  toggleTomado: (id: Medicamento['id']) => void;
-  eliminarMedicamento: (id: Medicamento['id']) => void;
-};
+  toggleTomado: (id: string | number) => void;
+  eliminarMedicamento: (id: string | number) => void;
+}
 
 const MedicationList: React.FC<MedicationListProps> = ({ medicamentos, toggleTomado, eliminarMedicamento }) => (
   <View>
@@ -31,3 +29,4 @@ const MedicationList: React.FC<MedicationListProps> = ({ medicamentos, toggleTom
 );
 
 export default MedicationList;
+

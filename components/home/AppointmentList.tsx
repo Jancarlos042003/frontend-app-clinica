@@ -1,11 +1,16 @@
-
 import React from 'react';
 import { View } from 'react-native';
-import AppointmentCard from './AppointmentCard'; // Importa el componente AppointmentCard
-import type { Cita } from './AppointmentCard'; // Importamos solo el tipo 'Cita'
+import AppointmentCard from './AppointmentCard';
+
+interface Cita {
+  id: string | number;
+  especialidad: string;
+  doctor: string;
+  fecha: string;
+}
 
 interface AppointmentListProps {
-  citas: Cita[]; // Usamos el tipo 'Cita' en lugar de usar la interface directamente
+  citas: Cita[];  
 }
 
 const AppointmentList: React.FC<AppointmentListProps> = ({ citas }) => (
