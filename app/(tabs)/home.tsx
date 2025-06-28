@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Image, StyleSheet, Button, Alert, Modal } from 
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '../../App';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importar el icono de sirena
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 import Notes from '../../components/home/Notes';
 import MedicationList from '../../components/home/MedicationList';
 
@@ -114,7 +114,6 @@ const Home = () => {
         </View>
       ))}
 
-      {/* Aquí se coloca el botón con icono de sirena */}
       <View style={styles.sosContainer}>
         <Icon name="bell" size={40} color="red" onPress={handleSOS} />
       </View>

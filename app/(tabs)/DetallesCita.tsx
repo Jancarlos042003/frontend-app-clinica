@@ -35,19 +35,19 @@ const DetallesCita = ({ route, navigation }: Props) => {
         title = 'No Asistiré';
         message = 'Acaba de cancelar su cita, esperamos verlo pronto. ¡Recuerde cuidar de su salud!';
         buttonColor = 'red';
-        icon = require('../../assets/images/NotificaciónA.png'); // Asegúrate de tener esta imagen
+        icon = require('../../assets/images/NotificaciónA.png'); 
         break;
       case 'asistire':
         title = 'Asistiré';
         message = 'Acaba de confirmar su cita exitosamente. ¡Lo(a) esperamos!';
         buttonColor = 'green';
-        icon = require('../../assets/images/NotificaciónNA.png'); // Asegúrate de tener esta imagen
+        icon = require('../../assets/images/NotificaciónNA.png'); 
         break;
       case 'reprogramar':
         title = 'Reprogramar';
         message = 'Acaba de reprogramar su cita. La fecha de su próxima cita será en una semana.';
         buttonColor = 'purple';
-        icon = require('../../assets/images/NotificaciónR.png'); // Asegúrate de tener esta imagen
+        icon = require('../../assets/images/NotificaciónR.png');
         break;
       default:
         return null;
