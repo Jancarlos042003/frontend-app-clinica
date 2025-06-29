@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
   },
-  // bottomTab y tabItem ya no se usan, puedes borrarlos si quieres
+  
 });
 
 export default Home;
