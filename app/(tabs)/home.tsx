@@ -1,48 +1,27 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, Image, StyleSheet, Button, Alert, Modal } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert, Modal, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { RootStackParamList } from '../../App';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
+import type { RootStackParamList, Cita } from '../../App';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import AppointmentList from '../../components/home/AppointmentList';
 import Notes from '../../components/home/Notes';
 import MedicationList from '../../components/home/MedicationList';
 
-interface Medicamento {
-  id: string | number;
-  nombre: string;
-  hora: string;
-  tomado: boolean;
-}
-
-interface Cita {
-  id: string | number;
-  especialidad: string;
-  doctor: string;
-  fecha: string;
-  hora: string;
-  lugar: string;
-}
+const medicamentos = [
+  { id: '1', nombre: 'Prednisona', hora: '8:00 PM', tomado: false },
+  { id: '2', nombre: 'Ibuprofeno', hora: '7:00 AM', tomado: false },
+  { id: '3', nombre: 'Amoxicilina', hora: '1:00 PM', tomado: false },
+];
 
 const Home = () => {
-  const [medicamentos, setMedicamentos] = useState<Medicamento[]>([
-    { id: '1', nombre: 'Colchicina', hora: '2:00 PM', tomado: false },
-    { id: '2', nombre: 'Paracetamol', hora: '4:00 PM', tomado: false },
-    { id: '3', nombre: 'Prednisona', hora: '8:00 PM', tomado: false },
-  ]);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
   const [notas, setNotas] = useState('• Dolor de cabeza.\n• Mareos.');
   const [modoEdicion, setModoEdicion] = useState(false);
-  const [showModal, setShowModal] = useState(false);  // Estado para mostrar el modal de SOS
+  const [showAlarma, setShowAlarma] = useState(false);
+  const [medicamentoSeleccionado, setMedicamentoSeleccionado] = useState(medicamentos[0]);
 
-  const toggleTomado = (id: string | number) => {
-    setMedicamentos((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, tomado: !m.tomado } : m))
-    );
-  };
-
-  const eliminarMedicamento = (id: string | number) => {
-    setMedicamentos((prev) => prev.filter((m) => m.id !== id));
-  };
-
+  // Ejemplo de citas
   const citas: Cita[] = [
     {
       id: '1',
@@ -70,105 +49,238 @@ const Home = () => {
     },
   ];
 
-  // Función para manejar la acción SOS
-  const handleSOS = () => {
-    setShowModal(true); 
-  };
+  // Resultados clínicos de ejemplo
+  const resultados = [
+    { id: 1, nombre: 'Análisis de sangre' },
+    { id: 2, nombre: 'Resultados de perfil lipídico' },
+  ];
 
-  const handleSendAlert = () => {
-    Alert.alert('¡ALERTA ENVIADA!', 'Su ubicación ha sido enviada a la clínica, por favor mantenga la calma.');
-    setShowModal(false); 
-  };
-
-  // Tipamos el hook de navegación para que reconozca la ruta y los parámetros
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
-
-  // Función para navegar a DetallesCita
+  // --- HANDLERS ---
   const handleGoToDetails = (cita: Cita) => {
     navigation.navigate('DetallesCita', { cita });
   };
 
+  const handleAlarmaPress = (med) => {
+    setMedicamentoSeleccionado(med);
+    setShowAlarma(true);
+  };
+
+  const handleVerResultado = (nombre: string) => {
+    Alert.alert('Resultado', `Mostrando resultado de: ${nombre}`);
+  };
+
+  // --- RENDER ---
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../../assets/images/logo-medi.png')} style={styles.logo} />
-        <Text style={styles.name}>María Fernanda Jara Rivas</Text>
-      </View>
-
-      <Notes notas={notas} setNotas={setNotas} modoEdicion={modoEdicion} setModoEdicion={setModoEdicion} />
-
-      <Text style={styles.sectionTitle}>Medicamentos</Text>
-      <MedicationList
-        medicamentos={medicamentos}
-        toggleTomado={toggleTomado}
-        eliminarMedicamento={eliminarMedicamento}
-      />
-
-      <Text style={styles.sectionTitle}>Próximas Citas</Text>
-      {citas.map((cita) => (
-        <View key={cita.id}>
-          <Text>
-            {cita.especialidad} con {cita.doctor} - {cita.fecha} - {cita.hora}
-          </Text>
-          <Button title="Ver Detalles" onPress={() => handleGoToDetails(cita)} />
-        </View>
-      ))}
-
-      <View style={styles.sosContainer}>
-        <Icon name="bell" size={40} color="red" onPress={handleSOS} />
-      </View>
-
-      {/* Modal para la alerta SOS */}
-      <Modal
-        visible={showModal}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={() => setShowModal(false)}
+    <View style={styles.screen}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={true}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Icon name="bell" size={50} color="red" />
-            <Text style={styles.modalTitle}>SOS</Text>
-            <Text style={styles.modalText}>¿Deseas enviar una alerta médica a la clínica?</Text>
-            <Button title="ENVIAR ALERTA" onPress={handleSendAlert} color="red" />
-            <Button title="Cancelar" onPress={() => setShowModal(false)} color="gray" />
+        {/* Header */}
+        <View style={styles.header}>
+          <Image source={require('../../assets/images/logo-medi.png')} style={styles.logo} />
+          <View style={{ flex: 1 }} />
+          <View style={styles.userPhoto}>
+            <Icon name="user" size={32} color="#0F172A" />
           </View>
         </View>
-      </Modal>
-    </ScrollView>
+        <Text style={styles.name}>María Fernanda Jara Rivas</Text>
+        <Text style={styles.dni}>DNI: 44223578</Text>
+
+        {/* Próximas Citas */}
+        <Text style={styles.sectionTitle}>Próximas Citas</Text>
+        <AppointmentList citas={citas} onPressCita={handleGoToDetails} />
+
+        {/* Próxima alarma */}
+        <Text style={styles.sectionTitle}>Próxima alarma</Text>
+        <MedicationList
+          medicamentos={medicamentos}
+          onPressMedicamento={handleAlarmaPress}
+        />
+        <Modal visible={showAlarma} transparent animationType="fade" onRequestClose={() => setShowAlarma(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Próxima alarma</Text>
+              <Text>Medicamento: {medicamentoSeleccionado.nombre}</Text>
+              <Text>Hora: {medicamentoSeleccionado.hora}</Text>
+              <TouchableOpacity onPress={() => setShowAlarma(false)} style={styles.verBtn}>
+                <Text style={styles.verBtnText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Notas */}
+        <Text style={styles.sectionTitle}>Notas</Text>
+        <View style={styles.notasCard}>
+          <Text style={styles.notasText}>{notas}</Text>
+          <TouchableOpacity onPress={() => setModoEdicion(true)} style={styles.lapizBtn}>
+            <Icon name="pencil" size={20} color="#0F172A" />
+          </TouchableOpacity>
+        </View>
+        <Notes
+          notas={notas}
+          setNotas={setNotas}
+          modoEdicion={modoEdicion}
+          setModoEdicion={setModoEdicion}
+        />
+
+        {/* Últimos resultados clínicos */}
+        <Text style={styles.sectionTitle}>Últimos resultados clínicos</Text>
+        {resultados.map((r) => (
+          <View key={r.id} style={styles.resultadoCard}>
+            <Text style={styles.resultadoNombre}>{r.nombre}</Text>
+            <TouchableOpacity style={styles.verBtn} onPress={() => handleVerResultado(r.nombre)}>
+              <Text style={styles.verBtnText}>Ver</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+
+        <View style={{ height: 120 }} /> {/* Espacio extra para scroll */}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    backgroundColor: '#C5F0FF33',
+    backgroundColor: '#DDF6FF',
+  },
+  container: {
     padding: 20,
+    paddingBottom: 140,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 0,
   },
   logo: {
-    width: 160,
+    width: 120,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  userPhoto: {
+    width: 50,
     height: 50,
+    borderRadius: 25,
+    backgroundColor: '#E6F2FA',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
   },
   name: {
     color: '#0F172A',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 20,
+    marginTop: 10,
+    textAlign: 'left',
+  },
+  dni: {
+    color: '#0F172A',
+    fontSize: 14,
+    marginBottom: 15,
+    marginTop: 2,
+    textAlign: 'left',
   },
   sectionTitle: {
     fontWeight: 'bold',
     fontSize: 18,
     marginBottom: 10,
+    marginTop: 18,
+    color: '#0F172A',
   },
-  sosContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    marginLeft: -25,
+  citaCard: {
+    backgroundColor: '#E6F2FA',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 2,
+  },
+  citaEspecialidad: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#0F172A',
+    marginBottom: 2,
+  },
+  citaDoctor: {
+    fontSize: 15,
+    color: '#222',
+    marginBottom: 2,
+  },
+  citaFecha: {
+    fontSize: 14,
+    color: '#888',
+  },
+  alarmaCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 2,
+  },
+  alarmaMedicamento: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#0F172A',
+  },
+  alarmaHora: {
+    fontSize: 16,
+    color: '#0F172A',
+    fontWeight: 'bold',
+  },
+  notasCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 2,
+  },
+  notasText: {
+    fontSize: 15,
+    color: '#222',
+    flex: 1,
+  },
+  lapizBtn: {
+    marginLeft: 10,
+    padding: 6,
+  },
+  resultadoCard: {
+    backgroundColor: '#E6F2FA',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 2,
+  },
+  resultadoNombre: {
+    fontSize: 15,
+    color: '#0F172A',
+    fontWeight: 'bold',
+  },
+  verBtn: {
+    backgroundColor: '#0F172A',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 18,
+  },
+  verBtnText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   modalContainer: {
     flex: 1,
@@ -188,11 +300,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
   },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
+  // bottomTab y tabItem ya no se usan, puedes borrarlos si quieres
 });
 
 export default Home;

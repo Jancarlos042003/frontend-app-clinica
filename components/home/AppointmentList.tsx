@@ -1,25 +1,12 @@
 import React from 'react';
-import { View } from 'react-native';
 import AppointmentCard from './AppointmentCard';
 
-interface Cita {
-  id: string | number;
-  especialidad: string;
-  doctor: string;
-  fecha: string;
-}
-
-interface AppointmentListProps {
-  citas: Cita[];  
-}
-
-const AppointmentList: React.FC<AppointmentListProps> = ({ citas }) => (
-  <View>
+const AppointmentList = ({ citas, onPressCita }) => (
+  <>
     {citas.map((cita) => (
-      <AppointmentCard key={cita.id} cita={cita} />
+      <AppointmentCard key={cita.id} cita={cita} onPress={() => onPressCita(cita)} />
     ))}
-  </View>
+  </>
 );
 
 export default AppointmentList;
-

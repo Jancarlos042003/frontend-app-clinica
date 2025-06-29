@@ -1,44 +1,32 @@
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Modal, View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-interface NotesProps {
-  notas: string;
-  setNotas: (text: string) => void;
-  modoEdicion: boolean;
-  setModoEdicion: (value: boolean) => void;
-}
-
-const Notes: React.FC<NotesProps> = ({ notas, setNotas, modoEdicion, setModoEdicion }) => (
-  <View style={styles.container}>
-    <TextInput
-      style={styles.input}
-      multiline
-      editable={modoEdicion}
-      value={notas}
-      onChangeText={setNotas}
-    />
-    <TouchableOpacity onPress={() => setModoEdicion(!modoEdicion)}>
-      <Text style={styles.buttonText}>{modoEdicion ? 'Guardar' : 'Editar'}</Text>
-    </TouchableOpacity>
-  </View>
+const Notes = ({ notas, setNotas, modoEdicion, setModoEdicion }) => (
+  <Modal visible={modoEdicion} transparent animationType="fade" onRequestClose={() => setModoEdicion(false)}>
+    <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        <Text style={styles.title}>Editar notas</Text>
+        <TextInput
+          style={styles.input}
+          multiline
+          value={notas}
+          onChangeText={setNotas}
+        />
+        <TouchableOpacity style={styles.btn} onPress={() => setModoEdicion(false)}>
+          <Text style={styles.btnText}>Guardar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
 );
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  input: {
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-    fontSize: 16,
-  },
-  buttonText: {
-    color: 'blue',  
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' },
+  modalContent: { backgroundColor: 'white', padding: 24, borderRadius: 12, width: '80%' },
+  title: { fontWeight: 'bold', fontSize: 18, marginBottom: 12 },
+  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, minHeight: 80, padding: 8, marginBottom: 16 },
+  btn: { backgroundColor: '#0F172A', borderRadius: 8, padding: 12, alignItems: 'center' },
+  btnText: { color: 'white', fontWeight: 'bold' },
 });
 
 export default Notes;
-

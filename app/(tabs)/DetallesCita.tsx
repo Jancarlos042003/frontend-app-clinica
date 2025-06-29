@@ -1,141 +1,71 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, Alert, Modal, Image } from 'react-native';
-import { StackScreenProps } from '@react-navigation/stack';  
+import React from 'react';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import type { RouteProp } from '@react-navigation/native';
+import type { RootStackParamList } from '../../App';
 
-type RootStackParamList = {
-  Home: undefined;
-  DetallesCita: { cita: { especialidad: string; doctor: string; fecha: string; hora: string; lugar: string } };
-};
+interface Props {
+  route: RouteProp<RootStackParamList, 'DetallesCita'>;
+}
 
-type Props = StackScreenProps<RootStackParamList, 'DetallesCita'>;
+const DetallesCita: React.FC<Props> = ({ route }) => {
+  const { cita } = route.params;
 
-const DetallesCita = ({ route, navigation }: Props) => {
-  const { cita } = route.params;  
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<string>(''); // Para diferenciar las notificaciones
-
-  const handleNotification = (type: string) => {
-    setModalType(type);
-    setShowModal(true);
-  };
-
-  const handleSendAlert = () => {
-    Alert.alert('¡ALERTA ENVIADA!', 'Su ubicación ha sido enviada a la clínica, por favor mantenga la calma.');
-    setShowModal(false);
-  };
-
-  const renderModalContent = () => {
-    let title = '';
-    let message = '';
-    let buttonColor = '';
-    let icon = null;
-
-    switch (modalType) {
-      case 'noAsistire':
-        title = 'No Asistiré';
-        message = 'Acaba de cancelar su cita, esperamos verlo pronto. ¡Recuerde cuidar de su salud!';
-        buttonColor = 'red';
-        icon = require('../../assets/images/NotificaciónA.png'); 
-        break;
-      case 'asistire':
-        title = 'Asistiré';
-        message = 'Acaba de confirmar su cita exitosamente. ¡Lo(a) esperamos!';
-        buttonColor = 'green';
-        icon = require('../../assets/images/NotificaciónNA.png'); 
-        break;
-      case 'reprogramar':
-        title = 'Reprogramar';
-        message = 'Acaba de reprogramar su cita. La fecha de su próxima cita será en una semana.';
-        buttonColor = 'purple';
-        icon = require('../../assets/images/NotificaciónR.png');
-        break;
-      default:
-        return null;
-    }
-
-    return (
-      <View style={styles.modalContent}>
-        <Image source={icon} style={styles.icon} />
-        <Text style={styles.modalTitle}>{title}</Text>
-        <Text style={styles.modalText}>{message}</Text>
-        <Button title="Aceptar" onPress={handleSendAlert} color={buttonColor} />
-      </View>
-    );
+  const handleAccion = (accion: string) => {
+    let mensaje = '';
+    if (accion === 'asistire') mensaje = '¡Has confirmado tu asistencia!';
+    if (accion === 'noasistire') mensaje = 'Has indicado que no asistirás.';
+    if (accion === 'reprogramar') mensaje = 'Solicitud de reprogramación enviada.';
+    Alert.alert('Cita', mensaje);
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Detalles de la Cita</Text>
-      <Text>Especialidad: {cita.especialidad}</Text>
-      <Text>Médico: {cita.doctor}</Text>
-      <Text>Fecha: {cita.fecha}</Text>
-      <Text>Hora: {cita.hora}</Text>
-      <Text>Lugar: {cita.lugar}</Text>
-
-      <View style={styles.buttonsContainer}>
-        <Button title="NO ASISTIRÉ" color="red" onPress={() => handleNotification('noAsistire')} />
-        <Button title="ASISTIRÉ" color="green" onPress={() => handleNotification('asistire')} />
-        <Button title="REPROGRAMAR" color="purple" onPress={() => handleNotification('reprogramar')} />
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>{cita.especialidad}</Text>
+      <Text style={styles.label}>Doctor: <Text style={styles.value}>{cita.doctor}</Text></Text>
+      <Text style={styles.label}>Fecha: <Text style={styles.value}>{cita.fecha}</Text></Text>
+      <Text style={styles.label}>Hora: <Text style={styles.value}>{cita.hora}</Text></Text>
+      <Text style={styles.label}>Lugar: <Text style={styles.value}>{cita.lugar}</Text></Text>
+      <View style={styles.btns}>
+        <TouchableOpacity style={[styles.btn, styles.btnAsistire]} onPress={() => handleAccion('asistire')}>
+          <Text style={styles.btnText}>Asistiré</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.btn, styles.btnNoAsistire]} onPress={() => handleAccion('noasistire')}>
+          <Text style={styles.btnText}>No asistiré</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.btn, styles.btnReprogramar]} onPress={() => handleAccion('reprogramar')}>
+          <Text style={styles.btnText}>Reprogramar</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Notificación */}
-      <Modal
-        visible={showModal}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={() => setShowModal(false)}
-      >
-        <View style={styles.modalContainer}>
-          {renderModalContent()}
-        </View>
-      </Modal>
-    </View>
+      <View style={{ height: 40 }} /> {/* Espacio extra para scroll */}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#C5F0FF33',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  buttonsContainer: {
-    marginTop: 20,
-    justifyContent: 'space-evenly',
-    height: 200,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  container: { flexGrow: 1, padding: 24, backgroundColor: '#E6F2FA', paddingBottom: 80 },
+  title: { fontWeight: 'bold', fontSize: 22, marginBottom: 20, color: '#0F172A' },
+  label: { fontSize: 16, color: '#0F172A', marginBottom: 6 },
+  value: { fontWeight: 'bold', color: '#222' },
+  btns: { marginTop: 30, gap: 12 },
+  btn: {
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    marginBottom: 8,
   },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '80%',
+  btnAsistire: {
+    backgroundColor: '#0F172A',
   },
-  modalTitle: {
-    fontSize: 24,
+  btnNoAsistire: {
+    backgroundColor: '#E57373',
+  },
+  btnReprogramar: {
+    backgroundColor: '#1976D2',
+  },
+  btnText: {
+    color: 'white',
     fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  modalText: {
     fontSize: 16,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  icon: {
-    width: 50,
-    height: 50,
-    marginBottom: 20,
   },
 });
 

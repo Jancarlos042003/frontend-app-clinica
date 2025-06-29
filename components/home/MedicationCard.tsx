@@ -1,97 +1,63 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Check, Trash2 } from 'lucide-react-native';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Medicamento {
   id: string | number;
   nombre: string;
   hora: string;
   tomado: boolean;
-  color?: string;
 }
 
-interface MedicationCardProps {
+interface Props {
   medicamento: Medicamento;
-  toggleTomado: (id: string | number) => void;
-  eliminarMedicamento: (id: string | number) => void;
+  onPress: () => void;
 }
 
-const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, toggleTomado, eliminarMedicamento }) => (
-  <View style={styles.card}>
-    <View style={styles.infoContainer}>
-      <View style={[styles.circle, { backgroundColor: medicamento.tomado ? 'green' : medicamento.color || 'yellow' }]} />
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{medicamento.nombre}</Text>
-        <Text style={styles.time}>{medicamento.hora}</Text>
-      </View>
+const MedicationCard: React.FC<Props> = ({ medicamento, onPress }) => (
+  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {/* Avatar de usuario opcional */}
+      {/* <View style={styles.avatar}>
+        <Icon name="user" size={24} color="#0F172A" />
+      </View> */}
+      <Icon name="clock-o" size={22} color="#0F172A" style={{ marginRight: 10 }} />
+      <Text style={styles.nombre}>{medicamento.nombre}</Text>
     </View>
-
-    {/* Confirmación o mensaje de pendiente */}
-    {medicamento.tomado ? (
-      <Text style={styles.confirmation}>Confirmado a las {medicamento.hora}</Text>
-    ) : (
-      <Text style={styles.pending}>Pendiente</Text>
-    )}
-
-    {/* Acciones: Marcar como tomado y eliminar */}
-    <View style={styles.actions}>
-      <TouchableOpacity onPress={() => toggleTomado(medicamento.id)} accessibilityLabel={`Marcar ${medicamento.nombre} como tomado`}>
-        <Check color={medicamento.tomado ? 'green' : 'gray'} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => eliminarMedicamento(medicamento.id)} accessibilityLabel={`Eliminar ${medicamento.nombre}`}>
-        <Trash2 color="red" />
-      </TouchableOpacity>
-    </View>
-  </View>
+    <Text style={styles.hora}>{medicamento.hora}</Text>
+  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  infoContainer: {
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    elevation: 2,
   },
-  circle: {
-    width: 24,
-    height: 24,
-    borderRadius: 50,
-    marginRight: 10,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  name: {
+  nombre: {
     fontWeight: 'bold',
+    fontSize: 16,
     color: '#0F172A',
   },
-  time: {
-    color: '#888',
+  hora: {
+    fontSize: 16,
+    color: '#0F172A',
+    fontWeight: 'bold',
   },
-  actions: {
-    flexDirection: 'row',
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#E6F2FA',
     alignItems: 'center',
-  },
-  confirmation: {
-    marginTop: 5,
-    color: 'green',
-    fontSize: 12,
-  },
-  pending: {
-    marginTop: 5,
-    color: 'red',
-    fontSize: 12,
+    justifyContent: 'center',
+    marginRight: 12,
   },
 });
 
 export default MedicationCard;
-
-

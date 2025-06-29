@@ -14,8 +14,8 @@ type Cita = {
 };
 
 export type RootStackParamList = {
-  Home: undefined;
-  DetallesCita: { cita: Cita };
+  Home: undefined; 
+  DetallesCita: { cita: Cita }; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

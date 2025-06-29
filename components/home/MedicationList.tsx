@@ -9,24 +9,17 @@ interface Medicamento {
   tomado: boolean;
 }
 
-interface MedicationListProps {
+interface Props {
   medicamentos: Medicamento[];
-  toggleTomado: (id: string | number) => void;
-  eliminarMedicamento: (id: string | number) => void;
+  onPressMedicamento: (medicamento: Medicamento) => void;
 }
 
-const MedicationList: React.FC<MedicationListProps> = ({ medicamentos, toggleTomado, eliminarMedicamento }) => (
+const MedicationList: React.FC<Props> = ({ medicamentos, onPressMedicamento }) => (
   <View>
-    {medicamentos.map((medicamento) => (
-      <MedicationCard
-        key={medicamento.id}
-        medicamento={medicamento}
-        toggleTomado={toggleTomado}
-        eliminarMedicamento={eliminarMedicamento}
-      />
+    {medicamentos.map((med) => (
+      <MedicationCard key={med.id} medicamento={med} onPress={() => onPressMedicamento(med)} />
     ))}
   </View>
 );
 
 export default MedicationList;
-
