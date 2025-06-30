@@ -38,6 +38,33 @@ export default function ProfileLayout() {
           headerBackground: () => <HeaderBackgroundWithBorder />,
         }}
       />
+      <Stack.Screen
+        name="modal-edit-tolerance"
+        options={{
+          title: 'Editar ventana de tolerancia',
+          presentation: 'modal',
+          headerShadowVisible: false,
+          headerBackground: () => <HeaderBackgroundWithBorder />,
+        }}
+      />
+      <Stack.Screen
+        name="modal-edit-frequency"
+        options={{
+          title: 'Editar frecuencia de recordatorio',
+          presentation: 'modal',
+          headerShadowVisible: false,
+          headerBackground: () => <HeaderBackgroundWithBorder />,
+        }}
+      />
+      <Stack.Screen
+        name="modal-edit-attempts"
+        options={{
+          title: 'Editar máximo de intentos',
+          presentation: 'modal',
+          headerShadowVisible: false,
+          headerBackground: () => <HeaderBackgroundWithBorder />,
+        }}
+      />
     </Stack>
   );
 }
