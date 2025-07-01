@@ -1,20 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import useApi from '~/hooks/useApi';
 import { useUser } from '~/hooks/useUser';
-
-export type Symptom = {
-  id: string;
-  date: string;
-  symptom: string;
-  intensity: string;
-  notes: string;
-};
+import { Symptom } from '~/types/symptom';
 
 interface SymptomContextProps {
   todaysSymptoms: Symptom[];
   loading: boolean;
   error: string | null;
   refetch: () => void;
+  addSymptom: (symptom: Symptom) => void;
 }
 
 const SymptomContext = createContext<SymptomContextProps>({
@@ -22,6 +16,7 @@ const SymptomContext = createContext<SymptomContextProps>({
   loading: false,
   error: null,
   refetch: () => {}, // Para volver a obtener los síntomas
+  addSymptom: () => {}, // Para agregar un nuevo síntoma
 });
 
 // Creamos el contexto
@@ -45,12 +40,17 @@ export const SymptomProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const addSymptom = (symptom: Symptom) => {
+    setTodaysSymptoms((prevSymptoms) => [...prevSymptoms, symptom]);
+  };
+
   useEffect(() => {
     getSymptoms();
   }, [user?.dni]);
 
   return (
-    <SymptomContext.Provider value={{ todaysSymptoms, loading, error, refetch: getSymptoms }}>
+    <SymptomContext.Provider
+      value={{ todaysSymptoms, loading, error, refetch: getSymptoms, addSymptom }}>
       {children}
     </SymptomContext.Provider>
   );
