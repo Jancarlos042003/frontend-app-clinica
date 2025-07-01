@@ -1,6 +1,5 @@
 import { View, Text, Pressable, Animated } from 'react-native';
 import { Symptom } from '~/types/symptom';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   AlignLeftIcon,
   Calendar,
@@ -9,6 +8,7 @@ import {
   FaceSadTearIcon,
 } from '../icons/icons';
 import { StateSymptom } from '../../constants/constants';
+import { SymptomColor } from '../../types/color';
 
 type SymptomInfoCardProps = {
   symptom: Symptom;
@@ -40,7 +40,9 @@ const SymptomInfoCard = ({ symptom }: SymptomInfoCardProps) => {
 
   return (
     <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }} className="mb-3 overflow-hidden rounded-2xl bg-white shadow-sm">
+      <Animated.View
+        style={{ transform: [{ scale: scaleAnim }] }}
+        className="mb-3 overflow-hidden rounded-2xl bg-white shadow-sm">
         {/* Header con color de intensidad */}
         <View className="px-4 py-3" style={{ backgroundColor: colors.backgroundColor }}>
           <View className="flex-row items-center justify-between">
@@ -88,11 +90,6 @@ const SymptomInfoCard = ({ symptom }: SymptomInfoCardProps) => {
 };
 
 export default SymptomInfoCard;
-
-type SymptomColor = {
-  backgroundColor: string;
-  color: string;
-};
 
 const getSymptomColor: Record<StateSymptom, SymptomColor> = {
   Leve: {

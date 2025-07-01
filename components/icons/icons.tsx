@@ -168,6 +168,10 @@ export const ChevronRightIcon = ({ size, color, style }: IconProps) => {
   return <Feather name="chevron-right" size={size} color={color} style={style} />;
 };
 
+export const ChevronLeftIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="chevron-left" size={size} color={color} style={style} />;
+};
+
 export const SquareIcon = ({ size, color, style }: IconProps) => {
   return <FontAwesome6 name="square" size={size} color={color} style={style} />;
 };

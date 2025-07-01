@@ -1,42 +1,18 @@
-import { ScrollView, View, Text, TouchableOpacity, Alert, Modal } from 'react-native';
-import { router } from 'expo-router';
-import AppointmentList from '../../components/home/AppointmentList';
-import MedicationList from '../../components/home/MedicationList';
-import { useSymptomContext } from '~/context/SymptomContext';
+import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
+
+import MedicationList from '../../components/lists/MedicationList';
+
+import AppointmentList from '~/components/lists/AppointmentList';
 import SymptomList from '~/components/lists/SymptomList';
 import { useMedicationContext } from '~/context/MedicationContext';
+import { useSymptomContext } from '~/context/SymptomContext';
+import { Appointment } from '~/types/appointment';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Home = () => {
   const { todaysMedications } = useMedicationContext();
   const { todaysSymptoms } = useSymptomContext();
-
-  // Ejemplo de citas
-  const citas = [
-    {
-      id: '1',
-      especialidad: 'TRAUMATOLOGÍA',
-      doctor: 'Dr. Juan Valdez',
-      fecha: '29 - 06 - 2025',
-      hora: '10:00',
-      lugar: 'Consultorio 1',
-    },
-    {
-      id: '2',
-      especialidad: 'PSICOLOGÍA',
-      doctor: 'Dra. Karla Ramos',
-      fecha: '29 - 06 - 2025',
-      hora: '12:00',
-      lugar: 'Consultorio 2',
-    },
-    {
-      id: '3',
-      especialidad: 'MEDICINA GENERAL',
-      doctor: 'Dr. Carlos Rivera',
-      fecha: '29 - 06 - 2025',
-      hora: '15:00',
-      lugar: 'Consultorio 3',
-    },
-  ];
+  const insets = useSafeAreaInsets();
 
   // Resultados clínicos de ejemplo
   const resultados = [
@@ -44,28 +20,69 @@ const Home = () => {
     { id: 2, nombre: 'Resultados de perfil lipídico' },
   ];
 
-  // --- HANDLERS ---
-  const handleGoToDetails = (cita) => {
-    router.push({
-      pathname: '/(tabs)/DetallesCita',
-      params: { cita: JSON.stringify(cita) },
-    });
-  };
+  // Citas médicas de ejemplo
+  const upcomingAppointments: Appointment[] = [
+    {
+      id: 1,
+      doctorName: 'María González',
+      specialty: 'Cardiología',
+      date: '15 Jul 2025',
+      time: '10:30 AM',
+      location: 'Consultorio 301, Clínica San Rafael',
+      type: 'presencial',
+      status: 'confirmada',
+    },
+    {
+      id: 2,
+      doctorName: 'Carlos Mendoza',
+      specialty: 'Medicina General',
+      date: '18 Jul 2025',
+      time: '2:00 PM',
+      location: 'Telemedicina',
+      type: 'virtual',
+      status: 'programada',
+    },
+    {
+      id: 3,
+      doctorName: 'Ana Rodríguez',
+      specialty: 'Dermatología',
+      date: '22 Jul 2025',
+      time: '11:15 AM',
+      location: 'Centro Médico El Bosque',
+      type: 'presencial',
+      status: 'programada',
+    },
+  ];
 
-  const handleVerResultado = (nombre) => {
+  // --- HANDLERS ---
+  const handleVerResultado = (nombre: string) => {
     Alert.alert('Resultado', `Mostrando resultado de: ${nombre}`);
   };
 
-  // --- RENDER ---
+  const handleAppointmentPress = (appointment: Appointment) => {
+    Alert.alert(
+      'Detalles de la Cita',
+      `Cita con Dr. ${appointment.doctorName}\n${appointment.specialty}\n${appointment.date} a las ${appointment.time}`,
+      [{ text: 'OK' }]
+    );
+  };
+
   return (
-    <View className="bg-[#d9eff4]]">
-      <ScrollView className="p-5 pb-20" showsVerticalScrollIndicator>
+    <View style={{ paddingBottom: insets.bottom }} className="flex-1">
+      <ScrollView className="bg-[#d9eff4]] p-5">
         {/* Próximas Citas */}
         <Text className="mb-2 mt-4 text-lg font-bold text-[#0F172A]">Próximas Citas</Text>
-        <AppointmentList citas={citas} onPressCita={handleGoToDetails} />
-        {/* Próxima alarma */}
-        <MedicationList medications={todaysMedications} />
-        <SymptomList data={todaysSymptoms} />
+        <AppointmentList
+          appointments={upcomingAppointments}
+          scrollEnabled={false}
+          onAppointmentPress={handleAppointmentPress}
+        />
+
+        {/* Próximos Medicamentos */}
+        <MedicationList medications={todaysMedications} scrollEnabled={false} />
+
+        {/* Próximos Síntomas */}
+        <SymptomList data={todaysSymptoms} scrollEnabled={false} />
         {/* Últimos resultados clínicos */}
         <Text className="mb-2 mt-4 text-lg font-bold text-[#0F172A]">
           Últimos resultados clínicos
@@ -82,7 +99,7 @@ const Home = () => {
             </TouchableOpacity>
           </View>
         ))}
-        <View style={{ height: 120 }} /> {/* Espacio extra para scroll */}
+        <View style={{ height: 120 }} />
       </ScrollView>
     </View>
   );

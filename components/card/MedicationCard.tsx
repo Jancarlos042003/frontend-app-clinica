@@ -82,10 +82,23 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
             <ClockIcon size={22} color="#32729f" />
           </View>
           <View>
-            <Text className="text-[22px] font-extrabold tracking-tight text-black">
-              {medication.timeOfTaking}
-            </Text>
-            <Text className="text-base font-semibold text-gray-500">
+            <View className="flex-row items-center gap-2">
+              <Text className="text-[22px] font-extrabold tracking-tight text-black">
+                {medication.timeOfTaking}
+              </Text>
+              <View
+                style={{
+                  backgroundColor: getColorMedicationStatus[medication.status].backgroundColor,
+                }}
+                className="flex-row items-center rounded-full px-3 py-1">
+                <Text
+                  className="text-xs font-bold"
+                  style={{ color: getColorMedicationStatus[medication.status].color }}>
+                  {medication.status}
+                </Text>
+              </View>
+            </View>
+            <Text className="mt-1 text-base font-semibold text-gray-500">
               {medication.nameMedicine} - {medication.doses}
             </Text>
           </View>
@@ -141,3 +154,22 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
 };
 
 export default MedicationCard;
+
+const getColorMedicationStatus: Record<string, { backgroundColor: string; color: string }> = {
+  'Por tomar': {
+    backgroundColor: '#fef3c7',
+    color: '#92400e',
+  },
+  'En curso': {
+    backgroundColor: '#dbeafe',
+    color: '#1e40af',
+  },
+  Completado: {
+    backgroundColor: '#dcfce7',
+    color: '#166534',
+  },
+  'No tomado': {
+    backgroundColor: '#fef2f2',
+    color: '#b91c1c',
+  },
+};

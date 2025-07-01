@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Svg, { Circle, Defs, Path, Rect, SvgProps } from 'react-native-svg';
 /* SVGR has dropped some elements not supported by react-native-svg: style */
-const SvgComponent = (props: SvgProps) => (
+const MedicalAppointments = (props: SvgProps) => (
   <Svg id="Layer_1" data-name="Layer 1" viewBox="0 0 48 48" {...props}>
     <Defs />
     <Rect width={35.25} height={45.04} x={0.5} y={2.46} rx={1.96} />
@@ -27,4 +27,4 @@ const SvgComponent = (props: SvgProps) => (
     <Path d="M43.58 10.29h-3.92V6.38a2 2 0 0 1 2-2 2 2 0 0 1 2 2v3.91Z" />
   </Svg>
 );
-export default SvgComponent;
+export default MedicalAppointments;
