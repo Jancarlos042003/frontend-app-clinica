@@ -45,7 +45,6 @@ const Login = () => {
   }, [user]);
 
   const onSubmit = async (data: LoginSchema) => {
-
     const requestData = {
       identifier: data.dni,
       password: data.password.trim(),
@@ -71,19 +70,6 @@ const Login = () => {
       console.error('Error al iniciar sesión:', error);
     }
   };
-
-  try {
-    const response = await fetchData(`/api/auth/login`, 'POST', requestData);
-
-    if (response) {
-      
-      router.replace('/(tabs)/home');
-    }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-  }
-};
-
 
   return (
     <KeyboardAwareFormLayout>
