@@ -1,6 +1,5 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react';
 
-import { getAccessToken } from '../auth/tokenService';
 import { API_URL } from '../config/env';
 
 type Props = {
@@ -11,40 +10,71 @@ export type User = {
   name: string;
   lastname: string;
   dni: string;
-  birthday: Date;
-  phone: string;
-  email: string;
+  birthDate: Date;
+  patientId: string;
+  phone: string | null;
+  email: string | null;
 };
 
 type UserContextType = {
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
+  token: string | null;
+  setToken: Dispatch<SetStateAction<string | null>>;
+  loginUser: (token: string) => void; // Optional method for login
 };
 
-export const UserContext = createContext<UserContextType | null>(null);
+// Creamos el contexto de usuario
+export const UserContext = createContext<UserContextType>({
+  user: null,
+  setUser: () => {},
+  token: null,
+  setToken: () => {},
+  loginUser: () => {},
+});
 
+// Componente proveedor del contexto de usuario
 export const UserProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUser = async () => {
-      const token = await getAccessToken();
-
       if (token) {
         try {
-          const response = await fetch(`${API_URL}/api/auth/user`);
-          console.log(response); // <-- eliminar
-          const data = await response.json(); // <-- importante
-          setUser(data);
+          const response = await fetch(`${API_URL}/api/auth/user`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json(); // <-- importante
+            setUser(data);
+          } else {
+            console.error('Error al obtener los datos del usuario:', response.status);
+            setUser(null);
+          }
         } catch (error) {
           console.error('Error al obtener los datos del usuario:', error);
           setUser(null);
         }
+      } else {
+        setUser(null);
       }
     };
 
     loadUser(); // Ejecutamos loadUser()
-  }, []);
+  }, [token]);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  const loginUser = (newToken: string) => {
+    setToken(newToken);
+  };
+
+  return (
+    <UserContext.Provider value={{ user, setUser, token, setToken, loginUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
