@@ -116,16 +116,16 @@ export const TargetIcon = ({ size, color, style }: IconProps) => {
   return <Feather name="target" size={size} color={color} style={style} />;
 };
 
-export const FaceSmileIcon = ({ size, color }: IconProps) => {
-  return <FontAwesome6 name="face-smile" size={size} color={color} />;
+export const FaceSadTearIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="face-sad-tear" size={size} color={color} />;
 };
 
 export const FaceMehIcon = ({ size, color }: IconProps) => {
   return <FontAwesome6 name="face-meh" size={size} color={color} />;
 };
 
-export const FaceFrownIcon = ({ size, color }: IconProps) => {
-  return <FontAwesome6 name="face-frown" size={size} color={color} />;
+export const FaceGrimaceIcon = ({ size, color }: IconProps) => {
+  return <FontAwesome6 name="face-grimace" size={size} color={color} />;
 };
 
 export const CameraIcon = ({ size, color, style }: IconProps) => {
@@ -162,4 +162,24 @@ export const BellIcon = ({ size, color, style }: IconProps) => {
 
 export const ContactsIcon = ({ size, color, style }: IconProps) => {
   return <Feather name="users" size={size} color={color} style={style} />;
+};
+
+export const ChevronRightIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="chevron-right" size={size} color={color} style={style} />;
+};
+
+export const SquareIcon = ({ size, color, style }: IconProps) => {
+  return <FontAwesome6 name="square" size={size} color={color} style={style} />;
+};
+
+export const SquareCheckIcon = ({ size, color, style }: IconProps) => {
+  return <FontAwesome6 name="square-check" size={size} color={color} style={style} />;
+};
+
+export const CheckV2Icon = ({ size, color, style }: IconProps) => {
+  return <Feather name="check" size={size} color={color} style={style} />;
+};
+
+export const AlignLeftIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="align-left" size={size} color={color} style={style} />;
 };
