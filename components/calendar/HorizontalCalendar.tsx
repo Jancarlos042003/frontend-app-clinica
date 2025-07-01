@@ -1,23 +1,32 @@
-'use client';
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
   type ListRenderItem,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
   Platform,
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
 } from 'react-native';
-import dayjs, { type Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import 'dayjs/locale/es'; // Configurar DayJS
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MedicationList from '../lists/MedicationList';
+import { useMedicationContext } from '~/context/MedicationContext';
+import { useSymptomContext } from '~/context/SymptomContext';
+import { useUser } from '~/hooks/useUser';
+import useApi from '~/hooks/useApi';
+import SymptomList from '../lists/SymptomList';
+import LoadingIndicator from './LoadingIndicator';
+import DateItemComponent from './DateItemComponent';
+import { generateInitialDates } from './dateUtils';
+import { ChevronLeftIcon, ChevronRightIcon } from '../icons/icons';
+import { Symptom } from '~/types/symptom';
+import { Medication } from '~/types/medication';
 
 // Configurar DayJS
 dayjs.locale('es');
@@ -27,20 +36,7 @@ dayjs.extend(isSameOrAfter);
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = 80;
-const INITIAL_DAYS_RANGE = 60; // Aumentado para mejor experiencia inicial
-const LOAD_MORE_THRESHOLD = 5; // Reducido para carga más temprana
-const DAYS_TO_ADD = 30;
-
-// Interfaces
-interface Event {
-  id: number;
-  title: string;
-  time: string;
-}
-
-interface EventsData {
-  [key: string]: Event[];
-}
+const INITIAL_DAYS_RANGE = 30; // Solo 30 días antes y después
 
 interface DateFormat {
   dayName: string;
@@ -60,8 +56,8 @@ interface DateItem {
 // Estilos optimizados
 const styles = {
   itemContainer: 'mx-1 w-20 items-center justify-center rounded-2xl py-4',
-  selectedItem: 'bg-blue-500',
-  todayItem: 'bg-blue-50',
+  selectedItem: 'bg-primary',
+  todayItem: 'bg-prymary',
   weekendItem: 'bg-orange-50',
   transparentItem: 'bg-transparent',
 
@@ -80,84 +76,40 @@ const styles = {
 const HorizontalCalendar: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const [dates, setDates] = useState<Dayjs[]>([]);
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const [isLoadingMore] = useState<boolean>(false);
   const flatListRef = useRef<FlatList<DateItem>>(null);
   const initialScrollDone = useRef<boolean>(false);
   const insets = useSafeAreaInsets(); // Usar insets de zona segura
+  const { todaysMedications } = useMedicationContext();
+  const { todaysSymptoms } = useSymptomContext();
+  const { user } = useUser();
+
+  // Estados para datos de otros días usando useApi
+  const {
+    data: medications,
+    loading: loadingMedications,
+    fetchData: fetchMedications,
+  } = useApi<Medication[]>();
+
+  const {
+    data: symptoms,
+    loading: loadingSymptoms,
+    fetchData: fetchSymptoms,
+  } = useApi<Symptom[]>();
 
   const MARGIN_BOTTOM = (Platform.OS === 'android' ? 70 : 60) + insets.bottom; // Ajuste para margen inferior
 
   // Refs para optimización de scroll
-  const lastScrollX = useRef<number>(0);
-  const scrollDirection = useRef<'left' | 'right' | null>(null);
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Datos de ejemplo para eventos - memoizados
-  const eventsData: EventsData = useMemo(
-    () => ({
-      '2025-06-20': [
-        { id: 1, title: 'Reunión de trabajo', time: '09:00' },
-        { id: 2, title: 'Almuerzo con cliente', time: '13:00' },
-      ],
-      '2025-06-21': [{ id: 3, title: 'Presentación', time: '10:00' }],
-      '2025-06-22': [
-        { id: 4, title: 'Conferencia', time: '14:00' },
-        { id: 5, title: 'Cena familiar', time: '19:00' },
-      ],
-      '2025-05-15': [{ id: 6, title: 'Evento del pasado', time: '15:00' }],
-      '2025-07-15': [{ id: 7, title: 'Evento futuro', time: '16:00' }],
-    }),
-    []
-  );
-
-  // Generar fechas iniciales optimizado
-  const generateInitialDates = useCallback((): Dayjs[] => {
-    const dates: Dayjs[] = [];
-    const today = dayjs();
-
-    for (let i = -INITIAL_DAYS_RANGE; i <= INITIAL_DAYS_RANGE; i++) {
-      dates.push(today.add(i, 'day'));
-    }
-    return dates;
-  }, []);
-
-  // Funciones de agregado de fechas optimizadas
-  const addDatesAtBeginning = useCallback((currentDates: Dayjs[], daysToAdd: number): Dayjs[] => {
-    if (currentDates.length === 0) return [];
-
-    const newDates: Dayjs[] = [];
-    const firstDate = currentDates[0];
-
-    for (let i = daysToAdd; i >= 1; i--) {
-      newDates.push(firstDate.subtract(i, 'day'));
-    }
-
-    return [...newDates, ...currentDates];
-  }, []);
-
-  const addDatesAtEnd = useCallback((currentDates: Dayjs[], daysToAdd: number): Dayjs[] => {
-    if (currentDates.length === 0) return [];
-
-    const newDates: Dayjs[] = [];
-    const lastDate = currentDates[currentDates.length - 1];
-
-    for (let i = 1; i <= daysToAdd; i++) {
-      newDates.push(lastDate.add(i, 'day'));
-    }
-
-    return [...currentDates, ...newDates];
-  }, []);
 
   // Procesar fechas a formato optimizado para FlatList
   const processedDates = useMemo((): DateItem[] => {
     const today = dayjs();
-
     return dates.map((date, index) => {
       const key = `${date.format('YYYY-MM-DD')}-${index}`;
       const isToday = date.isSame(today, 'day');
       const dayOfWeek = date.day();
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-
       return {
         date,
         key,
@@ -173,11 +125,11 @@ const HorizontalCalendar: React.FC = () => {
     });
   }, [dates]);
 
-  // Inicializar fechas
+  // Inicializar fechas solo 30 antes y 30 después
   useEffect(() => {
-    const initialDates = generateInitialDates();
+    const initialDates = generateInitialDates(INITIAL_DAYS_RANGE);
     setDates(initialDates);
-  }, [generateInitialDates]);
+  }, []);
 
   // Scroll inicial mejorado
   useEffect(() => {
@@ -206,83 +158,6 @@ const HorizontalCalendar: React.FC = () => {
     }
   }, [processedDates, width]);
 
-  // Manejar scroll optimizado para mejor fluidez
-  const handleScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (isLoadingMore || !event?.nativeEvent) return;
-
-      const { contentOffset, layoutMeasurement, contentSize } = event.nativeEvent;
-      const currentOffset = contentOffset.x;
-
-      // Detectar dirección de scroll
-      const direction = currentOffset > lastScrollX.current ? 'right' : 'left';
-      scrollDirection.current = direction;
-      lastScrollX.current = currentOffset;
-
-      // Verificar si necesitamos cargar más datos
-      const maxOffset = contentSize.width - layoutMeasurement.width;
-      const shouldLoadAtEnd = currentOffset > maxOffset - LOAD_MORE_THRESHOLD * ITEM_WIDTH;
-      const shouldLoadAtStart = currentOffset < LOAD_MORE_THRESHOLD * ITEM_WIDTH;
-
-      if (shouldLoadAtEnd || shouldLoadAtStart) {
-        // Limpiar timeout anterior
-        if (loadingTimeoutRef.current) {
-          clearTimeout(loadingTimeoutRef.current);
-        }
-
-        // Usar timeout más corto para mejor responsividad
-        loadingTimeoutRef.current = setTimeout(() => {
-          if (isLoadingMore) return;
-
-          setIsLoadingMore(true);
-
-          // Usar requestIdleCallback si está disponible, sino requestAnimationFrame
-          const scheduleUpdate = (callback: () => void) => {
-            if (typeof requestIdleCallback !== 'undefined') {
-              requestIdleCallback(callback, { timeout: 100 });
-            } else {
-              requestAnimationFrame(callback);
-            }
-          };
-
-          scheduleUpdate(() => {
-            if (shouldLoadAtEnd) {
-              setDates((prevDates) => {
-                if (prevDates.length === 0) return prevDates;
-                return addDatesAtEnd(prevDates, DAYS_TO_ADD);
-              });
-            } else if (shouldLoadAtStart) {
-              const currentTodayIndex = dates.findIndex((date) => date.isSame(dayjs(), 'day'));
-
-              setDates((prevDates) => {
-                if (prevDates.length === 0) return prevDates;
-                const newDates = addDatesAtBeginning(prevDates, DAYS_TO_ADD);
-
-                // Mantener posición de scroll de forma más suave
-                setTimeout(() => {
-                  if (flatListRef.current && currentTodayIndex !== -1) {
-                    const newIndex = currentTodayIndex + DAYS_TO_ADD;
-                    const newOffset = newIndex * ITEM_WIDTH - width / 2 + ITEM_WIDTH / 2;
-
-                    flatListRef.current.scrollToOffset({
-                      offset: newOffset,
-                      animated: false,
-                    });
-                  }
-                }, 0);
-
-                return newDates;
-              });
-            }
-
-            setIsLoadingMore(false);
-          });
-        }, 50); // Timeout más corto para mejor responsividad
-      }
-    },
-    [dates, isLoadingMore, addDatesAtEnd, addDatesAtBeginning, width]
-  );
-
   // Funciones utilitarias memoizadas
   const isSelected = useCallback(
     (date: Dayjs): boolean => {
@@ -291,13 +166,23 @@ const HorizontalCalendar: React.FC = () => {
     [selectedDate]
   );
 
-  const getEventsForDate = useCallback(
-    (date: Dayjs): Event[] => {
-      const dateKey = date.format('YYYY-MM-DD');
-      return eventsData[dateKey] || [];
-    },
-    [eventsData]
-  );
+  // Efecto para cargar datos según el día seleccionado
+  useEffect(() => {
+    const fetchAll = async () => {
+      if (selectedDate.isSame(dayjs(), 'day')) return;
+      if (!user?.dni) return;
+      const dateStr = selectedDate.format('YYYY-MM-DD');
+      await Promise.all([
+        fetchMedications(`/api/medications/${user.dni}?date=${dateStr}`, 'GET'),
+        fetchSymptoms(
+          `/api/symptom-diary/patient/${user.dni}/date-range?startDate=${dateStr}&endDate=${dateStr}`,
+          'GET'
+        ),
+      ]);
+    };
+    fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, user]);
 
   const getDateInfo = useCallback((date: Dayjs): string => {
     const today = dayjs();
@@ -323,7 +208,7 @@ const HorizontalCalendar: React.FC = () => {
             viewPosition: 0.5,
           });
           setSelectedDate(targetDate);
-        } catch (error) {
+        } catch {
           // Fallback más suave
           const targetOffset = dateIndex * ITEM_WIDTH - width / 2 + ITEM_WIDTH / 2;
           flatListRef.current.scrollToOffset({
@@ -349,92 +234,26 @@ const HorizontalCalendar: React.FC = () => {
     goToDate(selectedDate.subtract(1, 'week'));
   }, [goToDate, selectedDate]);
 
-  // Componente DateItem memoizado y optimizado
-  const DateItemComponent = React.memo<{ item: DateItem; isSelected: boolean }>(
-    ({ item, isSelected: selected }) => {
-      const { date, formatted, isToday, isWeekend } = item;
-      const { dayName, dayNumber, month } = formatted;
-
-      const containerStyle = `${styles.itemContainer} ${
-        selected
-          ? styles.selectedItem
-          : isToday
-            ? styles.todayItem
-            : isWeekend
-              ? styles.weekendItem
-              : styles.transparentItem
-      }`;
-
-      const dayNameStyle = `${styles.dayNameText} ${
-        selected
-          ? styles.selectedText
-          : isToday
-            ? styles.todayText
-            : isWeekend
-              ? styles.weekendText
-              : styles.normalText
-      }`;
-
-      const dayNumberStyle = `${styles.dayNumberText} ${
-        selected
-          ? styles.selectedText
-          : isToday
-            ? styles.todayText
-            : isWeekend
-              ? styles.weekendText
-              : styles.normalDayText
-      }`;
-
-      const monthStyle = `${styles.monthText} ${
-        selected
-          ? styles.selectedText
-          : isToday
-            ? styles.todayText
-            : isWeekend
-              ? styles.weekendText
-              : styles.normalMonthText
-      }`;
-
-      return (
-        <TouchableOpacity
-          className={containerStyle}
-          onPress={() => setSelectedDate(date)}
-          activeOpacity={0.7}>
-          <Text className={dayNameStyle}>{dayName}</Text>
-          <Text className={dayNumberStyle}>{dayNumber}</Text>
-          <Text className={monthStyle}>{month}</Text>
-        </TouchableOpacity>
-      );
-    }
-  );
+  // Usar componente separado para DateItem
 
   // Renderizador de fecha optimizado
   const renderDateItem: ListRenderItem<DateItem> = useCallback(
     ({ item }) => {
       const selected = isSelected(item.date);
-      return <DateItemComponent item={item} isSelected={selected} />;
+      return (
+        <DateItemComponent
+          item={item}
+          isSelected={selected}
+          onPress={setSelectedDate}
+          styles={styles}
+        />
+      );
     },
     [isSelected]
   );
 
-  // Renderizador de eventos memoizado
-  const renderEvent: ListRenderItem<Event> = useCallback(
-    ({ item }) => (
-      <View className="mb-2 flex-row rounded-xl bg-white p-4 shadow-sm">
-        <View className="w-15 mr-4 items-center justify-center">
-          <Text className="text-xs font-semibold text-blue-500">{item.time}</Text>
-        </View>
-        <View className="flex-1 justify-center">
-          <Text className="text-base font-medium text-gray-800">{item.title}</Text>
-        </View>
-      </View>
-    ),
-    []
-  );
-
   // Funciones de clave optimizadas
   const keyExtractor = useCallback((item: DateItem) => item.key, []);
-  const eventKeyExtractor = useCallback((item: Event) => item.id.toString(), []);
 
   // Función de layout optimizada
   const getItemLayout = useCallback(
@@ -447,7 +266,6 @@ const HorizontalCalendar: React.FC = () => {
   );
 
   // Datos calculados
-  const events = useMemo(() => getEventsForDate(selectedDate), [selectedDate, getEventsForDate]);
   const dateInfo = useMemo(() => getDateInfo(selectedDate), [selectedDate, getDateInfo]);
   const selectedDateText = useMemo(
     () => selectedDate.format('dddd, D [de] MMMM [de] YYYY'),
@@ -464,7 +282,7 @@ const HorizontalCalendar: React.FC = () => {
   }, []);
 
   return (
-    <View className="flex-1 bg-gray-50" style={{ marginBottom: MARGIN_BOTTOM }}>
+    <ScrollView className="flex-1 bg-gray-50" style={{ marginBottom: MARGIN_BOTTOM }}>
       {/* Header con fecha seleccionada */}
       <View className="flex-row items-center justify-between border-b border-gray-200 bg-white px-5 pb-5 pt-5">
         <View className="flex-1">
@@ -476,10 +294,10 @@ const HorizontalCalendar: React.FC = () => {
             className="mx-1 h-9 w-9 items-center justify-center rounded-full bg-gray-100"
             onPress={goToPrevWeek}
             activeOpacity={0.7}>
-            <Text className="text-lg font-bold text-gray-800">←</Text>
+            <ChevronLeftIcon size={20} color="#000" />
           </TouchableOpacity>
           <TouchableOpacity
-            className="mx-1 rounded-full bg-blue-500 px-4 py-2"
+            className="mx-1 rounded-full bg-primary px-4 py-2"
             onPress={goToToday}
             activeOpacity={0.8}>
             <Text className="text-sm font-semibold text-white">Hoy</Text>
@@ -488,7 +306,7 @@ const HorizontalCalendar: React.FC = () => {
             className="mx-1 h-9 w-9 items-center justify-center rounded-full bg-gray-100"
             onPress={goToNextWeek}
             activeOpacity={0.7}>
-            <Text className="text-lg font-bold text-gray-800">→</Text>
+            <ChevronRightIcon size={20} color="#000" />
           </TouchableOpacity>
         </View>
       </View>
@@ -502,61 +320,57 @@ const HorizontalCalendar: React.FC = () => {
           keyExtractor={keyExtractor}
           horizontal
           showsHorizontalScrollIndicator={false}
-          snapToInterval={ITEM_WIDTH}
-          snapToAlignment="center"
           decelerationRate="fast"
           contentContainerStyle={{ paddingHorizontal: 10 }}
-          onScroll={handleScroll}
-          scrollEventThrottle={16} // Mejorado para 60fps
           getItemLayout={getItemLayout}
-          initialNumToRender={20} // Aumentado para mejor experiencia inicial
-          maxToRenderPerBatch={10} // Aumentado
-          windowSize={10} // Aumentado
-          removeClippedSubviews={true}
-          updateCellsBatchingPeriod={50} // Reducido para mejor responsividad
-          disableIntervalMomentum={true}
-          // Nuevas props para mejor rendimiento
+          initialNumToRender={20}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          removeClippedSubviews
+          updateCellsBatchingPeriod={50}
+          disableIntervalMomentum
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
             autoscrollToTopThreshold: 10,
           }}
-          overScrollMode="never" // Android
-          bounces={false} // iOS
+          overScrollMode="never"
+          bounces={false}
         />
 
         {/* Indicador de carga mejorado */}
-        {isLoadingMore && (
-          <View className="absolute bottom-1 left-0 right-0 items-center">
-            <View className="rounded-full bg-black/10 px-3 py-1">
-              <Text className="text-xs text-gray-600">Cargando...</Text>
-            </View>
-          </View>
-        )}
+        <LoadingIndicator isLoading={isLoadingMore} />
       </View>
 
       {/* Lista de eventos */}
       <View className="flex-1 p-5">
-        <Text className="mb-4 text-lg font-bold text-gray-800">
-          Eventos del día ({events.length})
+        {/** Calcular totales para el título */}
+        {selectedDate.isSame(dayjs(), 'day') ? null : null}
+        <Text className="mb-2 text-xl font-bold text-gray-800">
+          Eventos del día{' '}
+          {selectedDate.isSame(dayjs(), 'day')
+            ? `(${todaysMedications.length + todaysSymptoms.length})`
+            : `(${(Array.isArray(medications) ? medications.length : 0) + (Array.isArray(symptoms) ? symptoms.length : 0)})`}
         </Text>
-        {events.length > 0 ? (
-          <FlatList
-            data={events}
-            renderItem={renderEvent}
-            keyExtractor={eventKeyExtractor}
-            className="flex-1"
-            removeClippedSubviews={true}
-            showsVerticalScrollIndicator={false}
-          />
+
+        {/* Medicamentos primero */}
+        {selectedDate.isSame(dayjs(), 'day') ? (
+          <MedicationList medications={todaysMedications} scrollEnabled={false} />
+        ) : loadingMedications ? (
+          <LoadingIndicator isLoading />
         ) : (
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-center text-base text-gray-400">
-              No hay eventos programados para este día
-            </Text>
-          </View>
+          <MedicationList medications={medications ?? []} scrollEnabled={false} />
+        )}
+
+        {/* Síntomas después */}
+        {selectedDate.isSame(dayjs(), 'day') ? (
+          <SymptomList data={todaysSymptoms} scrollEnabled={false} />
+        ) : loadingSymptoms ? (
+          <LoadingIndicator isLoading />
+        ) : (
+          <SymptomList data={symptoms ?? []} scrollEnabled={false} />
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

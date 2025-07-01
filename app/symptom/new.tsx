@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import ValidationError from 'components/card/ValidationError';
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -15,11 +15,14 @@ import { symptomSchema, SymptomSchema } from '../../schemas/SymptomSchema';
 import { durationOptions, intensityOptions, symptomOptions } from '../../utils/symptomOptions';
 import useApi from '../../hooks/useApi';
 import { useUser } from '../../hooks/useUser';
+import { useSymptomContext } from '~/context/SymptomContext';
+import { Symptom } from '~/types/symptom';
 
 const NewSymptom = () => {
   const [isFocus, setIsFocus] = useState(false);
   const { user } = useUser(); // Asegúrate de que useUser esté correctamente importado
-  const { data, error, loading, fetchData, clearError } = useApi<SymptomSchema[]>();
+  const { data: newSymptom, error, loading, fetchData, clearError } = useApi<Symptom>();
+  const { addSymptom } = useSymptomContext();
 
   const {
     control,
@@ -36,6 +39,16 @@ const NewSymptom = () => {
       notes: '',
     },
   });
+
+  // Cuando se recibe un nuevo síntoma, lo agregamos al contexto
+  useEffect(() => {
+    if (newSymptom) {
+      addSymptom(newSymptom); // Agregar el nuevo síntoma al contexto
+    }
+    if (error) {
+      console.error('Error al registrar el síntoma:', error);
+    }
+  }, [newSymptom]);
 
   const onSubmit = (data: SymptomSchema) => {
     // Combinar fecha y hora en un solo objeto Date
