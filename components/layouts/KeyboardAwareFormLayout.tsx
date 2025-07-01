@@ -1,8 +1,5 @@
 import { ReactNode } from 'react';
-import { ScrollView } from 'react-native';
-
-import DismissKeyboardView from './DismissKeyboardView';
-import KeyboardAvoidingWrapper from './KeyboardAvoidingWrapper';
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 
 interface KeyboardAwareFormLayoutProps {
   children: ReactNode;
@@ -10,13 +7,13 @@ interface KeyboardAwareFormLayoutProps {
 
 const KeyboardAwareFormLayout = ({ children }: KeyboardAwareFormLayoutProps) => {
   return (
-    <KeyboardAvoidingWrapper>
-      <DismissKeyboardView>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          {children}
-        </ScrollView>
-      </DismissKeyboardView>
-    </KeyboardAvoidingWrapper>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        {children}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
