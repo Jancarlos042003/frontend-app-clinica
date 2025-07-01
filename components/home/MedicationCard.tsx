@@ -74,7 +74,7 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
   };
 
   return (
-    <View className="">
+    <View>
       <View
         className={`flex-row items-center justify-between rounded-2xl border-2 ${checked ? 'border-primary' : 'border-gray-300'} bg-white p-5`}>
         <View className="flex-row items-center">
