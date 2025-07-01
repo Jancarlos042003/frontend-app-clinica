@@ -1,14 +1,11 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import type { RouteProp } from '@react-navigation/native';
-import type { RootStackParamList } from '../../App';
+import { useLocalSearchParams } from 'expo-router';
 
-interface Props {
-  route: RouteProp<RootStackParamList, 'DetallesCita'>;
-}
-
-const DetallesCita: React.FC<Props> = ({ route }) => {
-  const { cita } = route.params;
+const DetallesCita = () => {
+  const params = useLocalSearchParams();
+  // Recibe la cita como string y la parsea
+  const cita = params.cita ? JSON.parse(params.cita as string) : {};
 
   const handleAccion = (accion: string) => {
     let mensaje = '';
@@ -36,7 +33,7 @@ const DetallesCita: React.FC<Props> = ({ route }) => {
           <Text style={styles.btnText}>Reprogramar</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ height: 40 }} /> {/* Espacio extra para scroll */}
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 };

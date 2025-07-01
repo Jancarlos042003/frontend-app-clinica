@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Alert, Modal, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { RootStackParamList, Cita } from '../../App';
+import { router } from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AppointmentList from '../../components/home/AppointmentList';
 import Notes from '../../components/home/Notes';
@@ -15,14 +13,13 @@ const medicamentos = [
 ];
 
 const Home = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
   const [notas, setNotas] = useState('• Dolor de cabeza.\n• Mareos.');
   const [modoEdicion, setModoEdicion] = useState(false);
   const [showAlarma, setShowAlarma] = useState(false);
   const [medicamentoSeleccionado, setMedicamentoSeleccionado] = useState(medicamentos[0]);
 
   // Ejemplo de citas
-  const citas: Cita[] = [
+  const citas = [
     {
       id: '1',
       especialidad: 'TRAUMATOLOGÍA',
@@ -56,8 +53,11 @@ const Home = () => {
   ];
 
   // --- HANDLERS ---
-  const handleGoToDetails = (cita: Cita) => {
-    navigation.navigate('DetallesCita', { cita });
+  const handleGoToDetails = (cita) => {
+    router.push({
+      pathname: '/(tabs)/DetallesCita',
+      params: { cita: JSON.stringify(cita) }
+    });
   };
 
   const handleAlarmaPress = (med) => {
@@ -65,7 +65,7 @@ const Home = () => {
     setShowAlarma(true);
   };
 
-  const handleVerResultado = (nombre: string) => {
+  const handleVerResultado = (nombre) => {
     Alert.alert('Resultado', `Mostrando resultado de: ${nombre}`);
   };
 
@@ -300,7 +300,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
   },
-  
 });
 
 export default Home;
