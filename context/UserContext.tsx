@@ -11,6 +11,7 @@ export type User = {
   lastname: string;
   dni: string;
   birthDate: Date;
+  patientId: string;
   phone: string | null;
   email: string | null;
 };

@@ -1,7 +1,7 @@
-import { Text } from 'react-native';
+import HorizontalCalendar from '../../components/calendar/HorizontalCalendar';
 
 const Calendar = () => {
-  return <Text>Screen Calendar</Text>;
+  return <HorizontalCalendar />;
 };
 
 export default Calendar;

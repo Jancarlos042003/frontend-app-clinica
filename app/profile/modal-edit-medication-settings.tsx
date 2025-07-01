@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, Modal, Pressable, TextInput, Alert } from 'react-native';
+import { View, Text, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import useApi from 'hooks/useApi';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Title from '../../components/iu/Title';
@@ -10,13 +11,19 @@ import { Dropdown } from '../../components/medicacion/Dropdown';
 import { Input } from '../../components/medicacion/Input';
 import { MedicationFormData, medicationSchema } from '../../schemas/medicationSchema';
 import { DOSE_UNITS, DURATION_UNITS } from '../../utils/medicationOptions';
+import { useUser } from 'hooks/useUser';
+import { TreatmentRecord } from 'schemas/TreatmentRecordSchema';
+import SubmitButton from 'components/buttons/SubmitButton';
 
 export default function MedicationFormScreen() {
   const insets = useSafeAreaInsets();
+  const { user } = useUser();
+  const { data, fetchData, error, loading } = useApi<TreatmentRecord[]>();
+
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm<MedicationFormData>({
     resolver: zodResolver(medicationSchema),
@@ -27,49 +34,47 @@ export default function MedicationFormScreen() {
       frequency: undefined,
       period: undefined,
       periodUnit: '',
-      startDate: '',
-      startTime: undefined,
+      startDate: new Date(),
+      startTime: new Date(),
       duration: undefined,
       durationUnit: '',
+      hasCustomTimes: false,
+      customTimes: [],
     },
   });
 
   const onSubmit = async (data: MedicationFormData) => {
-    try {
-      const dateTime = new Date(data.startDate);
-
-      // Combinar fecha y hora de inicio
-      if (data.startTime) {
-        const hours = new Date(data.startTime).getHours();
-        const minutes = new Date(data.startTime).getMinutes();
-        dateTime.setHours(hours, minutes, 0, 0);
-      }
-
-      // Eliminar startTime del objeto para evitar duplicación
-      const { startTime, ...dataWithoutStartTime } = data;
-
-      // Formatear la fecha al formato ISO 8601
-      const formattedData = {
-        ...dataWithoutStartTime,
-        startDate: new Date(dateTime).toISOString(),
-      };
-
-      console.log('Datos del formulario:', JSON.stringify(formattedData, null, 2));
-
-      Alert.alert(
-        'Éxito',
-        'Medicación guardada correctamente. Revisa la consola para ver los datos.',
-        [
-          {
-            text: 'OK',
-            onPress: () => reset(),
-          },
-        ]
-      );
-    } catch (error) {
-      console.error('Error al procesar el formulario:', error);
-      Alert.alert('Error', 'Hubo un problema al guardar la medicación');
+    if (!user?.dni) {
+      Alert.alert('Error', 'No se pudo obtener el DNI del usuario.');
+      return;
     }
+
+    const dateTime = new Date(data.startDate);
+
+    // Combinar fecha y hora de inicio
+    if (data.startTime) {
+      const hours = new Date(data.startTime).getHours();
+      const minutes = new Date(data.startTime).getMinutes();
+      dateTime.setHours(hours, minutes, 0, 0);
+    }
+
+    // Eliminar startTime del objeto para evitar duplicación
+    const { startTime, ...dataWithoutStartTime } = data;
+
+    // Formatear la fecha al formato ISO 8601
+    const formattedData = {
+      ...dataWithoutStartTime,
+      startDate: new Date(dateTime).toISOString(),
+      identifier: user?.dni,
+    };
+
+    console.log('Datos del formulario:', JSON.stringify(formattedData, null, 2));
+
+    fetchData(`/api/treatments`, 'POST', formattedData);
+
+    // Hacer que aparezca un mensaje de éxito
+
+    reset(); // Reiniciar el formulario después de enviar
   };
 
   return (
@@ -85,7 +90,7 @@ export default function MedicationFormScreen() {
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
               label="Nombre de la medicina"
-              placeholder="Ej: Amoxicilina 250mg"
+              placeholder="Ej: Amoxicilina"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -102,7 +107,7 @@ export default function MedicationFormScreen() {
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
               label="Valor de la dosis"
-              placeholder="Ej: 250"
+              placeholder="Ej: 250 mg"
               value={value?.toString() || ''}
               onChangeText={(text) => {
                 const numValue = Number.parseFloat(text);
@@ -142,8 +147,8 @@ export default function MedicationFormScreen() {
             <CustomDateTimePicker
               label="Fecha inicio"
               mode="date"
-              value={value ? new Date(value) : undefined}
-              onChange={(date) => onChange(date.toISOString())} // Convertir a ISO 8601
+              value={value}
+              onChange={onChange}
               error={errors.startDate?.message}
               required
             />
@@ -157,8 +162,8 @@ export default function MedicationFormScreen() {
             <CustomDateTimePicker
               label="Hora de inicio"
               mode="time"
-              value={value ? new Date(value) : undefined}
-              onChange={(date) => onChange(date.toISOString())} // Convertir a ISO 8601
+              value={value}
+              onChange={onChange}
               error={errors.startTime?.message}
               required
             />
@@ -171,8 +176,8 @@ export default function MedicationFormScreen() {
           name="frequency"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
-              label="Cantidad por toma"
-              placeholder="Ej: 2"
+              label="Frecuencia"
+              placeholder="Ej: 2 (veces al día)"
               value={value?.toString() || ''}
               onChangeText={(text) => {
                 const numValue = Number.parseFloat(text);
@@ -192,7 +197,7 @@ export default function MedicationFormScreen() {
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
               label="Cada cuánto tiempo"
-              placeholder="Ej: 1"
+              placeholder="Ej: Cada 12 (horas)"
               value={value?.toString() || ''}
               onChangeText={(text) => {
                 const numValue = Number.parseFloat(text);
@@ -230,7 +235,7 @@ export default function MedicationFormScreen() {
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
               label="Duración"
-              placeholder="Ej: 7"
+              placeholder="Ej: 7 (días)"
               value={value?.toString() || ''}
               onChangeText={(text) => {
                 const numValue = Number.parseFloat(text);
@@ -261,15 +266,9 @@ export default function MedicationFormScreen() {
           )}
         />
 
-        {/* Botón de envío */}
-        <Pressable
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
-          className={`mt-6 rounded-lg px-6 py-4 ${isSubmitting ? 'bg-gray-400' : 'bg-blue-600 active:bg-blue-700'}`}>
-          <Text className="text-center text-lg font-semibold text-white">
-            {isSubmitting ? 'Guardando...' : 'Guardar Medicación'}
-          </Text>
-        </Pressable>
+        <View className="mt-4">
+          <SubmitButton onPress={handleSubmit(onSubmit)} loading={loading} text="Registrar" />
+        </View>
       </View>
     </KeyboardAwareFormLayout>
   );

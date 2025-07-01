@@ -11,6 +11,7 @@ type TextInputControllerProps = {
   autoFocus?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  maxLength?: number;
 };
 
 const TextInputController = ({
@@ -23,6 +24,7 @@ const TextInputController = ({
   autoFocus = false,
   multiline = false,
   numberOfLines = 1,
+  maxLength = 100,
 }: TextInputControllerProps) => {
   return (
     <Controller
@@ -40,6 +42,7 @@ const TextInputController = ({
           autoFocus={autoFocus}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          maxLength={maxLength}
           style={[
             multiline && { textAlignVertical: 'top', minHeight: 100 }, // Ajustar altura para multiline
           ]}

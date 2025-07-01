@@ -1,8 +1,10 @@
+import ChatHeaderLeft from 'components/buttons/ChatHeaderLeft';
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import ChatHeaderRight from '../../components/buttons/ChatHeaderRight';
 import UserProfile from '../../components/buttons/UserProfile';
 import Welcome from '../../components/headers/Welcome';
 import { Calendar, Health, Home, Message } from '../../components/icons/icons';
@@ -40,7 +42,7 @@ const TabsLayout = () => {
         tabBarActiveTintColor: '#4189b6',
         tabBarInactiveTintColor: '#7f7f83',
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
           marginTop: 1,
           marginBottom: insets.bottom > 0 ? 5 : 0, // Ajuste extra para iOS
@@ -119,6 +121,27 @@ const TabsLayout = () => {
         options={{
           title: 'Medibot',
           headerTitle: 'Asistente Virtual',
+          headerLeft:
+            Platform.OS === 'ios'
+              ? () => (
+                  <View className="ml-4">
+                    <ChatHeaderLeft />
+                  </View>
+                )
+              : undefined,
+          headerRight:
+            Platform.OS === 'ios'
+              ? () => (
+                  <View className="mr-4">
+                    <ChatHeaderRight />
+                  </View>
+                )
+              : () => (
+                  <View className="mr-4 flex-row items-center gap-5">
+                    <ChatHeaderLeft />
+                    <ChatHeaderRight />
+                  </View>
+                ),
           tabBarIcon: ({ color, focused }) => (
             <Message
               color={color}

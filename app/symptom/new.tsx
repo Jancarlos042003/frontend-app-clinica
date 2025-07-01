@@ -11,22 +11,25 @@ import { ActivityIcon } from '../../components/icons/icons';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
 import { CustomDateTimePicker } from '../../components/medicacion/DateTimePicker';
 import { Input } from '../../components/medicacion/Input';
-import { SymptomSchema, useSymptomSchema } from '../../hooks/useSymptomSchema';
+import { symptomSchema, SymptomSchema } from '../../schemas/SymptomSchema';
 import { durationOptions, intensityOptions, symptomOptions } from '../../utils/symptomOptions';
+import useApi from '../../hooks/useApi';
+import { useUser } from '../../hooks/useUser';
 
 const NewSymptom = () => {
   const [isFocus, setIsFocus] = useState(false);
-  const schema = useSymptomSchema();
+  const { user } = useUser(); // Asegúrate de que useUser esté correctamente importado
+  const { data, error, loading, fetchData, clearError } = useApi<SymptomSchema[]>();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<SymptomSchema>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(symptomSchema), // Usar el schema directamente
     defaultValues: {
       symptom: '',
-      intensity: '255604002',
+      intensity: 'Leve',
       date: undefined,
       time: undefined,
       duration: '59',
@@ -34,7 +37,7 @@ const NewSymptom = () => {
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: SymptomSchema) => {
     // Combinar fecha y hora en un solo objeto Date
     const dateTime = new Date(data.date);
     const timeData = new Date(data.time);
@@ -53,9 +56,12 @@ const NewSymptom = () => {
     const symptomData = {
       ...dataWithoutTime,
       date: dateTime.toISOString(),
+      identifier: user?.dni, // Asegúrate de que user esté definido
     };
 
     console.log('Data de síntoma:', symptomData);
+
+    fetchData('/api/symptom-diary', 'POST', symptomData);
   };
 
   return (
@@ -214,7 +220,7 @@ const NewSymptom = () => {
         </View>
 
         <View className="mb-14">
-          <SubmitButton onPress={handleSubmit(onSubmit)} text="Registrar" />
+          <SubmitButton onPress={handleSubmit(onSubmit)} loading={loading} text="Registrar" />
         </View>
       </View>
     </KeyboardAwareFormLayout>

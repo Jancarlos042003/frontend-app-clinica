@@ -62,7 +62,7 @@ export const Dropdown = ({
               keyExtractor={(item) => item.value}
               renderItem={({ item }) => (
                 <Pressable
-                  className="border-b border-gray-100 px-4 py-3"
+                  className="border-t border-gray-100 px-4 py-3"
                   onPress={() => {
                     onSelect(item.value);
                     setIsVisible(false);

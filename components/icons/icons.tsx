@@ -127,3 +127,39 @@ export const FaceMehIcon = ({ size, color }: IconProps) => {
 export const FaceFrownIcon = ({ size, color }: IconProps) => {
   return <FontAwesome6 name="face-frown" size={size} color={color} />;
 };
+
+export const CameraIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="camera" size={size} color={color} style={style} />;
+};
+
+export const ImageIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="image" size={size} color={color} style={style} />;
+};
+
+export const PaperClipIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="paperclip" size={size} color={color} style={style} />;
+};
+
+export const ArrowUpIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="arrow-up" size={size} color={color} style={style} />;
+};
+
+export const PlusIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="plus" size={size} color={color} style={style} />;
+};
+
+export const LoaderIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="loader" size={size} color={color} style={style} />;
+};
+
+export const SetttingsIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="settings" size={size} color={color} style={style} />;
+};
+
+export const BellIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="bell" size={size} color={color} style={style} />;
+};
+
+export const ContactsIcon = ({ size, color, style }: IconProps) => {
+  return <Feather name="users" size={size} color={color} style={style} />;
+};

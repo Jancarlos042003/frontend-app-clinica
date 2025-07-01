@@ -1,45 +1,70 @@
-import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 
 import SubmitButton from '../../components/buttons/SubmitButton';
 import TextInputController from '../../components/inputs/TextInputController';
 import KeyboardAwareFormLayout from '../../components/layouts/KeyboardAwareFormLayout';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import ValidationError from '../../components/card/ValidationError';
+import ModalContainer from '~/components/modal/ModalContainer';
+import { AttemptsSchema, AttemptsType } from '~/schemas/SettingsSchema';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UserSettings } from '~/types/settings';
 
-const ModalEditAttempts = () => {
-  const router = useRouter();
-  const params = useLocalSearchParams();
-  const prevValue = params.maxReminderAttempts || 3;
+type ModalEditAttemptsProps = {
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+  currentSettings: UserSettings | null;
+  onSave: (data: number) => void;
+};
 
-  const { control, handleSubmit } = useForm({
+const ModalEditAttempts = ({
+  showModal,
+  setShowModal,
+  currentSettings,
+  onSave,
+}: ModalEditAttemptsProps) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AttemptsType>({
+    resolver: zodResolver(AttemptsSchema),
     defaultValues: {
-      maxReminderAttempts: String(prevValue),
+      maxAttempts: currentSettings?.medicationSettings.maxReminderAttempts.toString() || '3', // Valor por defecto
     },
   });
 
-  const onSubmit = (data: { maxReminderAttempts: string }) => {
-    // Aquí deberías guardar el valor
-    router.back();
+  const onSubmit = (data: AttemptsType) => {
+    onSave(Number(data.maxAttempts));
+    setShowModal(false);
   };
 
   return (
-    <KeyboardAwareFormLayout>
-      <View className="flex-1 justify-between px-6 pb-20 pt-6">
-        <View>
-          <Text className="text-base font-bold text-primary">Máximo de intentos</Text>
-          <Text className="mb-1 text-xs text-gray-500">Valor anterior: {prevValue}</Text>
-          <TextInputController
-            name="maxReminderAttempts"
-            control={control}
-            placeholder="Ingrese un número (1-5)"
-            keyboardType="number-pad"
-            maxLength={1}
-            autoFocus
-          />
+    <ModalContainer
+      showModal={showModal}
+      setShowModal={setShowModal}
+      title="Editar máximo de intentos">
+      <KeyboardAwareFormLayout>
+        <View className="flex-1 justify-between px-6 pb-20 pt-6">
+          <View>
+            <Text className="text-base font-bold text-primary">Máximo de intentos</Text>
+            <Text className="mb-1 text-xs text-gray-500">
+              Valor actual: {currentSettings?.medicationSettings.maxReminderAttempts || 3}
+            </Text>
+            <TextInputController
+              name="maxAttempts"
+              control={control}
+              placeholder="Ingrese un número (1-5)"
+              keyboardType="number-pad"
+              maxLength={1}
+              autoFocus
+            />
+            {errors.maxAttempts && <ValidationError message={errors.maxAttempts.message} />}
+          </View>
+          <SubmitButton onPress={handleSubmit(onSubmit)} text="Guardar" />
         </View>
-        <SubmitButton onPress={handleSubmit(onSubmit)} text="Guardar" />
-      </View>
-    </KeyboardAwareFormLayout>
+      </KeyboardAwareFormLayout>
+    </ModalContainer>
   );
 };
 
