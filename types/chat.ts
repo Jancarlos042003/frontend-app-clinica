@@ -8,5 +8,6 @@ export interface Message {
 }
 
 export interface ChatInputData {
+  sessionId: string;
   message: string;
 }

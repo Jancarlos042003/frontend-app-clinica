@@ -16,14 +16,14 @@ import {
 } from 'react-native';
 import { z } from 'zod';
 
-import type { ChatInputData } from '../../types/chat';
-
 const chatInputSchema = z.object({
   message: z
     .string()
     .min(1, 'El mensaje no puede estar vacío')
     .max(1000, 'El mensaje es demasiado largo'),
 });
+
+type ChatInputForm = z.infer<typeof chatInputSchema>;
 
 interface ChatInputProps {
   onSendMessage: (message: string, imageUri?: string) => void;
@@ -39,8 +39,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     control,
     handleSubmit,
     reset,
-    formState: { errors, isValid },
-  } = useForm<ChatInputData>({
+    formState: { isValid },
+  } = useForm<ChatInputForm>({
     resolver: zodResolver(chatInputSchema),
     mode: 'onChange',
     defaultValues: {
@@ -48,7 +48,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     },
   });
 
-  const onSubmit = (data: ChatInputData) => {
+  const onSubmit = (data: ChatInputForm) => {
     if (!isValid || disabled) return;
 
     onSendMessage(data.message.trim(), selectedImage || undefined);
@@ -75,6 +75,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         setSelectedImage(result.assets[0].uri);
       }
     } catch (error) {
+      console.error('Error selecting image:', error);
       Alert.alert('Error', 'No se pudo seleccionar la imagen');
     }
   };
@@ -97,6 +98,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         setSelectedImage(result.assets[0].uri);
       }
     } catch (error) {
+      console.error('Error taking photo:', error);
       Alert.alert('Error', 'No se pudo tomar la foto');
     }
   };
@@ -126,7 +128,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           </View>
         )}
 
-        <View className="m-1 flex-col rounded-xl border border-gray-400 px-1 py-1 shadow-sm">
+        <View className="m-1 flex-col rounded-xl border border-gray-400 px-1 py-1">
           <View className="flex flex-col justify-end" style={{ minHeight: 45 }}>
             <Controller
               control={control}

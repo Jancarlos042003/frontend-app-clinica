@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetch } from 'expo/fetch';
 import uuid from 'react-native-uuid';
 
 import { API_URL } from '../config/env';
@@ -53,23 +54,23 @@ export class ChatService {
         await this.initializeStorage();
       }
 
-      // Creamos el payload en el formato requerido por Spring AI
+      // Creamos el payload en el formato requerido por el backend Spring Boot
       const payload = {
-        sessionId: this.conversationId, // Usamos el conversationId como sessionId para el backend
+        sessionId: this.conversationId, // Usamos el conversationId como sessionId
         message,
       };
 
-      // Nota: En esta implementación no estamos enviando la imagen
-      // Si necesitas enviar imágenes, tendrías que adaptar esta parte
+      // Nota: Por ahora no estamos enviando la imagen ya que el backend aún no la soporta
+      // Cuando se implemente soporte para imágenes, se podría enviar aquí
 
       const response = await fetch(`${this.baseUrl}/api/chat/stream`, {
         method: 'POST',
-        body: JSON.stringify(payload),
         headers: {
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
           'Cache-Control': 'no-cache',
         },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -83,46 +84,69 @@ export class ChatService {
 
       const decoder = new TextDecoder();
       let buffer = '';
+      let contentAccumulator = ''; // Acumula todo el contenido para preservar estructura
 
       try {
         while (true) {
           const { done, value } = await reader.read();
 
           if (done) {
+            // Enviar contenido final acumulado
+            if (contentAccumulator.trim()) {
+              onChunk?.(contentAccumulator);
+            }
             onComplete?.();
             break;
           }
 
-          buffer += decoder.decode(value, { stream: true });
+          // Decodificamos cada chunk del stream
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+
+          // Procesamos las líneas completas en el buffer
           const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
+          buffer = lines.pop() || ''; // Guardamos la línea incompleta para el próximo chunk
+
+          let hasNewContent = false;
 
           for (const line of lines) {
             if (line.trim() === '') continue;
 
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
+            // Procesamos las líneas que empiezan con "data:"
+            if (line.startsWith('data:')) {
+              const data = line.slice(5); // Removemos "data:"
 
-              if (data === '[DONE]') {
+              // Verificamos si es la señal de finalización
+              if (data.trim() === '[DONE]') {
+                if (contentAccumulator.trim()) {
+                  onChunk?.(contentAccumulator);
+                }
                 onComplete?.();
                 return;
               }
 
-              try {
-                // Si el backend envía JSON
-                const parsed = JSON.parse(data);
-                onChunk?.(parsed.content || parsed.message || data);
-              } catch {
-                // Si el backend envía texto plano
-                onChunk?.(data);
+              // Si la línea está vacía después de "data:", es un salto de línea
+              if (data.trim() === '') {
+                contentAccumulator += '\n';
+                hasNewContent = true;
+              } else {
+                // Agregar el contenido
+                contentAccumulator += data;
+                hasNewContent = true;
               }
             }
+          }
+
+          // Enviar actualizaciones para el streaming en tiempo real
+          if (hasNewContent) {
+            onChunk?.(contentAccumulator);
           }
         }
       } finally {
         reader.releaseLock();
       }
     } catch (error) {
+      console.error('Error en sendMessageStream:', error);
       onError?.(error as Error);
     }
   }

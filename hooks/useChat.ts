@@ -46,16 +46,13 @@ export const useChat = () => {
       setIsLoading(true);
 
       try {
-        let accumulatedContent = '';
-
         await chatService.sendMessageStream(
           content,
           imageUri,
-          // onChunk
+          // onChunk - Recibe el contenido completo acumulado
           (chunk: string) => {
-            accumulatedContent += chunk;
             updateMessage(assistantMessageId, {
-              content: accumulatedContent,
+              content: chunk,
               isStreaming: true,
               isComplete: false,
             });
@@ -72,7 +69,7 @@ export const useChat = () => {
           (error: Error) => {
             console.error('Error en el stream:', error);
             updateMessage(assistantMessageId, {
-              content: accumulatedContent || 'Error al procesar la respuesta',
+              content: 'Error al procesar la respuesta',
               isStreaming: false,
               isComplete: true,
             });
