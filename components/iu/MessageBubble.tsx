@@ -86,8 +86,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   return (
     <View className={`mb-4 flex-row ${isUser ? 'justify-end' : 'justify-start'}`}>
       <View
-        className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-          isUser ? 'rounded-br-md bg-blue-500' : 'rounded-bl-md bg-gray-100'
+        className={`${isUser ? 'max-w-[80%] rounded-2xl px-4 py-3' : 'w-full p-3'} ${
+          isUser ? 'rounded-br-md bg-primary_500' : 'bg-white'
         }`}>
         {message.imageUri && (
           <Image
@@ -98,7 +98,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         )}
 
         {isUser ? (
-          <Text className="text-base text-white">{message.content}</Text>
+          <Text className="text-lg text-white">{message.content}</Text>
         ) : (
           <Markdown style={markdownStyles}>{message.content}</Markdown>
         )}

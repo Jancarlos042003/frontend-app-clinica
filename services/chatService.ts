@@ -130,8 +130,9 @@ export class ChatService {
                 contentAccumulator += '\n';
                 hasNewContent = true;
               } else {
-                // Agregar el contenido
-                contentAccumulator += data;
+                // Procesar el contenido, convirtiendo saltos de línea explícitos
+                const processedData = data.replace(/\\n/g, '\n');
+                contentAccumulator += processedData;
                 hasNewContent = true;
               }
             }
