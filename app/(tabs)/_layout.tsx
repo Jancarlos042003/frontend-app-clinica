@@ -38,7 +38,7 @@ const TabsLayout = () => {
           bottom: 0, // Asegurar que esté en el bottom
           left: 0,
           right: 0,
-          overflow: 'hidden', // Evitar que el contenido se desborde
+          overflow: 'visible', // Permitir que el botón SOS se extienda fuera del tab bar
         },
         tabBarActiveTintColor: '#4189b6',
         tabBarInactiveTintColor: '#7f7f83',
@@ -105,12 +105,13 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="sos"
         options={{
-          title: '',
-          tabBarButton: (props) => (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <SpecialTabButton />
-            </View>
-          ),
+          tabBarButton: SpecialTabButton, // Usar el botón especial para SOS
+        }}
+        listeners={{
+          tabPress: (e) => {
+            // Previene el comportamiento por defecto del tab
+            e.preventDefault();
+          },
         }}
       />
 
