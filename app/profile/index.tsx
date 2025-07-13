@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { Pressable, View, Text, ScrollView } from 'react-native';
+import { Pressable, View, Text, ScrollView, Alert } from 'react-native';
+import * as Location from 'expo-location';
 
 import LogoutButton from '../../components/buttons/LogoutButton';
 import {
@@ -42,26 +43,19 @@ const Index = () => {
 
   useEffect(() => {
     console.log('ID del paciente:', user?.patientId);
-    // Esta es una funcion asíncrona
     fetchData(`/api/users/${user?.patientId}/settings`, 'GET');
   }, [user]);
 
   useEffect(() => {
-    // Se llama a setUserSettings cuando data tiene un valor actualizado
     console.log('Datos obtenidos:', data);
     if (data && typeof data === 'object') {
       setUserSettings(data as UserSettings);
     }
   }, [data]);
 
-  // Agrega esta función para manejar el guardado
   const handleSaveAttempts = async (newValue: number) => {
     try {
       console.log('Guardando nuevo valor de intentos:', newValue);
-
-      // Llamar a la API
-
-      // Actualizar el estado local
       setUserSettings((prev) =>
         prev
           ? {
@@ -73,7 +67,6 @@ const Index = () => {
             }
           : null
       );
-
       console.log('Valor guardado exitosamente');
     } catch (error) {
       console.error('Error al guardar:', error);
@@ -117,6 +110,17 @@ const Index = () => {
         },
       });
     }
+  };
+
+  // FUNCIÓN PARA PEDIR PERMISO DE UBICACIÓN
+  const pedirPermisoUbicacion = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permiso de ubicación denegado');
+      return false;
+    }
+    Alert.alert('Permiso de ubicación concedido');
+    return true;
   };
 
   if (loading) return <Loader />;
@@ -182,6 +186,20 @@ const Index = () => {
                 title="Correo"
               />
             </Pressable>
+
+            {/* BOTÓN PARA DAR PERMISO DE UBICACIÓN */}
+            <View style={{ marginTop: 8 }}>
+              <Pressable
+                onPress={pedirPermisoUbicacion}
+                className="rounded-xl bg-blue-200 p-4 active:bg-blue-300"
+                style={{ alignItems: 'center' }}
+              >
+                <Text style={{ color: '#32729F', fontWeight: 'bold' }}>
+                  Dar permiso de ubicación
+                </Text>
+              </Pressable>
+            </View>
+            {/* FIN BOTÓN */}
           </View>
         </View>
 
