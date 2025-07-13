@@ -49,9 +49,15 @@ const SpecialTabButton = () => {
     <>
       <Animated.View
         style={{
-          transform: [{ scale: animScala }],
           backgroundColor: '#e31f1f',
           borderRadius: 50,
+          width: 80,
+          height: 80,
+          position: 'absolute',
+          bottom: 5,
+          left: '50%',
+          marginLeft: -40, // Centrar usando marginLeft en lugar de translateX
+          transform: [{ scale: animScala }], // Solo la escala
           padding: 17,
           alignItems: 'center',
           justifyContent: 'center',
@@ -61,7 +67,7 @@ const SpecialTabButton = () => {
           shadowOpacity: 0.25,
         }}>
         <Pressable onPress={handleSOSPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
-          <SosIcon size={30} color="white" />
+          <SosIcon size={35} color="white" />
         </Pressable>
       </Animated.View>
 
