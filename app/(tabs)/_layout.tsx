@@ -38,7 +38,7 @@ const TabsLayout = () => {
           bottom: 0, // Asegurar que esté en el bottom
           left: 0,
           right: 0,
-          overflow: 'visible', // Permitir que el botón SOS se extienda fuera del tab bar
+          overflow: 'hidden', // Evitar que el contenido se desborde
         },
         tabBarActiveTintColor: '#4189b6',
         tabBarInactiveTintColor: '#7f7f83',
@@ -85,7 +85,8 @@ const TabsLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+      
+            <Tabs.Screen
         name="health"
         options={{
           title: 'Mi Salud',
@@ -102,7 +103,7 @@ const TabsLayout = () => {
         }}
       />
 
-      <Tabs.Screen
+   <Tabs.Screen
         name="sos"
         options={{
           tabBarButton: SpecialTabButton, // Usar el botón especial para SOS
