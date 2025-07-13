@@ -1,6 +1,7 @@
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 type IconProps = {
   size: number;
@@ -186,4 +187,8 @@ export const CheckV2Icon = ({ size, color, style }: IconProps) => {
 
 export const AlignLeftIcon = ({ size, color, style }: IconProps) => {
   return <Feather name="align-left" size={size} color={color} style={style} />;
+};
+
+export const SosIcon = ({ size, color, style }: IconProps) => {
+  return <MaterialIcons name="sos" size={size} color={color} style={style} />;
 };

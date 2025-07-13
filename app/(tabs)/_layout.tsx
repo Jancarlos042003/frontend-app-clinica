@@ -5,6 +5,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ChatHeaderRight from '../../components/buttons/ChatHeaderRight';
+import SpecialTabButton from '../../components/buttons/SpecialTabButton';
 import UserProfile from '../../components/buttons/UserProfile';
 import Welcome from '../../components/headers/Welcome';
 import { Calendar, Health, Home, Message } from '../../components/icons/icons';
@@ -100,6 +101,19 @@ const TabsLayout = () => {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="sos"
+        options={{
+          title: '',
+          tabBarButton: (props) => (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <SpecialTabButton />
+            </View>
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="calendar"
         options={{
