@@ -137,7 +137,7 @@ const Index = () => {
         </View>
 
         {/* Información personal */}
-        <View className="mx-4 -mt-6 mb-6 rounded-2xl bg-white p-5 shadow-xs">
+        <View className="shadow-xs mx-4 -mt-6 mb-6 rounded-2xl bg-white p-5">
           <View className="mb-4 flex-row items-center">
             <View className="mr-3 rounded-full bg-[#32729F]/10 p-2">
               <UserIcon color="#32729F" size={20} />
@@ -190,7 +190,7 @@ const Index = () => {
         <ModalEditEmail showModal={showModalEmail} setShowModal={setShowModalEmail} />
 
         {/* Configuración de medicamentos */}
-        <View className="mx-4 mb-6 rounded-2xl bg-white p-5 shadow-xs">
+        <View className="shadow-xs mx-4 mb-6 rounded-2xl bg-white p-5">
           <View className="mb-4 flex-row items-center">
             <View className="mr-3 rounded-full bg-orange-100 p-2">
               <BellIcon color="#F97316" size={20} />
@@ -241,7 +241,7 @@ const Index = () => {
         />
 
         {/* Contactos de emergencia */}
-        <View className="mx-4 mb-6 rounded-2xl bg-white p-6 shadow-xs">
+        <View className="shadow-xs mx-4 mb-6 rounded-2xl bg-white p-6">
           <View className="mb-4 flex-row items-center">
             <View className="mr-3 rounded-full bg-green-100 p-2">
               <ContactsIcon color="#10B981" size={20} />
