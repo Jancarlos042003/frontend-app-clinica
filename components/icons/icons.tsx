@@ -192,3 +192,7 @@ export const AlignLeftIcon = ({ size, color, style }: IconProps) => {
 export const SosIcon = ({ size, color, style }: IconProps) => {
   return <MaterialIcons name="sos" size={size} color={color} style={style} />;
 };
+
+export const WarningIcon = ({ size, color }: IconProps) => {
+  return <Ionicons name="warning" size={size} color={color} />;
+};
