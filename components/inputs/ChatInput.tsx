@@ -6,14 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import type React from 'react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, Image, TextInput, TouchableOpacity, View } from 'react-native';
 import { z } from 'zod';
 
 const chatInputSchema = z.object({
@@ -108,7 +101,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   };
 
   return (
-    <KeyboardAvoidingView>
+    <>
       <ImageSelectionModal
         visible={showImageModal}
         onClose={() => setShowImageModal(false)}
@@ -116,7 +109,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         onPickImage={pickImage}
       />
 
-      <View className="p-1">
+      <View className="px-1 pb-2">
         {selectedImage && (
           <View className="relative m-1 h-20 w-20 rounded-lg bg-gray-100 shadow-sm">
             <Image source={{ uri: selectedImage }} className="h-full w-full" resizeMode="cover" />
@@ -128,7 +121,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           </View>
         )}
 
-        <View className="m-1 flex-col rounded-xl border border-gray-400 px-1 py-1">
+        <View className="flex-col rounded-xl border border-gray-400 px-1 pb-1">
           <View className="flex flex-col justify-end" style={{ minHeight: 45 }}>
             <Controller
               control={control}
@@ -143,11 +136,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
                     setHeight(newHeight);
                   }}
                   style={{ height: Math.min(height, 80), maxHeight: 80 }}
-                  className="w-full rounded-lg bg-white px-3 py-1 text-base"
+                  className="w-full rounded-lg bg-[#ededed] px-3 pb-1 text-lg"
                   onBlur={onBlur}
                   multiline
                   textAlignVertical="top"
                   editable={!disabled}
+                  autoFocus
                 />
               )}
             />
@@ -174,6 +168,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </>
   );
 };

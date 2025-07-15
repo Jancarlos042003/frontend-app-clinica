@@ -80,7 +80,7 @@ export default function MedicationFormScreen() {
   return (
     <KeyboardAwareFormLayout>
       <View
-        className="flex-1 bg-primary_100 px-4 pt-4"
+        className="flex-1 bg-[#ededed] px-4 pt-4"
         style={{ paddingBottom: insets.bottom + 16 }}>
         <Title title="Datos del Medicamento" />
         {/* Nombre de la medicina */}

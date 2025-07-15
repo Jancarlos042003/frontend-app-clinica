@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import { Pressable, Animated, Alert } from 'react-native';
 import { SosIcon } from '../icons/icons';
 import ModalMessageSos from '../modal/ModalMessageSos';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { requestPermission } from '~/services/permissionsService';
 
 const SpecialTabButton = () => {
   const [showSOSModal, setShowSOSModal] = useState(false);
@@ -24,17 +26,17 @@ const SpecialTabButton = () => {
     }).start();
   };
 
-  const handleSOSPress = () => {
+  const handleSOS = () => {
     Alert.alert(
       '🚨 Alerta de Emergencia',
-      '¿Estás seguro de que quieres activar la alerta SOS? Se notificará a tus contactos de emergencia.',
+      '¿Seguro de activar la alerta SOS? Se notificará a tus contactos de emergencia.',
       [
         {
           text: 'Cancelar',
           style: 'cancel',
         },
         {
-          text: 'Activar SOS',
+          text: 'Activar',
           style: 'destructive',
           onPress: () => {
             // Mostrar el modal para el mensaje opcional
@@ -43,6 +45,49 @@ const SpecialTabButton = () => {
         },
       ]
     );
+  };
+
+  const handleRequestPermission = () => {
+    Alert.alert(
+      'Permiso de Ubicación',
+      'Para usar el botón SOS, necesitas permitir el acceso a tu ubicación.',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Permitir',
+          onPress: async () => {
+            await requestPermission();
+
+            // Verificar si el permiso fue concedido después de la solicitud
+            const updatedPermission = await AsyncStorage.getItem('locationPermission');
+
+            if (updatedPermission === 'true') {
+              handleSOS();
+            } else {
+              Alert.alert(
+                'Permiso denegado',
+                'No se pudo activar el SOS sin acceso a la ubicación.',
+                [{ text: 'Entendido' }]
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleOnPress = async () => {
+    const permission = await AsyncStorage.getItem('locationPermission');
+
+    if (permission === 'true') {
+      console.log('Permiso de ubicación concedido - Activando SOS');
+      handleSOS();
+    } else {
+      handleRequestPermission();
+    }
   };
 
   return (
@@ -66,7 +111,7 @@ const SpecialTabButton = () => {
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
         }}>
-        <Pressable onPress={handleSOSPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+        <Pressable onPress={handleOnPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
           <SosIcon size={35} color="white" />
         </Pressable>
       </Animated.View>

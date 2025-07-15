@@ -34,6 +34,7 @@ const TextInputController = ({
         <TextInput
           className={className}
           placeholder={placeholder}
+          placeholderTextColor="#A0AEC0"
           onChangeText={onChange}
           onBlur={onBlur}
           value={value}
