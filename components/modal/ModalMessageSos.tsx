@@ -1,5 +1,22 @@
 import { useState } from 'react';
-import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+
+import { API_URL } from '~/config/env';
+import useApi from '~/hooks/useApi';
+import { useUser } from '~/hooks/useUser';
+import {
+  formatAddress,
+  getCurrentLocation,
+  getReverseGeocode,
+} from '~/services/permissionsService';
 
 type MessageSosProps = {
   showSOSModal: boolean;
@@ -8,20 +25,70 @@ type MessageSosProps = {
 
 const ModalMessageSos = ({ showSOSModal = false, setShowSOSModal }: MessageSosProps) => {
   const [sosMessage, setSOSMessage] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { fetchData } = useApi();
+  const { user } = useUser();
 
-  const handleSendSOS = () => {
-    // Aquí puedes agregar la lógica para activar el SOS con el mensaje
-    console.log('SOS Activado con mensaje:', sosMessage);
+  const handleSendSOS = async () => {
+    if (isProcessing) return; // Prevenir múltiples envíos
 
-    // Cerrar el modal y limpiar el mensaje
-    setShowSOSModal(false);
-    setSOSMessage('');
+    setIsProcessing(true);
 
-    // Mostrar confirmación
-    Alert.alert(
-      'SOS Activado',
-      `Se ha enviado la alerta a tus contactos de emergencia.${sosMessage ? `\n\nMensaje: "${sosMessage}"` : ''}`
-    );
+    try {
+      // Obtener ubicación con manejo de errores
+      const { latitude, longitude } = await getCurrentLocation();
+      const reverseGeocode = await getReverseGeocode(latitude, longitude);
+      const address = formatAddress(reverseGeocode);
+
+      const dataLocation = {
+        patientId: user?.patientId,
+        latitude,
+        longitude,
+        address,
+        patientMessage: sosMessage.trim(),
+      };
+
+      console.log('Enviando SOS con datos:', dataLocation);
+
+      const response = await fetchData(`${API_URL}/api/sos`, 'POST', dataLocation);
+
+      if (response) {
+        // Mostrar confirmación
+        Alert.alert(
+          'SOS Activado',
+          `Se ha enviado la alerta a tus contactos de emergencia.${sosMessage.trim() ? `\n\nMensaje: "${sosMessage.trim()}"` : ''}`,
+          [
+            {
+              text: 'Entendido',
+              onPress: () => {
+                // Cerrar el modal y limpiar el mensaje
+                setShowSOSModal(false);
+                setSOSMessage('');
+              },
+            },
+          ]
+        );
+      } else {
+        throw new Error('No se recibió respuesta del servidor');
+      }
+    } catch (error) {
+      console.error('Error al enviar el mensaje SOS:', error);
+
+      let errorMessage = 'No se pudo enviar el mensaje SOS. Inténtalo de nuevo.';
+
+      // Manejar diferentes tipos de errores
+      if (error instanceof Error) {
+        if (error.message?.includes('Location')) {
+          errorMessage = 'Error al obtener tu ubicación. Verifica que el GPS esté activado.';
+        } else if (error.message?.includes('Network')) {
+          errorMessage = 'Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo.';
+        }
+      }
+
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleCancelSOS = () => {
@@ -30,20 +97,19 @@ const ModalMessageSos = ({ showSOSModal = false, setShowSOSModal }: MessageSosPr
   };
 
   return (
-    <Modal
-      visible={showSOSModal}
-      transparent
-      animationType="slide"
-      onRequestClose={handleCancelSOS}>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>🚨 Emergencia Activada</Text>
-          <Text style={styles.modalSubtitle}>
+    <Modal visible={showSOSModal} transparent animationType="fade" onRequestClose={handleCancelSOS}>
+      <View className="flex-1 items-center justify-center bg-black/50 px-5">
+        <View className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-lg shadow-black/25">
+          <Text className="mb-2.5 text-center text-2xl font-bold text-red-700">
+            🚨 Emergencia Activada
+          </Text>
+          <Text className="mb-5 text-center text-base leading-6 text-gray-600">
             Describe brevemente lo que está sucediendo (opcional)
           </Text>
 
           <TextInput
-            style={styles.messageInput}
+            className="mb-2.5 min-h-24 rounded-xl border border-gray-300 bg-gray-50 p-4 text-base"
+            style={{ textAlignVertical: 'top' }}
             placeholder="Ej: Me encuentro en situación de riesgo, necesito ayuda urgente..."
             placeholderTextColor="#999"
             multiline
@@ -53,19 +119,39 @@ const ModalMessageSos = ({ showSOSModal = false, setShowSOSModal }: MessageSosPr
             maxLength={250}
           />
 
-          <Text style={styles.characterCount}>{sosMessage.length}/250 caracteres</Text>
+          <Text className="mb-5 text-right text-xs text-gray-500">
+            {sosMessage.length}/250 caracteres
+          </Text>
 
-          <View style={styles.modalButtons}>
+          <View className="flex-row justify-between gap-4">
             <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={handleCancelSOS}>
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
+              className={`flex-1 items-center rounded-xl border border-gray-300 py-4 ${
+                isProcessing ? 'bg-gray-200' : 'bg-gray-100'
+              }`}
+              onPress={handleCancelSOS}
+              disabled={isProcessing}>
+              <Text
+                className={`text-base font-semibold ${
+                  isProcessing ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                Cancelar
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.modalButton, styles.sendButton]}
-              onPress={handleSendSOS}>
-              <Text style={styles.sendButtonText}>Enviar SOS</Text>
+              className={`flex-1 items-center rounded-xl py-4 ${
+                isProcessing ? 'bg-red-400' : 'bg-red-700'
+              }`}
+              onPress={handleSendSOS}
+              disabled={isProcessing}>
+              {isProcessing ? (
+                <View className="flex-row items-center">
+                  <ActivityIndicator size="small" color="white" />
+                  <Text className="ml-2 text-base font-semibold text-white">Enviando...</Text>
+                </View>
+              ) : (
+                <Text className="text-base font-semibold text-white">Enviar SOS</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -75,88 +161,3 @@ const ModalMessageSos = ({ showSOSModal = false, setShowSOSModal }: MessageSosPr
 };
 
 export default ModalMessageSos;
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  modalContainer: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 25,
-    width: '100%',
-    maxWidth: 400,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-    color: '#d32f2f',
-  },
-  modalSubtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#666',
-    lineHeight: 22,
-  },
-  messageInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 16,
-    minHeight: 100,
-    textAlignVertical: 'top',
-    backgroundColor: '#f9f9f9',
-    marginBottom: 10,
-  },
-  characterCount: {
-    fontSize: 12,
-    color: '#999',
-    textAlign: 'right',
-    marginBottom: 20,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 15,
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: 15,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  cancelButtonText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  sendButton: {
-    backgroundColor: '#d32f2f',
-  },
-  sendButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

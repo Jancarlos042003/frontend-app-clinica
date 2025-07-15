@@ -25,6 +25,15 @@
           "photosPermission": "La aplicación accede a tus fotos para enviar imágenes en el chat.",
           "cameraPermission": "La aplicación accede a tu cámara para tomar fotos en el chat."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Esta aplicación necesita acceso a tu ubicación para ofrecerte servicios personalizados basados en tu ubicación actual.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": false
+        }
       ]
     ],
     "orientation": "portrait",
