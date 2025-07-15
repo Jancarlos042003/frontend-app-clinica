@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import MedicationList from '../../components/lists/MedicationList';
@@ -13,9 +13,10 @@ import { useSymptomContext } from '~/context/SymptomContext';
 import { Appointment } from '~/types/appointment';
 
 const Home = () => {
-  const { todaysMedications } = useMedicationContext();
-  const { todaysSymptoms } = useSymptomContext();
+  const { todaysMedications, refetch: refetchMedications } = useMedicationContext();
+  const { todaysSymptoms, refetch: refetchSymptoms } = useSymptomContext();
   const [showCardPermissions, setShowCardPermissions] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
   // Resultados clínicos de ejemplo
@@ -77,6 +78,29 @@ const Home = () => {
   }, []);
 
   // --- HANDLERS ---
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // Actualizar ambos contextos en paralelo
+      await Promise.all([refetchMedications(), refetchSymptoms()]);
+
+      // Verificar permisos de ubicación nuevamente
+      const permission = await AsyncStorage.getItem('locationPermission');
+      if (permission === null || permission === 'false') {
+        setShowCardPermissions(true);
+      } else {
+        setShowCardPermissions(false);
+      }
+
+      console.log('Datos del home actualizados');
+    } catch (error) {
+      console.error('Error al actualizar datos del home:', error);
+      Alert.alert('Error', 'No se pudieron actualizar los datos. Intenta de nuevo.');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const handleVerResultado = (nombre: string) => {
     Alert.alert('Resultado', `Mostrando resultado de: ${nombre}`);
   };
@@ -91,7 +115,18 @@ const Home = () => {
 
   return (
     <View style={{ paddingBottom: insets.bottom }} className="flex-1">
-      <ScrollView className="bg-[#d9eff4]] p-5">
+      <ScrollView
+        className="bg-[#d9eff4]] p-5"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['#0F172A']} // Color del indicador en Android
+            tintColor="#0F172A" // Color del indicador en iOS
+            title="Actualizando..." // Texto en iOS
+            titleColor="#0F172A" // Color del texto en iOS
+          />
+        }>
         {showCardPermissions && <CardPermissionsLocation />}
 
         {/* Próximas Citas */}
