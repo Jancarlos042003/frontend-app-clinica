@@ -7,7 +7,7 @@ export interface MedicationSettings {
 export interface EmergencyContact {
   id?: number;
   name: string;
-  phone: string;
+  phoneNumber: string;
   relationship: string;
 }
 

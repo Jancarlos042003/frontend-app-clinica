@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { View, Text } from 'react-native';
 
@@ -9,36 +9,51 @@ import TextInputController from '~/components/inputs/TextInputController';
 import KeyboardAwareFormLayout from '~/components/layouts/KeyboardAwareFormLayout';
 import ModalContainer from '~/components/modal/ModalContainer';
 import { emergencyContactSchema, EmergencyContact } from '~/types/emergency-contact'; // Importamos el esquema de validación
+import { EmergencyContact as SettingsEmergencyContact } from '~/types/settings';
 
-type ModalAddEmergencyContactProps = {
+type ModalEditEmergencyContactProps = {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
+  contactToEdit?: SettingsEmergencyContact | null;
 };
 
-export default function ModalAddEmergencyContact({
+export default function ModalEditEmergencyContact({
   showModal,
   setShowModal,
-}: ModalAddEmergencyContactProps) {
-  const router = useRouter();
-
+  contactToEdit,
+}: ModalEditEmergencyContactProps) {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<EmergencyContact>({
     resolver: zodResolver(emergencyContactSchema),
   });
 
+  // Efecto para cargar los datos del contacto cuando se abre el modal
+  useEffect(() => {
+    if (showModal && contactToEdit) {
+      reset({
+        name: contactToEdit.name,
+        phoneNumber: contactToEdit.phoneNumber,
+        relationship: contactToEdit.relationship,
+      });
+    }
+  }, [showModal, contactToEdit, reset]);
+
   // Función de manejar la acción de guardar
   const handleSave = (data: EmergencyContact) => {
-    console.log('Nuevo contacto de emergencia guardado:', data);
-    // Aquí puedes hacer una llamada para guardar el contacto, por ejemplo, enviarlo a un backend o al contexto global.
-    router.back(); // Cerrar el modal después de guardar
+    console.log('Contacto de emergencia editado:', data);
+    console.log('ID del contacto:', contactToEdit?.id);
+    // Aquí puedes hacer una llamada para actualizar el contacto, por ejemplo, enviarlo a un backend o al contexto global.
+    // Incluye el ID del contacto para la actualización: { ...data, id: contactToEdit?.id }
+    setShowModal(false); // Cerrar el modal después de guardar
   };
 
   return (
     <ModalContainer
-      title="Agregar contacto de emergencia"
+      title="Editar contacto de emergencia"
       showModal={showModal}
       setShowModal={setShowModal}>
       <KeyboardAwareFormLayout>

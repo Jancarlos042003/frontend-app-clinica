@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { Pressable, View, Text, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ModalAddEmergencyContact from './modal-add-emergency-contact';
 import ModalEditAttempts from './modal-edit-attempts';
 import ModalEditEmail from './modal-edit-email';
+import ModalEditEmergencyContact from './modal-edit-emergency-contact';
 import ModalEditFrequency from './modal-edit-frequency';
 import ModalEditPhone from './modal-edit-phone';
 import ModalEditTolerance from './modal-edit-tolerance';
@@ -29,7 +29,6 @@ import { UserSettings } from '../../types/settings';
 import Loader from '~/components/iu/Loader';
 
 const Index = () => {
-  const router = useRouter();
   const { fetchData, data, loading } = useApi();
   const { user } = useUser();
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
@@ -39,6 +38,10 @@ const Index = () => {
   const [showModalEmail, setShowModalEmail] = useState(false);
   const [showModalPhone, setShowModalPhone] = useState(false);
   const [showModalEmergencyContact, setShowModalEmergencyContact] = useState(false);
+  const [showModalEditEmergencyContact, setShowModalEditEmergencyContact] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<
+    UserSettings['emergencyContacts'][0] | null
+  >(null);
   const inset = useSafeAreaInsets();
 
   useEffect(() => {
@@ -105,19 +108,9 @@ const Index = () => {
     setShowModalEmergencyContact(true);
   };
 
-  const handleEditEmergencyContact = (contactId: number) => {
-    const contact = userSettings?.emergencyContacts.find((c) => c.id === contactId);
-    if (contact) {
-      router.push({
-        pathname: '/profile/modal-edit-emergency-contact',
-        params: {
-          contactId: contact.id,
-          name: contact.name,
-          phone: contact.phone,
-          relationship: contact.relationship,
-        },
-      });
-    }
+  const handleEditEmergencyContact = (contact: UserSettings['emergencyContacts'][0]) => {
+    setSelectedContact(contact);
+    setShowModalEditEmergencyContact(true);
   };
 
   if (loading) return <Loader />;
@@ -255,16 +248,22 @@ const Index = () => {
               {userSettings.emergencyContacts.map((contact, index) => (
                 <Pressable
                   key={contact.id || index}
-                  onPress={() => contact.id && handleEditEmergencyContact(contact.id)}
+                  onPress={() => handleEditEmergencyContact(contact)}
                   className="rounded-xl bg-green-50 p-4 active:bg-green-100">
                   <UserProfileInfo
                     content={contact.name}
                     icon={<ContactsIcon color="#10B981" size={24} />}
                     title={contact.relationship}
-                    subtitle={contact.phone}
+                    subtitle={contact.phoneNumber}
                   />
                 </Pressable>
               ))}
+
+              <ModalEditEmergencyContact
+                showModal={showModalEditEmergencyContact}
+                setShowModal={setShowModalEditEmergencyContact}
+                contactToEdit={selectedContact}
+              />
             </View>
           ) : (
             <View className="items-center rounded-xl bg-gray-200/80 py-8">
@@ -286,7 +285,7 @@ const Index = () => {
           {userSettings?.emergencyContacts && userSettings.emergencyContacts.length > 0 && (
             <Pressable
               onPress={handleAddEmergencyContact}
-              className="mt-4 flex-row items-center justify-center rounded-xl bg-[#32729F] px-6 py-3 shadow-sm active:bg-[#2A5F85]">
+              className="mt-4 flex-row items-center justify-center rounded-xl bg-primary px-6 py-4 shadow-sm active:bg-[#2A5F85]">
               <PlusCircleIcon color="#ffffff" size={20} />
               <Text className="ml-2 font-semibold text-white">Agregar nuevo contacto</Text>
             </Pressable>
