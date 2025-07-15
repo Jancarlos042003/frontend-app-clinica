@@ -79,7 +79,7 @@ const NewSymptom = () => {
 
   return (
     <KeyboardAwareFormLayout>
-      <View className="flex-1 gap-1 bg-primary_100 p-4">
+      <View className="flex-1 gap-1 bg-[#ededed] p-4">
         <View className="mb-3">
           <View className="flex-row">
             <Text className="mb-2 text-lg font-bold text-gray-700">Síntoma</Text>

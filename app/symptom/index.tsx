@@ -43,7 +43,7 @@ const Index = () => {
   }
 
   return (
-    <View className="flex-1 bg-primary_100 px-4" style={{ paddingBottom: insets.bottom + 16 }}>
+    <View className="flex-1 bg-[#ededed] px-4" style={{ paddingBottom: insets.bottom + 16 }}>
       <View className="flex-row items-center justify-between pt-4">
         <Text className="text-lg text-gray-500">Registra y monitorea tus síntomas</Text>
         <AddButton onPress={() => router.push('/symptom/new')} />

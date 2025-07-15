@@ -8,7 +8,7 @@ const Index = () => {
   const router = useRouter();
 
   return (
-    <View className="bg-[#d9eff4]] flex-1 gap-3 p-4">
+    <View className="bg-[#ededed] flex-1 gap-3 p-4">
       <CardContainer onPress={() => router.push('/symptom/')}>
         <View className="flex-row justify-between">
           <Text className="text-xl">Síntomas Registrados</Text>

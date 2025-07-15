@@ -284,7 +284,7 @@ const HorizontalCalendar: React.FC = () => {
   return (
     <ScrollView className="flex-1" style={{ marginBottom: MARGIN_BOTTOM }}>
       {/* Header con fecha seleccionada */}
-      <View className="bg-[#d9eff4]] flex-row items-center justify-between border-b border-gray-300 px-5 pb-5 pt-5">
+      <View className="flex-row items-center justify-between border-b border-gray-300 bg-[#ededed] px-5 pb-5 pt-5">
         <View className="flex-1">
           <Text className="text-lg font-bold capitalize text-gray-800">{selectedDateText}</Text>
           <Text className="mt-0.5 text-sm text-gray-500">{dateInfo}</Text>
@@ -312,7 +312,7 @@ const HorizontalCalendar: React.FC = () => {
       </View>
 
       {/* Calendario horizontal mejorado */}
-      <View className="bg-[#d9eff4]] relative border-b border-gray-300 py-4">
+      <View className="relative border-b border-gray-300 bg-[#ededed] py-4">
         <FlatList
           ref={flatListRef}
           data={processedDates}

@@ -33,7 +33,7 @@ const IndexMedication = () => {
   }
 
   return (
-    <View className="flex-1 bg-primary_100 p-4">
+    <View className="flex-1 bg-[#ededed] p-4">
       {/*<View className="flex-row items-center justify-between py-4">
         <Text>Registra y monitoria tus tratamientos</Text>
         <AddButton onPress={() => router.push('/medication/new')} />

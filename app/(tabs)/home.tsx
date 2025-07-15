@@ -116,7 +116,7 @@ const Home = () => {
   return (
     <View style={{ paddingBottom: insets.bottom }} className="flex-1">
       <ScrollView
-        className="bg-[#d9eff4]] p-5"
+        className="bg-[#ededed] p-5"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
