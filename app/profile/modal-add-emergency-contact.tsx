@@ -2,22 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { View, Text } from 'react-native';
-import * as z from 'zod';
 
 import SubmitButton from '~/components/buttons/SubmitButton';
 import TextInputController from '~/components/inputs/TextInputController';
 import KeyboardAwareFormLayout from '~/components/layouts/KeyboardAwareFormLayout';
 import ModalContainer from '~/components/modal/ModalContainer';
-
-// Usamos Zod para validar los datos del formulario
-const emergencyContactSchema = z.object({
-  name: z.string().min(1, 'El nombre es obligatorio.'), // Nombre obligatorio
-  phoneNumber: z
-    .string()
-    .min(1, 'El teléfono es obligatorio.')
-    .regex(/^9\d{8}$/, 'El teléfono debe tener 9 dígitos y empezar con 9.'), // Validación para que el teléfono empiece con 9 y tenga 9 dígitos
-  relationship: z.string().optional(), // La relación es opcional
-});
+import { emergencyContactSchema, EmergencyContact } from '~/types/emergency-contact'; // Importamos el esquema de validación
 
 type ModalAddEmergencyContactProps = {
   showModal: boolean;
@@ -34,12 +24,12 @@ export default function ModalAddEmergencyContact({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<EmergencyContact>({
     resolver: zodResolver(emergencyContactSchema),
   });
 
   // Función de manejar la acción de guardar
-  const handleSave = (data: any) => {
+  const handleSave = (data: EmergencyContact) => {
     console.log('Nuevo contacto de emergencia guardado:', data);
     // Aquí puedes hacer una llamada para guardar el contacto, por ejemplo, enviarlo a un backend o al contexto global.
     router.back(); // Cerrar el modal después de guardar
