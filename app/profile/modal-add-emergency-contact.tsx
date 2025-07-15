@@ -41,12 +41,8 @@ export default function ModalAddEmergencyContact({
       showModal={showModal}
       setShowModal={setShowModal}>
       <KeyboardAwareFormLayout>
-        <View>
+        <View className="flex-1 justify-between px-6 pb-20 pt-6">
           <View className="rounded-lg border border-gray-300 bg-white p-6">
-            <Text className="mb-4 text-center text-xl font-bold">
-              Agregar contacto de emergencia
-            </Text>
-
             <View className="mb-4">
               <Text className="mb-1 font-medium">Nombre</Text>
               <TextInputController control={control} name="name" placeholder="Ej: Juan Pérez" />
