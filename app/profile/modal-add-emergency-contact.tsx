@@ -4,6 +4,7 @@ import ModalContainer from '~/components/modal/ModalContainer';
 import { useForm, Controller } from 'react-hook-form'; // Importa Controller
 import * as z from 'zod';  // Importando Zod para validación
 import { zodResolver } from '@hookform/resolvers/zod';
+import SubmitButton from '~/components/buttons/SubmitButton';
 
 // Usamos Zod para validar los datos del formulario
 const emergencyContactSchema = z.object({
@@ -97,18 +98,7 @@ export default function ModalAddEmergencyContact() {
 
         {/* Botones para guardar o cancelar */}
         <View className="flex-row justify-between">
-          <Pressable
-            onPress={handleCancel}
-            className="bg-gray-300 p-3 rounded-lg flex-1 mr-2"
-          >
-            <Text className="text-center text-lg">Cancelar</Text>
-          </Pressable>
-          <Pressable
-            onPress={handleSubmit(handleSave)}  // Usamos handleSubmit para validar y ejecutar handleSave
-            className="bg-blue-500 p-3 rounded-lg flex-1 ml-2"
-          >
-            <Text className="text-center text-lg text-white">Guardar</Text>
-          </Pressable>
+          <SubmitButton onPress={handleSubmit(handleSave)} text="Guardar" />
         </View>
       </View>
     </ModalContainer>
