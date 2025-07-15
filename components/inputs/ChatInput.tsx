@@ -108,7 +108,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   };
 
   return (
-    <KeyboardAvoidingView>
+    <>
       <ImageSelectionModal
         visible={showImageModal}
         onClose={() => setShowImageModal(false)}
@@ -174,6 +174,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </>
   );
 };
