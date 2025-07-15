@@ -1,7 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { Pressable, View, Text, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import ModalAddEmergencyContact from './modal-add-emergency-contact';
+import ModalEditAttempts from './modal-edit-attempts';
+import ModalEditEmail from './modal-edit-email';
+import ModalEditFrequency from './modal-edit-frequency';
+import ModalEditPhone from './modal-edit-phone';
+import ModalEditTolerance from './modal-edit-tolerance';
 import LogoutButton from '../../components/buttons/LogoutButton';
 import {
   Calendar,
@@ -21,13 +28,6 @@ import { UserSettings } from '../../types/settings';
 
 import Loader from '~/components/iu/Loader';
 
-import ModalEditAttempts from './modal-edit-attempts';
-import ModalEditEmail from './modal-edit-email';
-import ModalEditFrequency from './modal-edit-frequency';
-import ModalEditPhone from './modal-edit-phone';
-import ModalEditTolerance from './modal-edit-tolerance';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 const Index = () => {
   const router = useRouter();
   const { fetchData, data, loading } = useApi();
@@ -38,6 +38,7 @@ const Index = () => {
   const [showModalAttempts, setShowModalAttempts] = useState(false);
   const [showModalEmail, setShowModalEmail] = useState(false);
   const [showModalPhone, setShowModalPhone] = useState(false);
+  const [showModalEmergencyContact, setShowModalEmergencyContact] = useState(false);
   const inset = useSafeAreaInsets();
 
   useEffect(() => {
@@ -101,7 +102,7 @@ const Index = () => {
   };
 
   const handleAddEmergencyContact = () => {
-    router.push('/profile/modal-add-emergency-contact');
+    setShowModalEmergencyContact(true);
   };
 
   const handleEditEmergencyContact = (contactId: number) => {
@@ -291,6 +292,11 @@ const Index = () => {
             </Pressable>
           )}
         </View>
+
+        <ModalAddEmergencyContact
+          showModal={showModalEmergencyContact}
+          setShowModal={setShowModalEmergencyContact}
+        />
 
         {/* Botón de logout */}
         <View className="mx-4 mb-8">
