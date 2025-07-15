@@ -143,7 +143,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
                     setHeight(newHeight);
                   }}
                   style={{ height: Math.min(height, 80), maxHeight: 80 }}
-                  className="w-full rounded-lg bg-white px-3 py-1 text-base"
+                  className="bg-[#d9eff4]] w-full rounded-lg px-3 py-1 text-base"
                   onBlur={onBlur}
                   multiline
                   textAlignVertical="top"

@@ -33,7 +33,7 @@ const ChatScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-white" style={{ marginBottom: MARGIN_BOTTOM }}>
+    <View className="bg-[#d9eff4]] flex-1" style={{ marginBottom: MARGIN_BOTTOM }}>
       <ChatHeader onHistoryPress={handleHistoryPress} onNewChatPress={handleNewChatPress} />
 
       <ChatList messages={messages} />

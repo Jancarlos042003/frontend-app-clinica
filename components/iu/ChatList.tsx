@@ -13,7 +13,7 @@ export const ChatList: React.FC<ChatListProps> = ({ messages, onEndReached }) =>
   const renderMessage = ({ item }: { item: Message }) => <MessageBubble message={item} />;
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="bg-[#d9eff4]] flex-1">
       <FlatList
         data={messages}
         renderItem={renderMessage}
