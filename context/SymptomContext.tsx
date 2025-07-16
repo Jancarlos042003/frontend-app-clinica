@@ -34,9 +34,10 @@ export const SymptomProvider = ({ children }: { children: ReactNode }) => {
     if (!user?.patientId) return;
     try {
       const data = await fetchData(
-        `/api/symptom-diary/patient/${user.patientId}/todays-symptoms`,
+        `/api/symptom-diary/patient/${user.patientId}/todays-registered-symptoms`,
         'GET'
       );
+      console.log('Síntomas del día:', data);
       setTodaysSymptoms(data || []);
     } catch (e) {
       console.error('Error fetching symptoms:', e);
