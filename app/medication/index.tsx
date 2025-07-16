@@ -1,8 +1,7 @@
-import AddButton from 'components/buttons/AddButton';
 import TreatmentCard from 'components/card/TreatmentCard';
 import Loader from 'components/iu/Loader';
 import NotResults from 'components/iu/NoResults';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import useApi from 'hooks/useApi';
 import { useUser } from 'hooks/useUser';
 import { useCallback } from 'react';
@@ -10,16 +9,15 @@ import { FlatList, Text, View } from 'react-native';
 import { TreatmentRecord } from 'schemas/TreatmentRecordSchema';
 
 const IndexMedication = () => {
-  const router = useRouter();
   const { user } = useUser();
   const { data, fetchData, error, loading } = useApi<TreatmentRecord[]>();
 
   useFocusEffect(
     useCallback(() => {
-      if (user?.dni) {
-        fetchData(`/api/treatments/patient/${user.dni}/all`, 'GET');
+      if (user?.patientId) {
+        fetchData(`/api/treatments/patient/${user.patientId}/all`, 'GET');
       }
-    }, [user?.dni])
+    }, [user?.patientId])
   );
 
   if (loading || data === undefined) return <Loader />;

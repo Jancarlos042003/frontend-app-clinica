@@ -42,6 +42,7 @@ export class ChatService {
   }
 
   async sendMessageStream(
+    patientId: string,
     message: string,
     imageUri?: string,
     onChunk?: (chunk: string) => void,
@@ -56,6 +57,7 @@ export class ChatService {
 
       // Creamos el payload en el formato requerido por el backend Spring Boot
       const payload = {
+        patientId,
         sessionId: this.conversationId, // Usamos el conversationId como sessionId
         message,
       };

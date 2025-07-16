@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+
 import useApi from '~/hooks/useApi';
 import { useUser } from '~/hooks/useUser';
 import { Symptom } from '~/types/symptom';
@@ -30,9 +31,9 @@ export const SymptomProvider = ({ children }: { children: ReactNode }) => {
 
   // Función para obtener los síntomas del día
   const getSymptoms = async () => {
-    if (!user?.dni) return;
+    if (!user?.patientId) return;
     try {
-      const data = await fetchData(`/api/symptom-diary/patient/${user.dni}/todays-symptoms`, 'GET');
+      const data = await fetchData(`/api/symptom-diary/patient/${user.patientId}/todays-symptoms`, 'GET');
       setTodaysSymptoms(data || []);
     } catch (e) {
       console.error('Error fetching symptoms:', e);
@@ -46,7 +47,7 @@ export const SymptomProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     getSymptoms();
-  }, [user?.dni]);
+  }, [user?.patientId]);
 
   return (
     <SymptomContext.Provider

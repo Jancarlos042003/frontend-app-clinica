@@ -65,7 +65,7 @@ export default function MedicationFormScreen() {
     const formattedData = {
       ...dataWithoutStartTime,
       startDate: new Date(dateTime).toISOString(),
-      identifier: user?.dni,
+      dni: user?.dni,
     };
 
     console.log('Datos del formulario:', JSON.stringify(formattedData, null, 2));
@@ -79,9 +79,7 @@ export default function MedicationFormScreen() {
 
   return (
     <KeyboardAwareFormLayout>
-      <View
-        className="flex-1 bg-[#ededed] px-4 pt-4"
-        style={{ paddingBottom: insets.bottom + 16 }}>
+      <View className="flex-1 bg-[#ededed] px-4 pt-4" style={{ paddingBottom: insets.bottom + 16 }}>
         <Title title="Datos del Medicamento" />
         {/* Nombre de la medicina */}
         <Controller

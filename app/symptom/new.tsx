@@ -69,7 +69,7 @@ const NewSymptom = () => {
     const symptomData = {
       ...dataWithoutTime,
       date: dateTime.toISOString(),
-      identifier: user?.dni, // Asegúrate de que user esté definido
+      patientId: user?.patientId, // Asegúrate de que user esté definido
     };
 
     console.log('Data de síntoma:', symptomData);

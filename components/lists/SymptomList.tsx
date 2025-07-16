@@ -1,8 +1,10 @@
-import { View, Text, FlatList } from 'react-native';
-import { Symptom } from '~/types/symptom';
-import SymptomInfoCard from '../card/SymptomInfoCard';
-import EmptyStateCard from '../card/EmptyStateCard';
 import { useRouter } from 'expo-router';
+import { View, Text, FlatList } from 'react-native';
+
+import EmptyStateCard from '../card/EmptyStateCard';
+import SymptomInfoCard from '../card/SymptomInfoCard';
+
+import { Symptom } from '~/types/symptom';
 
 type SymptomListProps = {
   data: Symptom[];

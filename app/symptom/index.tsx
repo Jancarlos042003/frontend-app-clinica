@@ -1,5 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import AddButton from 'components/buttons/AddButton';
+import Loader from 'components/iu/Loader';
 import { useRouter } from 'expo-router';
 import useApi from 'hooks/useApi';
 import { useUser } from 'hooks/useUser';
@@ -7,7 +8,6 @@ import { useEffect, useCallback } from 'react';
 import { StatusBar, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import Loader from 'components/iu/Loader';
 import SymptomList from '~/components/lists/SymptomList';
 import { Symptom } from '~/types/symptom';
 
@@ -24,10 +24,10 @@ const Index = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (user?.dni) {
-        fetchData(`/api/symptom-diary/patient/${user.dni}`, 'GET');
+      if (user?.patientId) {
+        fetchData(`/api/symptom-diary/patient/${user.patientId}`, 'GET');
       }
-    }, [user?.dni])
+    }, [user?.patientId])
   );
 
   // Carga los síntomas al montar el componente

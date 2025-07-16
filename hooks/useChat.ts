@@ -3,11 +3,13 @@ import uuid from 'react-native-uuid';
 
 import { ChatService } from '../services/chatService';
 import type { Message } from '../types/chat';
+import { useUser } from './useUser';
 
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const chatService = useRef(new ChatService()).current;
+  const { user } = useUser();
 
   const addMessage = useCallback((message: Omit<Message, 'id'>) => {
     const newMessage: Message = {
@@ -47,6 +49,7 @@ export const useChat = () => {
 
       try {
         await chatService.sendMessageStream(
+          user?.patientId || '',
           content,
           imageUri,
           // onChunk - Recibe el contenido completo acumulado

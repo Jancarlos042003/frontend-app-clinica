@@ -39,7 +39,7 @@ export const MedicationProvider = ({ children }: MedicationProviderProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchMedications = async () => {
-    if (!user?.dni) return;
+    if (!user?.patientId) return;
     setLoading(true);
     setError(null);
     try {
@@ -47,7 +47,7 @@ export const MedicationProvider = ({ children }: MedicationProviderProps) => {
       const startDate = today.toISOString().slice(0, 10);
       const endDate = startDate;
       const data = await fetchData(
-        `/api/medications/range/${user.dni}?startDate=${startDate}&endDate=${endDate}`,
+        `/api/medications/range/${user.patientId}?startDate=${startDate}&endDate=${endDate}`,
         'GET'
       );
 
