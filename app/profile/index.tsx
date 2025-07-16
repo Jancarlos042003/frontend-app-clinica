@@ -24,7 +24,7 @@ import {
 import UserProfileInfo from '../../components/profile/UserProfileInfo';
 import useApi from '../../hooks/useApi';
 import { useUser } from '../../hooks/useUser';
-import { UserSettings } from '../../types/settings';
+import { EmergencyContact, UserSettings } from '../../types/settings';
 
 import Loader from '~/components/iu/Loader';
 
@@ -39,9 +39,8 @@ const Index = () => {
   const [showModalPhone, setShowModalPhone] = useState(false);
   const [showModalEmergencyContact, setShowModalEmergencyContact] = useState(false);
   const [showModalEditEmergencyContact, setShowModalEditEmergencyContact] = useState(false);
-  const [selectedContact, setSelectedContact] = useState<
-    UserSettings['emergencyContacts'][0] | null
-  >(null);
+  const [contactData, setContactData] = useState<EmergencyContact | null>(null);
+  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const inset = useSafeAreaInsets();
 
   useEffect(() => {
@@ -51,10 +50,12 @@ const Index = () => {
   }, [user]);
 
   useEffect(() => {
-    // Se llama a setUserSettings cuando data tiene un valor actualizado
+    // Se actualiza el estado de userSettings y emergencyContacts cuando se obtienen los datos
     console.log('Datos obtenidos:', data);
     if (data && typeof data === 'object') {
-      setUserSettings(data as UserSettings);
+      const settings = data as UserSettings;
+      setUserSettings(settings);
+      setEmergencyContacts(settings.emergencyContacts || []);
     }
   }, [data]);
 
@@ -108,9 +109,9 @@ const Index = () => {
     setShowModalEmergencyContact(true);
   };
 
-  const handleEditEmergencyContact = (contact: UserSettings['emergencyContacts'][0]) => {
-    setSelectedContact(contact);
+  const handleEditEmergencyContact = (contact: EmergencyContact) => {
     setShowModalEditEmergencyContact(true);
+    setContactData(contact);
   };
 
   if (loading) return <Loader />;
@@ -243,9 +244,9 @@ const Index = () => {
             <Text className="text-xl font-bold text-gray-800">Contactos de Emergencia</Text>
           </View>
 
-          {userSettings?.emergencyContacts && userSettings.emergencyContacts.length > 0 ? (
+          {emergencyContacts && emergencyContacts.length > 0 ? (
             <View className="gap-3">
-              {userSettings.emergencyContacts.map((contact, index) => (
+              {emergencyContacts.map((contact, index) => (
                 <Pressable
                   key={contact.id || index}
                   onPress={() => handleEditEmergencyContact(contact)}
@@ -258,11 +259,12 @@ const Index = () => {
                   />
                 </Pressable>
               ))}
-
               <ModalEditEmergencyContact
                 showModal={showModalEditEmergencyContact}
                 setShowModal={setShowModalEditEmergencyContact}
-                contactToEdit={selectedContact}
+                contactToEdit={contactData}
+                emergencyContacts={emergencyContacts}
+                setEmergencyContacts={setEmergencyContacts}
               />
             </View>
           ) : (
@@ -282,7 +284,7 @@ const Index = () => {
             </View>
           )}
 
-          {userSettings?.emergencyContacts && userSettings.emergencyContacts.length > 0 && (
+          {emergencyContacts && emergencyContacts.length > 0 && (
             <Pressable
               onPress={handleAddEmergencyContact}
               className="mt-4 flex-row items-center justify-center rounded-xl bg-primary px-6 py-4 shadow-sm active:bg-[#2A5F85]">

@@ -1,13 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 
 import SubmitButton from '~/components/buttons/SubmitButton';
 import LabelWithRequired from '~/components/inputs/LabelWithRequired';
 import TextInputController from '~/components/inputs/TextInputController';
 import KeyboardAwareFormLayout from '~/components/layouts/KeyboardAwareFormLayout';
 import ModalContainer from '~/components/modal/ModalContainer';
+import useApi from '~/hooks/useApi';
+import { useUser } from '~/hooks/useUser';
 import { emergencyContactSchema, EmergencyContact } from '~/types/emergency-contact'; // Importamos el esquema de validación
 import { EmergencyContact as SettingsEmergencyContact } from '~/types/settings';
 
@@ -15,13 +17,19 @@ type ModalEditEmergencyContactProps = {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   contactToEdit?: SettingsEmergencyContact | null;
+  emergencyContacts: SettingsEmergencyContact[];
+  setEmergencyContacts: (contacts: SettingsEmergencyContact[]) => void;
 };
 
 export default function ModalEditEmergencyContact({
   showModal,
   setShowModal,
   contactToEdit,
+  emergencyContacts,
+  setEmergencyContacts,
 }: ModalEditEmergencyContactProps) {
+  const { fetchData, data, loading, error } = useApi();
+  const { user } = useUser();
   const {
     control,
     handleSubmit,
@@ -43,12 +51,22 @@ export default function ModalEditEmergencyContact({
   }, [showModal, contactToEdit, reset]);
 
   // Función de manejar la acción de guardar
-  const handleSave = (data: EmergencyContact) => {
-    console.log('Contacto de emergencia editado:', data);
-    console.log('ID del contacto:', contactToEdit?.id);
-    // Aquí puedes hacer una llamada para actualizar el contacto, por ejemplo, enviarlo a un backend o al contexto global.
-    // Incluye el ID del contacto para la actualización: { ...data, id: contactToEdit?.id }
-    setShowModal(false); // Cerrar el modal después de guardar
+  const handleSave = async (updatedContact: EmergencyContact) => {
+    await fetchData(
+      `/api/users/${user?.patientId}/settings/emergency-contacts/${contactToEdit?.id}`,
+      'PUT',
+      updatedContact
+    );
+
+    // Actualizar el contacto en la lista de contactos de emergencia
+    const updatedContacts = emergencyContacts.map((contact) =>
+      contact.id === contactToEdit?.id ? { ...contact, ...updatedContact } : contact
+    );
+    setEmergencyContacts(updatedContacts);
+
+    Alert.alert('Éxito', 'El contacto de emergencia ha sido actualizado correctamente', [
+      { text: 'Aceptar', onPress: () => setShowModal(false) }, // Cerrar el modal después de guardar
+    ]);
   };
 
   return (
@@ -93,8 +111,14 @@ export default function ModalEditEmergencyContact({
                 <Text className="text-red-500">{errors.relationship.message}</Text>
               )}
             </View>
+
+            {error && <Text className="text-red-500">{error}</Text>}
           </View>
-          <SubmitButton onPress={handleSubmit(handleSave)} text="Guardar" />
+          <SubmitButton
+            onPress={handleSubmit(handleSave)}
+            text={loading ? 'Guardando...' : 'Guardar'}
+            loading={loading}
+          />
         </View>
       </KeyboardAwareFormLayout>
     </ModalContainer>
