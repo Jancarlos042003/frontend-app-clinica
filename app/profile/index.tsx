@@ -297,6 +297,8 @@ const Index = () => {
         <ModalAddEmergencyContact
           showModal={showModalEmergencyContact}
           setShowModal={setShowModalEmergencyContact}
+          emergencyContacts={emergencyContacts}
+          setEmergencyContacts={setEmergencyContacts}
         />
 
         {/* Botón de logout */}
