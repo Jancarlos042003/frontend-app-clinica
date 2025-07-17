@@ -173,9 +173,9 @@ const HorizontalCalendar: React.FC = () => {
       if (!user?.dni) return;
       const dateStr = selectedDate.format('YYYY-MM-DD');
       await Promise.all([
-        fetchMedications(`/api/medications/${user.dni}?date=${dateStr}`, 'GET'),
+        fetchMedications(`/api/medications/${user.patientId}?date=${dateStr}`, 'GET'),
         fetchSymptoms(
-          `/api/symptom-diary/patient/${user.dni}/date-range?startDate=${dateStr}&endDate=${dateStr}`,
+          `/api/symptom-diary/patient/${user.patientId}/date-range?startDate=${dateStr}&endDate=${dateStr}`,
           'GET'
         ),
       ]);

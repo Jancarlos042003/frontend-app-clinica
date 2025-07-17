@@ -2,14 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 
 import useApi from '~/hooks/useApi';
 import { useUser } from '~/hooks/useUser';
-
-type Medication = {
-  medicationId: number;
-  nameMedicine: string;
-  doses: string;
-  timeOfTaking: string;
-  status: string;
-};
+import { Medication } from '~/types/medication';
 
 type MedicationContextType = {
   todaysMedications: Medication[];
