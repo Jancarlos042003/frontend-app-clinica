@@ -1,6 +1,9 @@
-import { Pressable, View, Text, Animated, Easing } from 'react-native';
-import { CheckV2Icon, ClockIcon, SquareCheckIcon, SquareIcon } from '../icons/icons';
 import { useState, useRef, useEffect } from 'react';
+import { Pressable, View, Text, Animated, Easing } from 'react-native';
+
+import { CheckV2Icon, ClockIcon, SquareCheckIcon, SquareIcon } from '../icons/icons';
+
+import { useMedicationTiming } from '~/hooks/useMedicationTiming';
 import { Medication } from '~/types/medication';
 
 interface MedicationCardProps {
@@ -14,6 +17,27 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
   const slideAnim = useRef(new Animated.Value(20)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const buttonScaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Hook para manejo de tiempo y ventana de tolerancia
+  const {
+    shouldShowCheckbox: shouldShowCheckboxByTime,
+    timeStatus,
+    statusMessage,
+  } = useMedicationTiming(medication);
+
+  // Helper functions to check medication status
+  const isCompleted = medication.status === 'COMPLETED' || medication.status === 'Completado';
+
+  // Combinar validaciones de estado y tiempo
+  const shouldShowCheckbox = shouldShowCheckboxByTime;
+
+  // Determine card styling based on status
+  const getBorderStyle = () => {
+    if (isCompleted) return 'border-primary';
+    if (checked) return 'border-primary';
+    if (timeStatus.isLate && timeStatus.isToday) return 'border-red-400';
+    return 'border-gray-300';
+  };
 
   useEffect(() => {
     if (checked) {
@@ -76,7 +100,7 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
   return (
     <View>
       <View
-        className={`flex-row items-center justify-between rounded-2xl border-2 ${checked ? 'border-primary' : 'border-gray-300'} bg-white p-5`}>
+        className={`flex-row items-center justify-between rounded-2xl border-2 ${getBorderStyle()} bg-white p-5`}>
         <View className="flex-row items-center">
           <View className="mr-4 rounded-full bg-primary_200 p-3 shadow-sm">
             <ClockIcon size={22} color="#32729f" />
@@ -101,23 +125,37 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
             <Text className="mt-1 text-base font-semibold text-gray-500">
               {medication.nameMedicine} - {medication.doses}
             </Text>
+            {statusMessage && timeStatus.isToday && (
+              <Text
+                className={`mt-1 text-sm font-medium ${
+                  timeStatus.isLate
+                    ? 'text-red-500'
+                    : timeStatus.withinTolerance
+                      ? 'text-green-600'
+                      : 'text-amber-600'
+                }`}>
+                {statusMessage}
+              </Text>
+            )}
           </View>
         </View>
-        <Pressable
-          className="ml-2"
-          disabled={isTaken}
-          onPress={() => {
-            setChecked(!checked);
-          }}>
-          {checked ? (
-            <SquareCheckIcon size={28} color="#32729F" />
-          ) : (
-            <SquareIcon size={28} color="#CBD5E1" />
-          )}
-        </Pressable>
+        {shouldShowCheckbox && (
+          <Pressable
+            className="ml-2"
+            disabled={isTaken}
+            onPress={() => {
+              setChecked(!checked);
+            }}>
+            {checked ? (
+              <SquareCheckIcon size={28} color="#32729F" />
+            ) : (
+              <SquareIcon size={28} color="#CBD5E1" />
+            )}
+          </Pressable>
+        )}
       </View>
       {/* MARCAR COMO TOMADO */}
-      {checked && !isTaken && (
+      {checked && !isTaken && shouldShowCheckbox && (
         <Animated.View
           style={{
             opacity: fadeAnim,
@@ -156,6 +194,10 @@ const MedicationCard = ({ medication }: MedicationCardProps) => {
 export default MedicationCard;
 
 const getColorMedicationStatus: Record<string, { backgroundColor: string; color: string }> = {
+  INTENDED: {
+    backgroundColor: '#fef3c7',
+    color: '#92400e',
+  },
   'Por tomar': {
     backgroundColor: '#fef3c7',
     color: '#92400e',
@@ -164,9 +206,17 @@ const getColorMedicationStatus: Record<string, { backgroundColor: string; color:
     backgroundColor: '#dbeafe',
     color: '#1e40af',
   },
+  COMPLETED: {
+    backgroundColor: '#dcfce7',
+    color: '#166534',
+  },
   Completado: {
     backgroundColor: '#dcfce7',
     color: '#166534',
+  },
+  NOT_TAKEN: {
+    backgroundColor: '#fef2f2',
+    color: '#b91c1c',
   },
   'No tomado': {
     backgroundColor: '#fef2f2',
