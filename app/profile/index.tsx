@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Pressable, View, Text, ScrollView } from 'react-native';
+import { Pressable, View, Text, ScrollView, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalAddEmergencyContact from './modal-add-emergency-contact';
@@ -10,6 +10,7 @@ import ModalEditFrequency from './modal-edit-frequency';
 import ModalEditPhone from './modal-edit-phone';
 import ModalEditTolerance from './modal-edit-tolerance';
 import LogoutButton from '../../components/buttons/LogoutButton';
+import EmergencyContactCard from '../../components/card/EmergencyContactCard';
 import {
   Calendar,
   DniIcon,
@@ -30,6 +31,7 @@ import Loader from '~/components/iu/Loader';
 
 const Index = () => {
   const { fetchData, data, loading } = useApi();
+  const deleteApi = useApi(); // Hook separado para eliminaciones
   const { user } = useUser();
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [showModalFrecuency, setShowModalFrecuency] = useState(false);
@@ -112,6 +114,46 @@ const Index = () => {
   const handleEditEmergencyContact = (contact: EmergencyContact) => {
     setShowModalEditEmergencyContact(true);
     setContactData(contact);
+  };
+
+  const executeDeleteEmergencyContact = async (contact: EmergencyContact) => {
+    try {
+      console.log('Eliminando contacto:', contact.name);
+
+      // Llamar a la API para eliminar el contacto usando el hook separado
+      await deleteApi.fetchData(
+        `/api/users/${user?.patientId}/settings/emergency-contacts/${contact.id}`,
+        'DELETE'
+      );
+
+      // Actualizar el estado local para remover el contacto eliminado
+      setEmergencyContacts((prevContacts) => prevContacts.filter((c) => c.id !== contact.id));
+
+      console.log('Contacto eliminado exitosamente');
+    } catch (error) {
+      console.error('Error al eliminar contacto:', error);
+      Alert.alert('Error', 'No se pudo eliminar el contacto. Por favor, intenta nuevamente.', [
+        { text: 'OK' },
+      ]);
+    }
+  };
+
+  const handleDeleteEmergencyContact = (contact: EmergencyContact) => {
+    Alert.alert(
+      'Confirmar eliminación',
+      `¿Estás seguro de que deseas eliminar a ${contact.name} de tus contactos de emergencia?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => executeDeleteEmergencyContact(contact),
+        },
+      ]
+    );
   };
 
   if (loading) return <Loader />;
@@ -247,17 +289,12 @@ const Index = () => {
           {emergencyContacts && emergencyContacts.length > 0 ? (
             <View className="gap-3">
               {emergencyContacts.map((contact, index) => (
-                <Pressable
+                <EmergencyContactCard
                   key={contact.id || index}
+                  contact={contact}
                   onPress={() => handleEditEmergencyContact(contact)}
-                  className="rounded-xl bg-green-50 p-4 active:bg-green-100">
-                  <UserProfileInfo
-                    content={contact.name}
-                    icon={<ContactsIcon color="#10B981" size={24} />}
-                    title={contact.relationship}
-                    subtitle={contact.phoneNumber}
-                  />
-                </Pressable>
+                  onDelete={() => handleDeleteEmergencyContact(contact)}
+                />
               ))}
               <ModalEditEmergencyContact
                 showModal={showModalEditEmergencyContact}

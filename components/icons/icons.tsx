@@ -196,3 +196,7 @@ export const SosIcon = ({ size, color, style }: IconProps) => {
 export const WarningIcon = ({ size, color }: IconProps) => {
   return <Ionicons name="warning" size={size} color={color} />;
 };
+
+export const TrashIcon = ({ size, color }: IconProps) => {
+  return <Feather name="trash-2" size={size} color={color} />;
+};

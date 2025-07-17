@@ -91,8 +91,6 @@ const Home = () => {
       } else {
         setShowCardPermissions(false);
       }
-
-      console.log('Datos del home actualizados');
     } catch (error) {
       console.error('Error al actualizar datos del home:', error);
       Alert.alert('Error', 'No se pudieron actualizar los datos. Intenta de nuevo.');
