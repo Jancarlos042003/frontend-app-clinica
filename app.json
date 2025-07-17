@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "app-postcare",
-    "slug": "app-postcare",
+    "name": "Medi+",
+    "slug": "mediplus",
     "version": "1.0.0",
-    "scheme": "postcare",
+    "scheme": "mediplus",
     "web": {
       "favicon": "./assets/favicon.png"
     },

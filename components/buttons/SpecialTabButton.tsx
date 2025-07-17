@@ -1,14 +1,33 @@
 import { useRef, useState } from 'react';
-import { Pressable, Animated, Alert } from 'react-native';
+import { Pressable, Animated, Alert, Linking } from 'react-native';
+
 import { SosIcon } from '../icons/icons';
 import ModalMessageSos from '../modal/ModalMessageSos';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { requestPermission } from '~/services/permissionsService';
+
+import {
+  requestPermission,
+  checkLocationPermission,
+  wasPermissionDeniedPermanently,
+} from '~/services/permissionsService';
 
 const SpecialTabButton = () => {
   const [showSOSModal, setShowSOSModal] = useState(false);
 
   const animScala = useRef(new Animated.Value(1)).current;
+
+  // Función para abrir la configuración de la aplicación
+  const openAppSettings = async () => {
+    try {
+      await Linking.openSettings();
+    } catch (error) {
+      console.error('Error al abrir configuración:', error);
+      Alert.alert(
+        'Error',
+        'No se pudo abrir la configuración. Ve manualmente a Configuración > Aplicaciones > PostCare > Permisos > Ubicación.',
+        [{ text: 'Entendido' }]
+      );
+    }
+  };
 
   const handlePressIn = () => {
     Animated.timing(animScala, {
@@ -47,7 +66,28 @@ const SpecialTabButton = () => {
     );
   };
 
-  const handleRequestPermission = () => {
+  const handleRequestPermission = async () => {
+    // Verificar si el permiso fue denegado permanentemente
+    const permanentlyDenied = await wasPermissionDeniedPermanently();
+
+    if (permanentlyDenied) {
+      Alert.alert(
+        'Permiso de Ubicación Requerido',
+        'Los permisos de ubicación fueron denegados. Para usar el SOS, debes habilitarlos manualmente en la configuración de la aplicación.',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel',
+          },
+          {
+            text: 'Ir a Configuración',
+            onPress: openAppSettings,
+          },
+        ]
+      );
+      return;
+    }
+
     Alert.alert(
       'Permiso de Ubicación',
       'Para usar el botón SOS, necesitas permitir el acceso a tu ubicación.',
@@ -59,13 +99,16 @@ const SpecialTabButton = () => {
         {
           text: 'Permitir',
           onPress: async () => {
-            await requestPermission();
+            const result = await requestPermission();
 
-            // Verificar si el permiso fue concedido después de la solicitud
-            const updatedPermission = await AsyncStorage.getItem('locationPermission');
-
-            if (updatedPermission === 'true') {
+            if (result.success) {
               handleSOS();
+            } else if (result.permanentlyDenied) {
+              Alert.alert(
+                'Permiso Denegado Permanentemente',
+                'Has denegado el permiso de ubicación. Para usar el SOS, debes habilitarlo manualmente en la configuración.',
+                [{ text: 'Entendido' }]
+              );
             } else {
               Alert.alert(
                 'Permiso denegado',
@@ -80,9 +123,10 @@ const SpecialTabButton = () => {
   };
 
   const handleOnPress = async () => {
-    const permission = await AsyncStorage.getItem('locationPermission');
+    // Verificar directamente el estado real del permiso (sin AsyncStorage)
+    const hasPermission = await checkLocationPermission();
 
-    if (permission === 'true') {
+    if (hasPermission) {
       console.log('Permiso de ubicación concedido - Activando SOS');
       handleSOS();
     } else {

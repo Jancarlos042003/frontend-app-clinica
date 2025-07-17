@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +9,7 @@ import AppointmentList from '~/components/lists/AppointmentList';
 import SymptomList from '~/components/lists/SymptomList';
 import { useMedicationContext } from '~/context/MedicationContext';
 import { useSymptomContext } from '~/context/SymptomContext';
+import { checkLocationPermission } from '~/services/permissionsService';
 import { Appointment } from '~/types/appointment';
 
 const Home = () => {
@@ -61,11 +61,11 @@ const Home = () => {
 
   useEffect(() => {
     // Verificar permisos de ubicación al cargar la pantalla
-    const checkLocationPermission = async () => {
-      const permission = await AsyncStorage.getItem('locationPermission');
+    const checkPermissions = async () => {
+      const hasPermission = await checkLocationPermission();
 
-      if (permission === null || permission === 'false') {
-        // Si no hay permiso guardado o fue denegado, mostrar la tarjeta
+      if (!hasPermission) {
+        // Si no tiene permisos, mostrar la tarjeta
         setShowCardPermissions(true);
       } else {
         // Si ya tiene permisos, no mostrar la tarjeta
@@ -74,7 +74,7 @@ const Home = () => {
       }
     };
 
-    checkLocationPermission();
+    checkPermissions();
   }, []);
 
   // --- HANDLERS ---
@@ -84,13 +84,9 @@ const Home = () => {
       // Actualizar ambos contextos en paralelo
       await Promise.all([refetchMedications(), refetchSymptoms()]);
 
-      // Verificar permisos de ubicación nuevamente
-      const permission = await AsyncStorage.getItem('locationPermission');
-      if (permission === null || permission === 'false') {
-        setShowCardPermissions(true);
-      } else {
-        setShowCardPermissions(false);
-      }
+      // Verificar permisos de ubicación nuevamente usando el estado real del sistema
+      const hasPermission = await checkLocationPermission();
+      setShowCardPermissions(!hasPermission);
     } catch (error) {
       console.error('Error al actualizar datos del home:', error);
       Alert.alert('Error', 'No se pudieron actualizar los datos. Intenta de nuevo.');
