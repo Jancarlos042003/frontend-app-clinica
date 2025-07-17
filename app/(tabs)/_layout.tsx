@@ -40,8 +40,8 @@ const TabsLayout = () => {
           right: 0,
           overflow: 'visible', // Permitir que el botón SOS se extienda fuera del tab bar
         },
-        tabBarActiveTintColor: '#4189b6',
-        tabBarInactiveTintColor: '#7f7f83',
+        tabBarActiveTintColor: '#32729F',
+        tabBarInactiveTintColor: '#dcdcdc',
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
