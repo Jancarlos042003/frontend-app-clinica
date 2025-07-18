@@ -10,6 +10,7 @@ type MedicationContextType = {
   error: string | null;
   refetch: () => void;
   addMedication: (medication: Medication) => void;
+  updateMedication: (updatedMedication: Medication) => void;
 };
 
 const MedicationContext = createContext<MedicationContextType>({
@@ -18,6 +19,7 @@ const MedicationContext = createContext<MedicationContextType>({
   error: null,
   refetch: () => {},
   addMedication: () => {},
+  updateMedication: () => {},
 });
 
 interface MedicationProviderProps {
@@ -60,13 +62,28 @@ export const MedicationProvider = ({ children }: MedicationProviderProps) => {
     setTodaysMedications((prevMedications) => [...prevMedications, medication]);
   };
 
+  const updateMedication = (updatedMedication: Medication) => {
+    setTodaysMedications((prevMedications) =>
+      prevMedications.map((med) =>
+        med.medicationId === updatedMedication.medicationId ? updatedMedication : med
+      )
+    );
+  };
+
   useEffect(() => {
     fetchMedications();
   }, [user]);
 
   return (
     <MedicationContext.Provider
-      value={{ todaysMedications, loading, error, refetch: fetchMedications, addMedication }}>
+      value={{
+        todaysMedications,
+        loading,
+        error,
+        refetch: fetchMedications,
+        addMedication,
+        updateMedication,
+      }}>
       {children}
     </MedicationContext.Provider>
   );
