@@ -1,8 +1,9 @@
 import { View, FlatList, Text } from 'react-native';
-import MedicationCard from '../card/MedicationCard';
-import { Medication } from '~/types/medication';
+
 import EmptyStateCard from '../card/EmptyStateCard';
-import { useRouter } from 'expo-router';
+import MedicationCard from '../card/MedicationCard';
+
+import { Medication } from '~/types/medication';
 
 interface MedicationListProps {
   medications: Medication[];
@@ -15,8 +16,6 @@ const MedicationList = ({
   scrollEnabled = true,
   ...otherProps
 }: MedicationListProps) => {
-  const router = useRouter();
-
   return (
     <View className="flex-1">
       <Text className="mb-2 text-lg font-bold text-[#0F172A]">Próximos Medicamentos</Text>
