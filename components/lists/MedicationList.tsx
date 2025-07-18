@@ -43,9 +43,7 @@ const MedicationList = ({
       ) : (
         <EmptyStateCard
           title="No hay medicamentos programados"
-          description="Agrega un medicamento para comenzar a recibir recordatorios."
-          buttonLabel="Agregar Medicamento"
-          onAdd={() => router.push('/medication/new')}
+          description="Actualmente no tienes medicamentos programados para hoy."
         />
       )}
     </View>

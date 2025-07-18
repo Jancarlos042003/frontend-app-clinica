@@ -5,8 +5,8 @@ import AddButton from '../buttons/AddButton';
 interface EmptyStateCardProps {
   title: string;
   description?: string;
-  buttonLabel: string;
-  onAdd: () => void;
+  buttonLabel?: string;
+  onAdd?: () => void;
 }
 
 const EmptyStateCard: React.FC<EmptyStateCardProps> = ({
@@ -21,7 +21,7 @@ const EmptyStateCard: React.FC<EmptyStateCardProps> = ({
       {description ? (
         <Text className="mb-4 text-center text-sm text-gray-400">{description}</Text>
       ) : null}
-      <AddButton label={buttonLabel} onPress={onAdd} />
+      {buttonLabel && onAdd ? <AddButton label={buttonLabel} onPress={onAdd} /> : null}
     </View>
   );
 };
