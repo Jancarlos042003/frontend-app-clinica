@@ -1,4 +1,4 @@
-import { Modal, View, Text } from 'react-native';
+import { Modal, View, Text, Platform } from 'react-native';
 
 type ModalContainerProps = {
   showModal: boolean;
@@ -12,7 +12,7 @@ const ModalContainer = ({ showModal, setShowModal, children, title }: ModalConta
     <Modal
       visible={showModal}
       presentationStyle="pageSheet"
-      animationType="slide"
+      animationType={Platform.OS === 'ios' ? 'slide' : 'fade'}
       onRequestClose={() => setShowModal(false)}>
       {/* TITULO PARA LA MODAL */}
       <View className="border-b border-gray-300 bg-white p-4">
