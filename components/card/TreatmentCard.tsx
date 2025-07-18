@@ -1,9 +1,9 @@
 import Badge from 'components/badge/Badge';
 import ProgressBar from 'components/iu/ProgressBar';
 import TreatmentInfoRow from 'components/iu/TreatmentInfoRow';
-import { useRef } from 'react';
-import { View, Text, Animated, Pressable } from 'react-native';
+import { View, Text } from 'react-native';
 import { TreatmentRecord } from 'schemas/TreatmentRecordSchema';
+
 import CardContainer from './CardContainer';
 
 interface TreatmentCardProps {
@@ -11,8 +11,6 @@ interface TreatmentCardProps {
 }
 
 const TreatmentCard = ({ treatment }: TreatmentCardProps) => {
-  const animScale = useRef(new Animated.Value(0)).current;
-
   const formatDateRange = (startDate: string, endDate: string) => {
     return `${startDate} - ${endDate}`;
   };
