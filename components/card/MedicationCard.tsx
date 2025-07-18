@@ -169,18 +169,22 @@ const MedicationCard = ({ medication, onMedicationUpdate }: MedicationCardProps)
             <Text className="mt-1 text-base font-semibold text-gray-500">
               {currentMedication.nameMedicine} - {currentMedication.doses}
             </Text>
-            {statusMessage && timeStatus.isToday && !isCompleted && (
-              <Text
-                className={`mt-1 text-sm font-medium ${
-                  timeStatus.isLate
-                    ? 'text-red-500'
-                    : timeStatus.withinTolerance
-                      ? 'text-green-600'
-                      : 'text-amber-600'
-                }`}>
-                {statusMessage}
-              </Text>
-            )}
+            {statusMessage &&
+              timeStatus.isToday &&
+              !isCompleted &&
+              currentMedication.status !== 'NOT_TAKEN' &&
+              currentMedication.status !== 'No tomado' && (
+                <Text
+                  className={`mt-1 text-sm font-medium ${
+                    timeStatus.isLate
+                      ? 'text-red-500'
+                      : timeStatus.withinTolerance
+                        ? 'text-green-600'
+                        : 'text-amber-600'
+                  }`}>
+                  {statusMessage}
+                </Text>
+              )}
           </View>
         </View>
         {shouldShowCheckbox && (
